@@ -1790,6 +1790,7 @@
             return diffDays <= 3 && diffDays >= 0;
         }
 
+        // === STORAGE ===
         function save() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
             localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
@@ -2185,23 +2186,29 @@
             const statusName = statusMessages[order.status] || order.status;
             const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
             
-            // Adicionar link do PDF se existir
-            let pdfLink = '';
-            if (order.pdfAttachment) {
-                pdfLink = `
+            // Link do Google Drive APENAS para pedidos novos (primeira notificação)
+            const isFirstNotification = order.status === 'novos' && !order.notificationSent;
+            const driveLink = 'https://drive.google.com/drive/folders/1dGzbDbBTlbU0TDvAsVfs0hqlLbWpcWGI';
+            
+            let orçamentoSection = '';
+            if (isFirstNotification) {
+                orçamentoSection = `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📎 ANEXO DO PEDIDO
+📎 ORÇAMENTO E MATERIAIS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Arquivo anexado: ${order.pdfAttachment.name}
+O orçamento detalhado e materiais de referência estão 
+disponíveis para download em nossa pasta compartilhada:
 
-(O arquivo PDF está salvo no sistema. Entre em contato 
-para solicitar o envio por WhatsApp ou e-mail)
+🔗 ${driveLink}
+
+Acesse o link acima para visualizar todos os arquivos 
+relacionados ao seu pedido.
 `;
             }
             
-            // E-mail SEM ASCII ART (NÃO ALTERAR)
+            // E-mail
             const emailBody = encodeURIComponent(
 `Olá ${order.client}! 👋
 
@@ -2214,7 +2221,7 @@ Temos boas notícias sobre o seu pedido!
 Produto: ${order.product}
 Status Atual: ${statusName}
 Previsão de Entrega: ${formatDate(order.deadline)}
-Valor: ${formatCurrency(order.value)}
+Valor: ${formatCurrency(order.value)}${orçamentoSection}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -2231,11 +2238,26 @@ Em caso de dúvidas, estamos à disposição:
 Com carinho,
 Equipe Alipel Papelaria Criativa
 
-✨ Transformando papel em arte desde 2025${pdfLink}
+✨ Transformando papel em arte desde 2025
 `
             );
 
-            // WhatsApp message (NÃO ALTERAR)
+            // WhatsApp - adicionar link APENAS na primeira notificação
+            let whatsappOrcamento = '';
+            if (isFirstNotification) {
+                whatsappOrcamento = `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📎 *ORÇAMENTO E MATERIAIS*
+
+O orçamento detalhado está disponível para download:
+
+🔗 ${driveLink}
+
+Acesse o link acima para visualizar todos os arquivos do seu pedido.`;
+            }
+
             const whatsappMessage = encodeURIComponent(
 `✨ *ALIPEL PAPELARIA CRIATIVA* ✨
 
@@ -2246,7 +2268,7 @@ Seu pedido está atualizado:
 📦 *Produto:* ${order.product}
 📍 *Status:* ${statusName}
 📅 *Entrega prevista:* ${formatDate(order.deadline)}
-💰 *Valor:* ${formatCurrency(order.value)}
+💰 *Valor:* ${formatCurrency(order.value)}${whatsappOrcamento}
 
 Estamos preparando tudo com muito carinho! 💜
 
@@ -2257,10 +2279,18 @@ _Alipel Papelaria Criativa_
 📷 @alipel_papelaria`
             );
 
-            // ABRE OS DOIS JUNTOS (NÃO ALTERAR)
+            // Marcar que a notificação foi enviada
+            if (isFirstNotification) {
+                orders = orders.map(o => 
+                    o.id === orderId ? { ...o, notificationSent: true } : o
+                );
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+            }
+
+            // ABRE OS DOIS JUNTOS
             let opened = false;
 
-            // ABRE WHATSAPP (NÃO ALTERAR)
+            // ABRE WHATSAPP
             if (order.clientWhatsApp) {
                 const phone = order.clientWhatsApp.replace(/\D/g, '');
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
@@ -2269,7 +2299,7 @@ _Alipel Papelaria Criativa_
                 showNotification('💬 WhatsApp aberto!', 'success');
             }
             
-            // ABRE E-MAIL (NÃO ALTERAR)
+            // ABRE E-MAIL
             if (order.clientEmail) {
                 const mailtoLink = `mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`;
                 window.open(mailtoLink, '_blank');
@@ -2277,7 +2307,7 @@ _Alipel Papelaria Criativa_
                 showNotification('📧 E-mail aberto!', 'info');
             }
 
-            // Se não tem nenhum contato (NÃO ALTERAR)
+            // Se não tem nenhum contato
             if (!opened) {
                 window.open(`mailto:?subject=${subject}&body=${emailBody}`, '_blank');
                 showNotification('⚠️ Adicione e-mail ou WhatsApp do cliente!', 'warning');
