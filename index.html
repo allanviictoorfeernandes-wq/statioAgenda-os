@@ -1601,32 +1601,43 @@ _Alipel Papelaria Criativa_
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
                 
                 // Tenta abrir no app do WhatsApp Desktop primeiro
-                const whatsappDesktop = `whatsapp://send?phone=${fullPhone}&text=${whatsappMessage}`;
-                window.location.href = whatsappDesktop;
+                window.location.href = `whatsapp://send?phone=${fullPhone}&text=${whatsappMessage}`;
                 
                 // Fallback para WhatsApp Web após 1 segundo (caso não tenha o app)
                 setTimeout(() => {
-                    const whatsappWeb = `https://web.whatsapp.com/send?phone=${fullPhone}&text=${whatsappMessage}`;
-                    window.open(whatsappWeb, '_blank');
+                    window.open(`https://web.whatsapp.com/send?phone=${fullPhone}&text=${whatsappMessage}`, '_blank');
                 }, 1000);
                 
                 showNotification('💬 WhatsApp aberto!', 'success');
             }
             
-            // ABRE E-MAIL
+            // ABRE E-MAIL - MÉTODO GARANTIDO
             if (order.clientEmail) {
                 const mailtoLink = `mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`;
                 
+                // Cria um link invisível e clica nele
+                const emailLink = document.createElement('a');
+                emailLink.href = mailtoLink;
+                emailLink.style.display = 'none';
+                document.body.appendChild(emailLink);
+                
                 // Delay para não conflitar com WhatsApp
                 setTimeout(() => {
-                    window.location.href = mailtoLink;
-                    showNotification('📧 E-mail aberto!', 'info');
-                }, order.clientWhatsApp ? 1500 : 0);
+                    emailLink.click();
+                    document.body.removeChild(emailLink);
+                    showNotification('📧 Cliente de e-mail aberto!', 'info');
+                }, order.clientWhatsApp ? 2000 : 100);
             }
 
             // Se não tem nenhum contato
             if (!order.clientEmail && !order.clientWhatsApp) {
-                window.location.href = `mailto:?subject=${subject}&body=${emailBody}`;
+                const mailtoLink = `mailto:?subject=${subject}&body=${emailBody}`;
+                const emailLink = document.createElement('a');
+                emailLink.href = mailtoLink;
+                emailLink.style.display = 'none';
+                document.body.appendChild(emailLink);
+                emailLink.click();
+                document.body.removeChild(emailLink);
                 showNotification('⚠️ Adicione e-mail ou WhatsApp do cliente!', 'warning');
             }
         }
