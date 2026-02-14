@@ -1498,6 +1498,14 @@
 
             save();
             closeModal();
+            
+            // ENVIA NOTIFICAÇÕES AUTOMATICAMENTE AO SALVAR
+            const savedOrderId = orderId || orders[orders.length - 1].id;
+            if (orderData.clientEmail || orderData.clientWhatsApp) {
+                setTimeout(() => {
+                    notifyClient(savedOrderId);
+                }, 300);
+            }
         });
 
         // === ORDER OPERATIONS ===
@@ -1587,39 +1595,39 @@ _Alipel Papelaria Criativa_
 📷 @alipel_papelaria`
             );
 
-            let notificationSent = false;
-
-            // Prioriza WhatsApp se disponível (mais usado)
+            // ABRE WHATSAPP (usando whatsapp:// para abrir no app do PC)
             if (order.clientWhatsApp) {
                 const phone = order.clientWhatsApp.replace(/\D/g, '');
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
                 
-                window.open(`https://wa.me/${fullPhone}?text=${whatsappMessage}`, '_blank');
-                notificationSent = true;
+                // Tenta abrir no app do WhatsApp Desktop primeiro
+                const whatsappDesktop = `whatsapp://send?phone=${fullPhone}&text=${whatsappMessage}`;
+                window.location.href = whatsappDesktop;
                 
-                // Mostra confirmação
-                showNotification('💬 WhatsApp aberto! Confira a mensagem e envie.', 'success');
+                // Fallback para WhatsApp Web após 1 segundo (caso não tenha o app)
+                setTimeout(() => {
+                    const whatsappWeb = `https://web.whatsapp.com/send?phone=${fullPhone}&text=${whatsappMessage}`;
+                    window.open(whatsappWeb, '_blank');
+                }, 1000);
+                
+                showNotification('💬 WhatsApp aberto!', 'success');
             }
             
-            // Depois abre email se disponível
+            // ABRE E-MAIL
             if (order.clientEmail) {
-                if (notificationSent) {
-                    // Delay para não bloquear popup
-                    setTimeout(() => {
-                        window.open(`mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`, '_blank');
-                        showNotification('📧 E-mail aberto! Confira e clique em Enviar.', 'info');
-                    }, 1000);
-                } else {
-                    window.open(`mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`, '_blank');
-                    notificationSent = true;
-                    showNotification('📧 E-mail aberto! Confira e clique em Enviar.', 'info');
-                }
+                const mailtoLink = `mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`;
+                
+                // Delay para não conflitar com WhatsApp
+                setTimeout(() => {
+                    window.location.href = mailtoLink;
+                    showNotification('📧 E-mail aberto!', 'info');
+                }, order.clientWhatsApp ? 1500 : 0);
             }
 
-            // Se não tem nenhum contato, abre email genérico
-            if (!notificationSent) {
+            // Se não tem nenhum contato
+            if (!order.clientEmail && !order.clientWhatsApp) {
                 window.location.href = `mailto:?subject=${subject}&body=${emailBody}`;
-                showNotification('📧 Adicione o e-mail do cliente para envio automático!', 'warning');
+                showNotification('⚠️ Adicione e-mail ou WhatsApp do cliente!', 'warning');
             }
         }
 
