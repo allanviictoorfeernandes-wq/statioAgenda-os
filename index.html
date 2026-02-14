@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
             /* Premium Craft Palette - Alipel Papelaria Criativa */
@@ -571,8 +572,22 @@
         .card-client {
             font-size: 0.85rem;
             color: var(--sage-dark);
-            margin-bottom: 1.25rem;
+            margin-bottom: 0.5rem;
             font-weight: 500;
+        }
+
+        .card-observations {
+            font-size: 0.8rem;
+            color: var(--sage);
+            margin-bottom: 1rem;
+            font-style: italic;
+            line-height: 1.4;
+            max-height: 2.8em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
         }
 
         .card-meta {
@@ -1265,6 +1280,10 @@
                 <span>📊</span>
                 <span>Relatórios</span>
             </a>
+            <a class="nav-item" onclick="showView('dashboard')">
+                <span>📈</span>
+                <span>Dashboard</span>
+            </a>
             <a class="nav-item" onclick="showView('configuracoes')">
                 <span>⚙️</span>
                 <span>Configurações</span>
@@ -1429,6 +1448,79 @@
                         </thead>
                         <tbody id="ordersTableBody"></tbody>
                     </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: DASHBOARD -->
+        <section id="view-dashboard" class="content-view" style="display: none;">
+            <div class="view-header">
+                <div>
+                    <h2>📈 Dashboard</h2>
+                    <p>Visão geral e análise do negócio</p>
+                </div>
+            </div>
+
+            <!-- CARDS NO TOPO -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div style="background: linear-gradient(135deg, var(--purple-primary), var(--purple-dark)); color: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.5rem;">💰 RECEITA TOTAL</div>
+                    <div style="font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif;" id="dash-total-revenue">R$ 0,00</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">Este ano</div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, var(--sage), var(--sage-dark)); color: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.5rem;">📦 PEDIDOS CONCLUÍDOS</div>
+                    <div style="font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif;" id="dash-total-orders">0</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">Este ano</div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, var(--terracotta), #B85F53); color: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.5rem;">⏰ EM ANDAMENTO</div>
+                    <div style="font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif;" id="dash-active-orders">0</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">Agora</div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, var(--gold), #D4AF37); color: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <div style="font-size: 0.85rem; opacity: 0.9; margin-bottom: 0.5rem;">💵 TICKET MÉDIO</div>
+                    <div style="font-size: 2rem; font-weight: 700; font-family: 'Playfair Display', serif;" id="dash-avg-ticket">R$ 0,00</div>
+                    <div style="font-size: 0.8rem; opacity: 0.8; margin-top: 0.5rem;">Por pedido</div>
+                </div>
+            </div>
+
+            <!-- GRÁFICO PRINCIPAL: FATURAMENTO MENSAL -->
+            <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper); margin-bottom: 2rem;">
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--charcoal);">💰 Faturamento Mensal - 2026</h3>
+                <canvas id="revenueChart" style="max-height: 300px;"></canvas>
+            </div>
+
+            <!-- LINHA COM 2 GRÁFICOS -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+                <!-- PEDIDOS POR STATUS -->
+                <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">📊 Pedidos por Status</h3>
+                    <canvas id="statusChart" style="max-height: 250px;"></canvas>
+                </div>
+
+                <!-- TOP 5 PRODUTOS -->
+                <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">🏆 Top 5 Produtos</h3>
+                    <canvas id="productsChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+
+            <!-- LINHA COM 2 GRÁFICOS -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                <!-- TOP 5 CLIENTES -->
+                <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">👥 Top 5 Clientes</h3>
+                    <canvas id="clientsChart" style="max-height: 250px;"></canvas>
+                </div>
+
+                <!-- PEDIDOS URGENTES -->
+                <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                    <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">⚠️ Pedidos Urgentes</h3>
+                    <div id="urgentOrders" style="max-height: 250px; overflow-y: auto;"></div>
                 </div>
             </div>
         </section>
@@ -1628,6 +1720,16 @@
                     <label for="pdfAttachment">📎 Anexar PDF (Opcional)</label>
                     <input type="file" id="pdfAttachment" accept=".pdf" style="padding: 0.75rem 1.25rem;">
                     <div id="pdfPreview" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--sage-dark);"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="observations">📝 Observações Internas (Opcional)</label>
+                    <textarea 
+                        id="observations" 
+                        rows="3" 
+                        placeholder="Ex: Capa rosa com nome dourado, folhas coloridas..."
+                        style="width: 100%; padding: 0.95rem 1.25rem; border: 2px solid var(--kraft-light); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                    <p style="font-size: 0.8rem; color: var(--sage-dark); margin-top: 0.5rem;">💡 Essas observações são apenas para uso interno e não serão enviadas ao cliente.</p>
                 </div>
 
                 <div class="modal-footer">
@@ -1939,6 +2041,7 @@
                     document.getElementById('productWire').value = order.productWire || '';
                     document.getElementById('value').value = order.value;
                     document.getElementById('deadline').value = order.deadline;
+                    document.getElementById('observations').value = order.observations || '';
                     
                     if (order.pdfAttachment) {
                         document.getElementById('pdfPreview').innerHTML = `✅ Anexo: ${order.pdfAttachment.name}`;
@@ -2125,7 +2228,8 @@
                 productPaper: document.getElementById('productPaper').value,
                 productWire: document.getElementById('productWire').value,
                 value: parseFloat(document.getElementById('value').value),
-                deadline: document.getElementById('deadline').value
+                deadline: document.getElementById('deadline').value,
+                observations: document.getElementById('observations').value.trim()
             };
 
             // SALVAR PDF ANEXADO
@@ -2555,12 +2659,23 @@ _Alipel Papelaria Criativa_
             const urgent = isUrgent(order.deadline);
             const urgentIndicator = urgent ? ' 🔥' : '';
 
+            // Preparar observações (limitar a 2 linhas)
+            let observationsHTML = '';
+            if (order.observations && order.observations.trim()) {
+                const maxLength = 60;
+                const obs = order.observations.length > maxLength 
+                    ? order.observations.substring(0, maxLength) + '...' 
+                    : order.observations;
+                observationsHTML = `<div class="card-observations">📝 ${obs}</div>`;
+            }
+
             card.innerHTML = `
                 <button class="btn-view-card" onclick="event.stopPropagation(); openViewModal('${order.id}')" title="Visualizar pedido">👁️</button>
                 <button class="btn-delete-card" onclick="event.stopPropagation(); deleteOrder('${order.id}')" title="Excluir pedido">×</button>
                 <span class="card-tag ${tagClass}">${tagText}</span>
                 <div class="card-title">${order.product}</div>
                 <div class="card-client">👤 ${order.client}</div>
+                ${observationsHTML}
                 <div class="card-meta">
                     <span class="card-value">${formatCurrency(order.value)}</span>
                     <span class="card-date">📅 ${formatDate(order.deadline)}${urgentIndicator}</span>
@@ -2711,6 +2826,10 @@ _Alipel Papelaria Criativa_
                     document.getElementById('header-title').textContent = 'Relatórios';
                     document.getElementById('header-subtitle').textContent = 'Análises e exportações';
                     renderReports();
+                } else if (viewName === 'dashboard') {
+                    document.getElementById('header-title').textContent = 'Dashboard';
+                    document.getElementById('header-subtitle').textContent = 'Visão geral e análise do negócio';
+                    renderDashboard();
                 } else if (viewName === 'clientes') {
                     document.getElementById('header-title').textContent = 'Clientes';
                     document.getElementById('header-subtitle').textContent = 'Histórico de pedidos por cliente';
@@ -2919,6 +3038,234 @@ _Alipel Papelaria Criativa_
             showNotification('✓ Relatório exportado com sucesso!', 'success');
         }
 
+        // === DASHBOARD ===
+        let dashboardCharts = {};
+
+        function renderDashboard() {
+            // Destruir gráficos anteriores se existirem
+            Object.values(dashboardCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            dashboardCharts = {};
+
+            // Calcular dados
+            const currentYear = new Date().getFullYear();
+            const yearOrders = orders.filter(o => {
+                const orderYear = new Date(o.createdAt).getFullYear();
+                return orderYear === currentYear;
+            });
+
+            // CARD 1: Receita Total
+            const totalRevenue = yearOrders
+                .filter(o => o.status === 'pronto')
+                .reduce((sum, o) => sum + o.value, 0);
+            document.getElementById('dash-total-revenue').textContent = formatCurrency(totalRevenue);
+
+            // CARD 2: Pedidos Concluídos
+            const completedOrders = yearOrders.filter(o => o.status === 'pronto').length;
+            document.getElementById('dash-total-orders').textContent = completedOrders;
+
+            // CARD 3: Em Andamento
+            const activeOrders = orders.filter(o => o.status !== 'pronto').length;
+            document.getElementById('dash-active-orders').textContent = activeOrders;
+
+            // CARD 4: Ticket Médio
+            const avgTicket = completedOrders > 0 ? totalRevenue / completedOrders : 0;
+            document.getElementById('dash-avg-ticket').textContent = formatCurrency(avgTicket);
+
+            // GRÁFICO 1: Faturamento Mensal
+            const monthlyRevenue = Array(12).fill(0);
+            yearOrders.forEach(order => {
+                if (order.status === 'pronto') {
+                    const month = new Date(order.createdAt).getMonth();
+                    monthlyRevenue[month] += order.value;
+                }
+            });
+
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            dashboardCharts.revenue = new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                    datasets: [{
+                        label: 'Faturamento (R$)',
+                        data: monthlyRevenue,
+                        borderColor: '#7B6BA8',
+                        backgroundColor: 'rgba(123, 107, 168, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => 'R$ ' + context.parsed.y.toFixed(2).replace('.', ',')
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => 'R$ ' + value.toFixed(0)
+                            }
+                        }
+                    }
+                }
+            });
+
+            // GRÁFICO 2: Pedidos por Status
+            const statusCount = {
+                'novos': orders.filter(o => o.status === 'novos').length,
+                'producao': orders.filter(o => o.status === 'producao').length,
+                'acabamento': orders.filter(o => o.status === 'acabamento').length,
+                'pronto': orders.filter(o => o.status === 'pronto').length
+            };
+
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            dashboardCharts.status = new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Novos', 'Produção', 'Acabamento', 'Pronto'],
+                    datasets: [{
+                        data: [statusCount.novos, statusCount.producao, statusCount.acabamento, statusCount.pronto],
+                        backgroundColor: ['#FFD700', '#C9765F', '#8FA998', '#7B6BA8'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // GRÁFICO 3: Top 5 Produtos
+            const productSales = {};
+            orders.forEach(order => {
+                if (order.product) {
+                    productSales[order.product] = (productSales[order.product] || 0) + 1;
+                }
+            });
+
+            const topProducts = Object.entries(productSales)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            const productsCtx = document.getElementById('productsChart').getContext('2d');
+            dashboardCharts.products = new Chart(productsCtx, {
+                type: 'bar',
+                data: {
+                    labels: topProducts.map(p => p[0].length > 20 ? p[0].substring(0, 20) + '...' : p[0]),
+                    datasets: [{
+                        label: 'Vendas',
+                        data: topProducts.map(p => p[1]),
+                        backgroundColor: '#E8A4B8',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: { beginAtZero: true }
+                    }
+                }
+            });
+
+            // GRÁFICO 4: Top 5 Clientes
+            const clientRevenue = {};
+            orders.forEach(order => {
+                if (order.client && order.status === 'pronto') {
+                    clientRevenue[order.client] = (clientRevenue[order.client] || 0) + order.value;
+                }
+            });
+
+            const topClients = Object.entries(clientRevenue)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+
+            const clientsCtx = document.getElementById('clientsChart').getContext('2d');
+            dashboardCharts.clients = new Chart(clientsCtx, {
+                type: 'bar',
+                data: {
+                    labels: topClients.map(c => c[0].length > 20 ? c[0].substring(0, 20) + '...' : c[0]),
+                    datasets: [{
+                        label: 'Faturamento (R$)',
+                        data: topClients.map(c => c[1]),
+                        backgroundColor: '#8FA998',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => 'R$ ' + context.parsed.x.toFixed(2).replace('.', ',')
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => 'R$ ' + value.toFixed(0)
+                            }
+                        }
+                    }
+                }
+            });
+
+            // LISTA: Pedidos Urgentes
+            const urgentContainer = document.getElementById('urgentOrders');
+            const urgentOrders = orders.filter(o => {
+                const daysUntil = Math.ceil((new Date(o.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                return o.status !== 'pronto' && daysUntil <= 3;
+            }).sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+
+            if (urgentOrders.length === 0) {
+                urgentContainer.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--sage-dark);">
+                        <div style="font-size: 3rem;">✅</div>
+                        <p style="margin-top: 1rem;">Nenhum pedido urgente!</p>
+                        <p style="font-size: 0.85rem; opacity: 0.8;">Tudo sob controle!</p>
+                    </div>
+                `;
+            } else {
+                urgentContainer.innerHTML = urgentOrders.map(order => {
+                    const daysUntil = Math.ceil((new Date(order.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+                    const urgencyColor = daysUntil <= 1 ? '#C9765F' : '#FFD700';
+                    const urgencyText = daysUntil <= 0 ? 'ATRASADO!' : daysUntil === 1 ? 'Vence AMANHÃ' : `Vence em ${daysUntil} dias`;
+                    
+                    return `
+                        <div style="border-left: 4px solid ${urgencyColor}; padding: 1rem; margin-bottom: 1rem; background: rgba(0,0,0,0.02); border-radius: 4px; cursor: pointer;" onclick="openViewModal('${order.id}')">
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${order.product}</div>
+                            <div style="font-size: 0.85rem; color: var(--sage-dark); margin-bottom: 0.5rem;">👤 ${order.client}</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                                <span style="color: ${urgencyColor}; font-weight: 600;">⚠️ ${urgencyText}</span>
+                                <span>${formatCurrency(order.value)}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
         // === CONFIGURAÇÕES ===
         function clearAllData() {
             const confirmed = confirm(
@@ -3030,6 +3377,17 @@ _Alipel Papelaria Criativa_
                     ${order.productSize ? `<div class="view-detail-item"><div class="view-detail-label">Tamanho:</div><div class="view-detail-value">${order.productSize}</div></div>` : ''}
                 </div>
             `;
+
+            if (order.observations && order.observations.trim()) {
+                html += `
+                    <div class="view-detail-group">
+                        <h3>📝 Observações Internas</h3>
+                        <div class="view-detail-item">
+                            <div class="view-detail-value" style="width: 100%; white-space: pre-wrap;">${order.observations}</div>
+                        </div>
+                    </div>
+                `;
+            }
 
             if (order.pdfAttachment) {
                 html += `
