@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
             /* Premium Craft Palette - Alipel Papelaria Criativa */
@@ -1466,6 +1468,19 @@
                 </div>
 
                 <div class="settings-group">
+                    <h3>🔗 Integração Google Drive</h3>
+                    <p style="font-size: 0.9rem; color: var(--navy); margin-bottom: 1rem;">
+                        Conecte sua conta do Google Drive para enviar automaticamente os links das pastas dos clientes nos e-mails e WhatsApp.
+                    </p>
+                    <button class="btn-create" onclick="handleAuthClick()" style="width: auto;">
+                        📁 Conectar Google Drive
+                    </button>
+                    <p style="font-size: 0.85rem; color: var(--sage-dark); margin-top: 1rem;">
+                        ✅ Após conectar, o sistema buscará automaticamente as pastas com o nome dos clientes e enviará os links.
+                    </p>
+                </div>
+
+                <div class="settings-group">
                     <h3>Gestão de Dados</h3>
                     <button class="btn-danger" onclick="clearAllData()">
                         🗑️ Limpar Todos os Dados
@@ -1746,6 +1761,17 @@
         const CLIENTS_KEY = 'alipel_clients_v3';
         const PRODUCTS_KEY = 'alipel_products_v3';
 
+        // === GOOGLE DRIVE API ===
+        const API_KEY = 'AIzaSyBSELS-bX2Dt7nwxdudkhTzl4X8gWf9UU8';
+        const CLIENT_ID = '440625825031-l7npcu772o47p0951pi336n5k19v0a47.apps.googleusercontent.com';
+        const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+        const SCOPES = 'https://www.googleapis.com/auth/drive.readonly';
+        
+        let gapiInited = false;
+        let gisInited = false;
+        let tokenClient;
+        let googleDriveReady = false;
+
         // === STATE ===
         let orders = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let clients = JSON.parse(localStorage.getItem(CLIENTS_KEY)) || [];
@@ -1789,6 +1815,92 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
             return diffDays <= 3 && diffDays >= 0;
         }
+
+        // === GOOGLE DRIVE INTEGRATION ===
+        function gapiLoaded() {
+            gapi.load('client', initializeGapiClient);
+        }
+
+        async function initializeGapiClient() {
+            await gapi.client.init({
+                apiKey: API_KEY,
+                discoveryDocs: DISCOVERY_DOCS,
+            });
+            gapiInited = true;
+            maybeEnableButtons();
+        }
+
+        function gisLoaded() {
+            tokenClient = google.accounts.oauth2.initTokenClient({
+                client_id: CLIENT_ID,
+                scope: SCOPES,
+                callback: '', // defined later
+            });
+            gisInited = true;
+            maybeEnableButtons();
+        }
+
+        function maybeEnableButtons() {
+            if (gapiInited && gisInited) {
+                googleDriveReady = true;
+            }
+        }
+
+        function handleAuthClick() {
+            tokenClient.callback = async (resp) => {
+                if (resp.error !== undefined) {
+                    throw (resp);
+                }
+                googleDriveReady = true;
+                showNotification('✅ Google Drive conectado!', 'success');
+            };
+
+            if (gapi.client.getToken() === null) {
+                tokenClient.requestAccessToken({prompt: 'consent'});
+            } else {
+                tokenClient.requestAccessToken({prompt: ''});
+            }
+        }
+
+        async function findClientFolder(clientName) {
+            if (!googleDriveReady) {
+                showNotification('⚠️ Conecte ao Google Drive primeiro!', 'warning');
+                handleAuthClick();
+                return null;
+            }
+
+            try {
+                const response = await gapi.client.drive.files.list({
+                    q: `name='${clientName}' and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+                    fields: 'files(id, name, webViewLink)',
+                    pageSize: 10,
+                });
+
+                const folders = response.result.files;
+                if (!folders || folders.length === 0) {
+                    showNotification(`❌ Pasta "${clientName}" não encontrada no Drive!`, 'warning');
+                    return null;
+                }
+
+                // Retorna o link da primeira pasta encontrada
+                return folders[0].webViewLink;
+            } catch (err) {
+                console.error('Erro ao buscar pasta:', err);
+                showNotification('❌ Erro ao acessar Google Drive!', 'warning');
+                
+                // Se der erro de autenticação, pede login novamente
+                if (err.status === 401 || err.status === 403) {
+                    handleAuthClick();
+                }
+                return null;
+            }
+        }
+
+        // Inicializar APIs quando a página carregar
+        window.addEventListener('load', () => {
+            gapiLoaded();
+            gisLoaded();
+        });
 
         // === STORAGE ===
         function save() {
@@ -2172,7 +2284,7 @@
             }
         }
 
-        function notifyClient(orderId) {
+        async function notifyClient(orderId) {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
 
@@ -2186,12 +2298,28 @@
             const statusName = statusMessages[order.status] || order.status;
             const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
             
-            // Link do Google Drive APENAS para pedidos novos (primeira notificação)
+            // Buscar link do Google Drive APENAS para pedidos novos (primeira notificação)
             const isFirstNotification = order.status === 'novos' && !order.notificationSent;
-            const driveLink = 'https://drive.google.com/drive/folders/1dGzbDbBTlbU0TDvAsVfs0hqlLbWpcWGI';
+            let driveLink = null;
+            
+            if (isFirstNotification && order.client) {
+                showNotification('🔍 Buscando pasta do cliente no Drive...', 'info');
+                driveLink = await findClientFolder(order.client);
+                
+                // Salvar o link no pedido para não precisar buscar novamente
+                if (driveLink) {
+                    orders = orders.map(o => 
+                        o.id === orderId ? { ...o, driveLink: driveLink } : o
+                    );
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+                }
+            } else if (order.driveLink) {
+                // Se já tem o link salvo, usa ele
+                driveLink = order.driveLink;
+            }
             
             let orçamentoSection = '';
-            if (isFirstNotification) {
+            if (isFirstNotification && driveLink) {
                 orçamentoSection = `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -2244,7 +2372,7 @@ Equipe Alipel Papelaria Criativa
 
             // WhatsApp - adicionar link APENAS na primeira notificação
             let whatsappOrcamento = '';
-            if (isFirstNotification) {
+            if (isFirstNotification && driveLink) {
                 whatsappOrcamento = `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
