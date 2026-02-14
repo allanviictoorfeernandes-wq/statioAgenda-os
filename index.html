@@ -1069,22 +1069,25 @@
 
     <aside>
         <div class="logo">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;">
-                <!-- Logo Alipel com Alicate -->
-                <svg width="50" height="50" viewBox="0 0 100 100" style="flex-shrink: 0;">
-                    <!-- Alicate estilizado -->
-                    <g transform="rotate(-30 50 50)">
-                        <rect x="20" y="40" width="8" height="35" rx="2" fill="#E8A4B8"/>
-                        <rect x="32" y="40" width="8" height="35" rx="2" fill="#E8A4B8"/>
-                        <circle cx="24" cy="38" r="5" fill="#E8A4B8"/>
-                        <circle cx="36" cy="38" r="5" fill="#E8A4B8"/>
-                        <path d="M 20 75 L 15 85 L 20 90 L 28 75 Z" fill="#E8A4B8"/>
-                        <path d="M 32 75 L 40 90 L 45 85 L 40 75 Z" fill="#E8A4B8"/>
+            <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                <!-- Alicate Rosa inclinado -->
+                <svg width="30" height="50" viewBox="0 0 60 100" style="flex-shrink: 0; margin-top: -5px;">
+                    <g transform="rotate(-30 30 50)">
+                        <!-- Braço esquerdo do alicate -->
+                        <rect x="18" y="25" width="5" height="38" rx="2.5" fill="#E8A0A8"/>
+                        <!-- Braço direito do alicate -->
+                        <rect x="27" y="25" width="5" height="38" rx="2.5" fill="#E8A0A8"/>
+                        <!-- Articulação superior -->
+                        <ellipse cx="25" cy="27" rx="7" ry="5" fill="#D88898"/>
+                        <!-- Ponta esquerda -->
+                        <path d="M 18 63 L 15 75 L 20 72 L 23 63 Z" fill="#E8A0A8"/>
+                        <!-- Ponta direita -->
+                        <path d="M 27 63 L 32 72 L 37 75 L 32 63 Z" fill="#E8A0A8"/>
                     </g>
                 </svg>
-                <div>
-                    <h1 style="margin: 0; font-size: 1.75rem; color: var(--purple-primary); font-family: 'Playfair Display', serif;">Alipel</h1>
-                    <p style="margin: 0; font-size: 0.75rem; color: var(--pink-accent); font-weight: 600;">Papelaria Criativa</p>
+                <div style="margin-left: -3px;">
+                    <h1 style="margin: 0; font-size: 1.85rem; color: #8B84B8; font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">Alipel</h1>
+                    <p style="margin: 0; margin-top: 1px; font-size: 0.52rem; color: #E8A4B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; line-height: 1;">Papelaria Criativa</p>
                 </div>
             </div>
         </div>
@@ -1495,14 +1498,6 @@
 
             save();
             closeModal();
-            
-            // Send notifications if email or whatsapp provided
-            if (orderData.clientEmail || orderData.clientWhatsApp) {
-                const newOrderId = orderId || orders[orders.length - 1].id;
-                setTimeout(() => {
-                    notifyClient(newOrderId);
-                }, 500);
-            }
         });
 
         // === ORDER OPERATIONS ===
@@ -1525,71 +1520,106 @@
             };
 
             const statusName = statusMessages[order.status] || order.status;
-            const subject = encodeURIComponent(`Atualização do Pedido: ${order.product}`);
+            const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
             
+            // E-mail com logo em ASCII art
             const emailBody = encodeURIComponent(
-`Olá ${order.client},
+`
+   ╔═══════════════════════════════════════════╗
+   ║                                           ║
+   ║        ✂️  ALIPEL PAPELARIA CRIATIVA       ║
+   ║                                           ║
+   ╚═══════════════════════════════════════════╝
+
+
+Olá ${order.client}! 👋
 
 Temos boas notícias sobre o seu pedido!
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📦 INFORMAÇÕES DO PEDIDO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Produto: ${order.product}
 Status Atual: ${statusName}
 Previsão de Entrega: ${formatDate(order.deadline)}
 Valor: ${formatCurrency(order.value)}
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Estamos trabalhando com todo carinho e atenção aos detalhes para que seu pedido fique perfeito!
+Estamos trabalhando com todo carinho e atenção 
+aos detalhes para que seu pedido fique perfeito! ✨
 
-Em caso de dúvidas, estamos à disposição.
-
-Com carinho,
-${EMPRESA_NOME}
+Em caso de dúvidas, estamos à disposição:
 
 📱 WhatsApp: (41) 99693-1010
-📍 Rua Xambre, 47 - Curitiba - PR
+📧 E-mail: contato@alipelpapelaria.com.br
+📍 Endereço: Rua Xambre, 47 - Curitiba - PR
 📷 Instagram: @alipel_papelaria
 
-✨ Transformando papel em arte desde 2025`
+Com carinho,
+Equipe Alipel Papelaria Criativa
+
+✨ Transformando papel em arte desde 2025
+
+`
             );
 
-            // WhatsApp message (shorter version)
+            // WhatsApp message (otimizada)
             const whatsappMessage = encodeURIComponent(
-`Olá ${order.client}! 👋
+`✨ *ALIPEL PAPELARIA CRIATIVA* ✨
 
-Seu pedido de *${order.product}* está em: *${statusName}*
+Olá *${order.client}*! 👋
 
-📅 Prazo: ${formatDate(order.deadline)}
-💰 Valor: ${formatCurrency(order.value)}
+Seu pedido está atualizado:
 
-Qualquer dúvida, estamos à disposição! 😊
+📦 *Produto:* ${order.product}
+📍 *Status:* ${statusName}
+📅 *Entrega prevista:* ${formatDate(order.deadline)}
+💰 *Valor:* ${formatCurrency(order.value)}
 
-_${EMPRESA_NOME}_`
+Estamos preparando tudo com muito carinho! 💜
+
+Qualquer dúvida, é só chamar! 😊
+
+_Alipel Papelaria Criativa_
+📍 Rua Xambre, 47 - Curitiba
+📷 @alipel_papelaria`
             );
 
-            // Open both email and WhatsApp
-            if (order.clientEmail) {
-                window.open(`mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`, '_blank');
-            }
-            
+            let notificationSent = false;
+
+            // Prioriza WhatsApp se disponível (mais usado)
             if (order.clientWhatsApp) {
-                // Remove formatting from phone number
                 const phone = order.clientWhatsApp.replace(/\D/g, '');
-                // Add country code if not present
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
                 
-                setTimeout(() => {
-                    window.open(`https://wa.me/${fullPhone}?text=${whatsappMessage}`, '_blank');
-                }, 500);
+                window.open(`https://wa.me/${fullPhone}?text=${whatsappMessage}`, '_blank');
+                notificationSent = true;
+                
+                // Mostra confirmação
+                showNotification('💬 WhatsApp aberto! Confira a mensagem e envie.', 'success');
+            }
+            
+            // Depois abre email se disponível
+            if (order.clientEmail) {
+                if (notificationSent) {
+                    // Delay para não bloquear popup
+                    setTimeout(() => {
+                        window.open(`mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`, '_blank');
+                        showNotification('📧 E-mail aberto! Confira e clique em Enviar.', 'info');
+                    }, 1000);
+                } else {
+                    window.open(`mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`, '_blank');
+                    notificationSent = true;
+                    showNotification('📧 E-mail aberto! Confira e clique em Enviar.', 'info');
+                }
             }
 
-            // If neither email nor whatsapp, show generic mailto
-            if (!order.clientEmail && !order.clientWhatsApp) {
+            // Se não tem nenhum contato, abre email genérico
+            if (!notificationSent) {
                 window.location.href = `mailto:?subject=${subject}&body=${emailBody}`;
+                showNotification('📧 Adicione o e-mail do cliente para envio automático!', 'warning');
             }
         }
 
