@@ -614,6 +614,8 @@
             background: white;
             width: 500px;
             max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
             border-radius: var(--radius);
             padding: 3rem;
             box-shadow: var(--shadow-float);
@@ -978,6 +980,41 @@
             box-shadow: var(--shadow-lift);
         }
 
+        /* NOVO: Botão de editar/excluir em cards */
+        .btn-edit, .btn-delete {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-edit {
+            background: var(--purple-primary);
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: var(--purple-dark);
+        }
+
+        .btn-delete {
+            background: var(--terracotta);
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #B85F53;
+        }
+
+        .card-actions-grid {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
         /* === RESPONSIVE === */
         @media (max-width: 1024px) {
             aside {
@@ -1101,6 +1138,16 @@
                 <span>💎</span>
                 <span>Clientes</span>
             </a>
+            <!-- NOVO: Cadastro de Clientes -->
+            <a class="nav-item" onclick="showView('cadastro-clientes')">
+                <span>👥</span>
+                <span>Cadastro Clientes</span>
+            </a>
+            <!-- NOVO: Cadastro de Produtos -->
+            <a class="nav-item" onclick="showView('cadastro-produtos')">
+                <span>📝</span>
+                <span>Cadastro Produtos</span>
+            </a>
             <a class="nav-item" onclick="showView('relatorios')">
                 <span>📊</span>
                 <span>Relatórios</span>
@@ -1128,10 +1175,10 @@
     <main>
         <header>
             <div class="header-left">
-                <h2>Quadro de Produção</h2>
-                <p>Gerencie seus pedidos com elegância e eficiência</p>
+                <h2 id="header-title">Quadro de Produção</h2>
+                <p id="header-subtitle">Gerencie seus pedidos com elegância e eficiência</p>
             </div>
-            <button class="btn-create" onclick="openModal()">
+            <button class="btn-create" id="btn-main-action" onclick="openModal()">
                 <span>✨</span> Novo Pedido
             </button>
         </header>
@@ -1170,7 +1217,7 @@
             </div>
         </section>
 
-        <!-- VIEW: CLIENTES -->
+        <!-- VIEW: CLIENTES (relatório) -->
         <section id="view-clientes" class="content-view" style="display: none;">
             <div class="view-header">
                 <div>
@@ -1179,6 +1226,34 @@
                 </div>
             </div>
             <div class="clients-grid" id="clientsGrid"></div>
+        </section>
+
+        <!-- NOVO: VIEW CADASTRO DE CLIENTES -->
+        <section id="view-cadastro-clientes" class="content-view" style="display: none;">
+            <div class="view-header">
+                <div>
+                    <h2>Cadastro de Clientes</h2>
+                    <p>Gerencie todos os seus clientes</p>
+                </div>
+                <button class="btn-create" onclick="openClientModal()">
+                    <span>👤</span> Novo Cliente
+                </button>
+            </div>
+            <div class="clients-grid" id="cadastroClientesGrid"></div>
+        </section>
+
+        <!-- NOVO: VIEW CADASTRO DE PRODUTOS -->
+        <section id="view-cadastro-produtos" class="content-view" style="display: none;">
+            <div class="view-header">
+                <div>
+                    <h2>Cadastro de Produtos</h2>
+                    <p>Gerencie todos os seus produtos</p>
+                </div>
+                <button class="btn-create" onclick="openProductModal()">
+                    <span>📦</span> Novo Produto
+                </button>
+            </div>
+            <div class="clients-grid" id="cadastroProdutosGrid"></div>
         </section>
 
         <!-- VIEW: RELATÓRIOS -->
@@ -1293,7 +1368,7 @@
                     <h3>Sobre o Sistema</h3>
                     <p style="color: var(--navy); margin-bottom: 0.5rem;">
                         <strong>Alipel Papelaria Criativa</strong><br>
-                        Sistema de Gestão de Produção v2.0
+                        Sistema de Gestão de Produção v3.0
                     </p>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">
                         Desenvolvido com ❤️ para transformar a gestão da sua papelaria artesanal.
@@ -1303,30 +1378,30 @@
         </section>
     </main>
 
+    <!-- MODAL: PEDIDO -->
     <div id="modal" class="modal" onclick="closeModalOnOverlay(event)">
         <div class="modal-content">
             <h2 id="modalTitle">Novo Pedido</h2>
             <form id="orderForm">
                 <input type="hidden" id="orderId">
                 
+                <!-- NOVO: Dropdown de Cliente -->
                 <div class="form-group">
-                    <label for="product">Produto / Serviço</label>
-                    <input 
-                        type="text" 
-                        id="product" 
-                        placeholder="Ex: Agenda 2026 Floral Premium" 
-                        required
-                        autocomplete="off">
+                    <label for="clientSelect">Cliente</label>
+                    <select id="clientSelect" onchange="fillClientData()">
+                        <option value="">Selecione um cliente</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="client">Cliente</label>
+                    <label for="client">Nome do Cliente</label>
                     <input 
                         type="text" 
                         id="client" 
                         placeholder="Ex: Maria Oliveira" 
                         required
-                        autocomplete="off">
+                        autocomplete="off"
+                        readonly>
                 </div>
 
                 <div style="display: flex; gap: 1rem">
@@ -1336,7 +1411,8 @@
                             type="email" 
                             id="clientEmail" 
                             placeholder="cliente@email.com"
-                            autocomplete="off">
+                            autocomplete="off"
+                            readonly>
                     </div>
                     <div class="form-group" style="flex: 1">
                         <label for="clientWhatsApp">WhatsApp</label>
@@ -1344,7 +1420,61 @@
                             type="tel" 
                             id="clientWhatsApp" 
                             placeholder="(00) 00000-0000"
-                            autocomplete="off">
+                            autocomplete="off"
+                            readonly>
+                    </div>
+                </div>
+
+                <!-- NOVO: Dropdown de Produto -->
+                <div class="form-group">
+                    <label for="productSelect">Produto / Serviço</label>
+                    <select id="productSelect" onchange="fillProductData()">
+                        <option value="">Selecione um produto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="product">Nome do Produto</label>
+                    <input 
+                        type="text" 
+                        id="product" 
+                        placeholder="Ex: Agenda 2026 Floral Premium" 
+                        required
+                        autocomplete="off"
+                        readonly>
+                </div>
+
+                <!-- NOVOS CAMPOS DO PRODUTO (preenchidos automaticamente) -->
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="productPages">Qtd. Folhas</label>
+                        <input type="number" id="productPages" readonly>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="productSize">Tamanho</label>
+                        <input type="text" id="productSize" readonly>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="productCover">Capa</label>
+                        <input type="text" id="productCover" readonly>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="productBinding">Encadernação</label>
+                        <input type="text" id="productBinding" readonly>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="productPaper">Tipo de Folha</label>
+                        <input type="text" id="productPaper" readonly>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="productWire">Tipo de Arame</label>
+                        <input type="text" id="productWire" readonly>
                     </div>
                 </div>
 
@@ -1376,13 +1506,122 @@
         </div>
     </div>
 
+    <!-- NOVO: MODAL DE CLIENTE -->
+    <div id="modalClient" class="modal" onclick="closeClientModalOnOverlay(event)">
+        <div class="modal-content">
+            <h2 id="modalClientTitle">Novo Cliente</h2>
+            <form id="clientForm">
+                <input type="hidden" id="clientId">
+                
+                <div class="form-group">
+                    <label for="clientName">Nome do Cliente</label>
+                    <input type="text" id="clientName" required autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label for="clientAddress">Endereço</label>
+                    <input type="text" id="clientAddress" autocomplete="off">
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="clientEmailCad">E-mail</label>
+                        <input type="email" id="clientEmailCad" autocomplete="off">
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="clientPhoneCad">Telefone/WhatsApp</label>
+                        <input type="tel" id="clientPhoneCad" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeClientModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOVO: MODAL DE PRODUTO -->
+    <div id="modalProduct" class="modal" onclick="closeProductModalOnOverlay(event)">
+        <div class="modal-content">
+            <h2 id="modalProductTitle">Novo Produto</h2>
+            <form id="productForm">
+                <input type="hidden" id="productId">
+                
+                <div class="form-group">
+                    <label for="productName">Nome do Produto</label>
+                    <input type="text" id="productName" required autocomplete="off">
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="productPagesCad">Quantidade de Folhas</label>
+                        <input type="number" id="productPagesCad" autocomplete="off">
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="productSizeCad">Tamanho</label>
+                        <select id="productSizeCad">
+                            <option value="">Selecione</option>
+                            <option value="A4">A4</option>
+                            <option value="A5">A5</option>
+                            <option value="A6">A6</option>
+                            <option value="Carta">Carta</option>
+                            <option value="Ofício">Ofício</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="productCoverCad">Capa</label>
+                        <select id="productCoverCad">
+                            <option value="">Selecione</option>
+                            <option value="Dura">Dura</option>
+                            <option value="Mole">Mole</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="productBindingCad">Encadernação</label>
+                        <select id="productBindingCad">
+                            <option value="">Selecione</option>
+                            <option value="Wire-o">Wire-o</option>
+                            <option value="Espiral">Espiral</option>
+                            <option value="Brochura">Brochura</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="productPaperCad">Tipo de Folha</label>
+                        <input type="text" id="productPaperCad" placeholder="Ex: Sulfite 75g" autocomplete="off">
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="productWireCad">Tipo de Arame</label>
+                        <input type="text" id="productWireCad" placeholder="Ex: 2x1" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeProductModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Produto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // === CONFIGURAÇÕES ===
         const EMPRESA_NOME = "Alipel Papelaria Criativa";
-        const STORAGE_KEY = 'alipel_stationery_v2';
+        const STORAGE_KEY = 'alipel_stationery_v3';
+        const CLIENTS_KEY = 'alipel_clients_v3';
+        const PRODUCTS_KEY = 'alipel_products_v3';
 
         // === STATE ===
         let orders = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        let clients = JSON.parse(localStorage.getItem(CLIENTS_KEY)) || [];
+        let products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
         let draggedCard = null;
 
         // === UTILITY FUNCTIONS ===
@@ -1391,6 +1630,14 @@
             const timestamp = Date.now();
             const random = Math.floor(Math.random() * 1000);
             return `${prefix}-${timestamp}-${random}`;
+        }
+
+        function generateClientId() {
+            return 'CLI-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+        }
+
+        function generateProductId() {
+            return 'PRO-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
         }
 
         function formatCurrency(value) {
@@ -1417,27 +1664,37 @@
 
         function save() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+            localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
+            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
             render();
             updateStats();
         }
 
-        // === MODAL FUNCTIONS ===
+        // === MODAL FUNCTIONS - PEDIDO ===
         function openModal(orderId = null) {
             const modal = document.getElementById('modal');
             const form = document.getElementById('orderForm');
             const title = document.getElementById('modalTitle');
 
             form.reset();
+            loadClientOptions();
+            loadProductOptions();
 
             if (orderId) {
                 const order = orders.find(o => o.id === orderId);
                 if (order) {
                     title.textContent = 'Editar Pedido';
                     document.getElementById('orderId').value = order.id;
-                    document.getElementById('product').value = order.product;
                     document.getElementById('client').value = order.client;
                     document.getElementById('clientEmail').value = order.clientEmail || '';
                     document.getElementById('clientWhatsApp').value = order.clientWhatsApp || '';
+                    document.getElementById('product').value = order.product;
+                    document.getElementById('productPages').value = order.productPages || '';
+                    document.getElementById('productSize').value = order.productSize || '';
+                    document.getElementById('productCover').value = order.productCover || '';
+                    document.getElementById('productBinding').value = order.productBinding || '';
+                    document.getElementById('productPaper').value = order.productPaper || '';
+                    document.getElementById('productWire').value = order.productWire || '';
                     document.getElementById('value').value = order.value;
                     document.getElementById('deadline').value = order.deadline;
                 }
@@ -1452,7 +1709,6 @@
             }
 
             modal.style.display = 'flex';
-            document.getElementById('product').focus();
         }
 
         function closeModal() {
@@ -1465,7 +1721,148 @@
             }
         }
 
-        // === FORM HANDLING ===
+        function loadClientOptions() {
+            const select = document.getElementById('clientSelect');
+            select.innerHTML = '<option value="">Selecione um cliente</option>';
+            clients.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = client.name;
+                select.appendChild(option);
+            });
+        }
+
+        function loadProductOptions() {
+            const select = document.getElementById('productSelect');
+            select.innerHTML = '<option value="">Selecione um produto</option>';
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.name;
+                select.appendChild(option);
+            });
+        }
+
+        function fillClientData() {
+            const clientId = document.getElementById('clientSelect').value;
+            if (!clientId) {
+                document.getElementById('client').value = '';
+                document.getElementById('clientEmail').value = '';
+                document.getElementById('clientWhatsApp').value = '';
+                return;
+            }
+            
+            const client = clients.find(c => c.id === clientId);
+            if (client) {
+                document.getElementById('client').value = client.name;
+                document.getElementById('clientEmail').value = client.email || '';
+                document.getElementById('clientWhatsApp').value = client.phone || '';
+            }
+        }
+
+        function fillProductData() {
+            const productId = document.getElementById('productSelect').value;
+            if (!productId) {
+                document.getElementById('product').value = '';
+                document.getElementById('productPages').value = '';
+                document.getElementById('productSize').value = '';
+                document.getElementById('productCover').value = '';
+                document.getElementById('productBinding').value = '';
+                document.getElementById('productPaper').value = '';
+                document.getElementById('productWire').value = '';
+                return;
+            }
+            
+            const product = products.find(p => p.id === productId);
+            if (product) {
+                document.getElementById('product').value = product.name;
+                document.getElementById('productPages').value = product.pages || '';
+                document.getElementById('productSize').value = product.size || '';
+                document.getElementById('productCover').value = product.cover || '';
+                document.getElementById('productBinding').value = product.binding || '';
+                document.getElementById('productPaper').value = product.paper || '';
+                document.getElementById('productWire').value = product.wire || '';
+            }
+        }
+
+        // === MODAL FUNCTIONS - CLIENTE ===
+        function openClientModal(clientId = null) {
+            const modal = document.getElementById('modalClient');
+            const form = document.getElementById('clientForm');
+            const title = document.getElementById('modalClientTitle');
+
+            form.reset();
+
+            if (clientId) {
+                const client = clients.find(c => c.id === clientId);
+                if (client) {
+                    title.textContent = 'Editar Cliente';
+                    document.getElementById('clientId').value = client.id;
+                    document.getElementById('clientName').value = client.name;
+                    document.getElementById('clientAddress').value = client.address || '';
+                    document.getElementById('clientEmailCad').value = client.email || '';
+                    document.getElementById('clientPhoneCad').value = client.phone || '';
+                }
+            } else {
+                title.textContent = 'Novo Cliente';
+                document.getElementById('clientId').value = '';
+            }
+
+            modal.style.display = 'flex';
+            document.getElementById('clientName').focus();
+        }
+
+        function closeClientModal() {
+            document.getElementById('modalClient').style.display = 'none';
+        }
+
+        function closeClientModalOnOverlay(event) {
+            if (event.target.id === 'modalClient') {
+                closeClientModal();
+            }
+        }
+
+        // === MODAL FUNCTIONS - PRODUTO ===
+        function openProductModal(productId = null) {
+            const modal = document.getElementById('modalProduct');
+            const form = document.getElementById('productForm');
+            const title = document.getElementById('modalProductTitle');
+
+            form.reset();
+
+            if (productId) {
+                const product = products.find(p => p.id === productId);
+                if (product) {
+                    title.textContent = 'Editar Produto';
+                    document.getElementById('productId').value = product.id;
+                    document.getElementById('productName').value = product.name;
+                    document.getElementById('productPagesCad').value = product.pages || '';
+                    document.getElementById('productSizeCad').value = product.size || '';
+                    document.getElementById('productCoverCad').value = product.cover || '';
+                    document.getElementById('productBindingCad').value = product.binding || '';
+                    document.getElementById('productPaperCad').value = product.paper || '';
+                    document.getElementById('productWireCad').value = product.wire || '';
+                }
+            } else {
+                title.textContent = 'Novo Produto';
+                document.getElementById('productId').value = '';
+            }
+
+            modal.style.display = 'flex';
+            document.getElementById('productName').focus();
+        }
+
+        function closeProductModal() {
+            document.getElementById('modalProduct').style.display = 'none';
+        }
+
+        function closeProductModalOnOverlay(event) {
+            if (event.target.id === 'modalProduct') {
+                closeProductModal();
+            }
+        }
+
+        // === FORM HANDLING - PEDIDO ===
         document.getElementById('orderForm').addEventListener('submit', (e) => {
             e.preventDefault();
 
@@ -1475,6 +1872,12 @@
                 client: document.getElementById('client').value.trim(),
                 clientEmail: document.getElementById('clientEmail').value.trim(),
                 clientWhatsApp: document.getElementById('clientWhatsApp').value.trim(),
+                productPages: document.getElementById('productPages').value,
+                productSize: document.getElementById('productSize').value,
+                productCover: document.getElementById('productCover').value,
+                productBinding: document.getElementById('productBinding').value,
+                productPaper: document.getElementById('productPaper').value,
+                productWire: document.getElementById('productWire').value,
                 value: parseFloat(document.getElementById('value').value),
                 deadline: document.getElementById('deadline').value
             };
@@ -1508,6 +1911,94 @@
             }
         });
 
+        // === FORM HANDLING - CLIENTE ===
+        document.getElementById('clientForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const clientId = document.getElementById('clientId').value;
+            const clientData = {
+                name: document.getElementById('clientName').value.trim(),
+                address: document.getElementById('clientAddress').value.trim(),
+                email: document.getElementById('clientEmailCad').value.trim(),
+                phone: document.getElementById('clientPhoneCad').value.trim()
+            };
+
+            if (clientId) {
+                // Update existing client
+                clients = clients.map(c => 
+                    c.id === clientId 
+                        ? { ...c, ...clientData } 
+                        : c
+                );
+            } else {
+                // Create new client
+                clients.push({
+                    id: generateClientId(),
+                    ...clientData
+                });
+            }
+
+            save();
+            closeClientModal();
+            renderCadastroClientes();
+            showNotification('Cliente salvo com sucesso!', 'success');
+        });
+
+        // === FORM HANDLING - PRODUTO ===
+        document.getElementById('productForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const productId = document.getElementById('productId').value;
+            const productData = {
+                name: document.getElementById('productName').value.trim(),
+                pages: document.getElementById('productPagesCad').value,
+                size: document.getElementById('productSizeCad').value,
+                cover: document.getElementById('productCoverCad').value,
+                binding: document.getElementById('productBindingCad').value,
+                paper: document.getElementById('productPaperCad').value.trim(),
+                wire: document.getElementById('productWireCad').value.trim()
+            };
+
+            if (productId) {
+                // Update existing product
+                products = products.map(p => 
+                    p.id === productId 
+                        ? { ...p, ...productData } 
+                        : p
+                );
+            } else {
+                // Create new product
+                products.push({
+                    id: generateProductId(),
+                    ...productData
+                });
+            }
+
+            save();
+            closeProductModal();
+            renderCadastroProdutos();
+            showNotification('Produto salvo com sucesso!', 'success');
+        });
+
+        // === DELETE FUNCTIONS ===
+        function deleteClient(clientId) {
+            if (confirm('Deseja realmente excluir este cliente?')) {
+                clients = clients.filter(c => c.id !== clientId);
+                save();
+                renderCadastroClientes();
+                showNotification('Cliente excluído!', 'warning');
+            }
+        }
+
+        function deleteProduct(productId) {
+            if (confirm('Deseja realmente excluir este produto?')) {
+                products = products.filter(p => p.id !== productId);
+                save();
+                renderCadastroProdutos();
+                showNotification('Produto excluído!', 'warning');
+            }
+        }
+
         // === ORDER OPERATIONS ===
         function deleteOrder(orderId) {
             if (confirm('Deseja realmente excluir este pedido?\n\nEsta ação não pode ser desfeita.')) {
@@ -1530,7 +2021,7 @@
             const statusName = statusMessages[order.status] || order.status;
             const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
             
-            // E-mail SEM ASCII ART
+            // E-mail SEM ASCII ART (NÃO ALTERAR)
             const emailBody = encodeURIComponent(
 `Olá ${order.client}! 👋
 
@@ -1564,7 +2055,7 @@ Equipe Alipel Papelaria Criativa
 `
             );
 
-            // WhatsApp message
+            // WhatsApp message (NÃO ALTERAR)
             const whatsappMessage = encodeURIComponent(
 `✨ *ALIPEL PAPELARIA CRIATIVA* ✨
 
@@ -1586,10 +2077,10 @@ _Alipel Papelaria Criativa_
 📷 @alipel_papelaria`
             );
 
-            // ABRE OS DOIS JUNTOS (window.open para ambos)
+            // ABRE OS DOIS JUNTOS (NÃO ALTERAR)
             let opened = false;
 
-            // ABRE WHATSAPP
+            // ABRE WHATSAPP (NÃO ALTERAR)
             if (order.clientWhatsApp) {
                 const phone = order.clientWhatsApp.replace(/\D/g, '');
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
@@ -1598,7 +2089,7 @@ _Alipel Papelaria Criativa_
                 showNotification('💬 WhatsApp aberto!', 'success');
             }
             
-            // ABRE E-MAIL (mesmo tendo whatsapp)
+            // ABRE E-MAIL (NÃO ALTERAR)
             if (order.clientEmail) {
                 const mailtoLink = `mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`;
                 window.open(mailtoLink, '_blank');
@@ -1606,7 +2097,7 @@ _Alipel Papelaria Criativa_
                 showNotification('📧 E-mail aberto!', 'info');
             }
 
-            // Se não tem nenhum contato
+            // Se não tem nenhum contato (NÃO ALTERAR)
             if (!opened) {
                 window.open(`mailto:?subject=${subject}&body=${emailBody}`, '_blank');
                 showNotification('⚠️ Adicione e-mail ou WhatsApp do cliente!', 'warning');
@@ -1767,33 +2258,81 @@ _Alipel Papelaria Criativa_
             document.getElementById('sidebar-urgent').textContent = urgent;
         }
 
+        // === RENDER CADASTROS ===
+        function renderCadastroClientes() {
+            const grid = document.getElementById('cadastroClientesGrid');
+            
+            if (clients.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">👥 Nenhum cliente cadastrado ainda</p>
+                        <p style="font-size: 0.9rem;">Clique em "Novo Cliente" para começar.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = clients.map(client => `
+                <div class="client-card">
+                    <div class="client-name">${client.name}</div>
+                    <div style="font-size: 0.85rem; color: var(--sage-dark); margin-top: 0.5rem;">
+                        ${client.address ? `📍 ${client.address}<br>` : ''}
+                        ${client.email ? `📧 ${client.email}<br>` : ''}
+                        ${client.phone ? `📱 ${client.phone}` : ''}
+                    </div>
+                    <div class="card-actions-grid" style="margin-top: 1rem;">
+                        <button class="btn-edit" onclick="openClientModal('${client.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="deleteClient('${client.id}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCadastroProdutos() {
+            const grid = document.getElementById('cadastroProdutosGrid');
+            
+            if (products.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📦 Nenhum produto cadastrado ainda</p>
+                        <p style="font-size: 0.9rem;">Clique em "Novo Produto" para começar.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = products.map(product => `
+                <div class="client-card">
+                    <div class="client-name">${product.name}</div>
+                    <div style="font-size: 0.85rem; color: var(--sage-dark); margin-top: 0.5rem;">
+                        ${product.pages ? `📄 ${product.pages} folhas<br>` : ''}
+                        ${product.size ? `📏 ${product.size}<br>` : ''}
+                        ${product.cover ? `📔 Capa: ${product.cover}<br>` : ''}
+                        ${product.binding ? `🔗 ${product.binding}<br>` : ''}
+                        ${product.paper ? `📃 ${product.paper}<br>` : ''}
+                        ${product.wire ? `🔩 Arame: ${product.wire}` : ''}
+                    </div>
+                    <div class="card-actions-grid" style="margin-top: 1rem;">
+                        <button class="btn-edit" onclick="openProductModal('${product.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="deleteProduct('${product.id}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
         // === KEYBOARD SHORTCUTS ===
         document.addEventListener('keydown', (e) => {
             // ESC to close modal
             if (e.key === 'Escape') {
                 closeModal();
+                closeClientModal();
+                closeProductModal();
             }
 
             // Ctrl/Cmd + N to create new order
             if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
                 e.preventDefault();
                 openModal();
-            }
-        });
-
-        // === INITIALIZATION ===
-        document.addEventListener('DOMContentLoaded', () => {
-            render();
-            updateStats();
-
-            // Add welcome message if no orders
-            if (orders.length === 0) {
-                console.log('%c✨ StationeryOS Premium', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
-                console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
-                console.log('%cAtalhos de teclado:', 'color: #2C3E50; font-size: 12px; font-weight: bold;');
-                console.log('%c  • Ctrl/Cmd + N: Novo Pedido', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • ESC: Fechar modal', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • Duplo clique no card: Editar', 'color: #636e72; font-size: 11px;');
             }
         });
 
@@ -1814,20 +2353,37 @@ _Alipel Papelaria Criativa_
             // Show selected view
             if (viewName === 'producao') {
                 document.getElementById('view-producao').style.display = 'flex';
+                document.getElementById('header-title').textContent = 'Quadro de Produção';
+                document.getElementById('header-subtitle').textContent = 'Gerencie seus pedidos com elegância e eficiência';
             } else {
                 document.getElementById(`view-${viewName}`).style.display = 'block';
+                
+                // Update header based on view
+                if (viewName === 'cadastro-clientes') {
+                    document.getElementById('header-title').textContent = 'Cadastro de Clientes';
+                    document.getElementById('header-subtitle').textContent = 'Gerencie todos os seus clientes';
+                    renderCadastroClientes();
+                } else if (viewName === 'cadastro-produtos') {
+                    document.getElementById('header-title').textContent = 'Cadastro de Produtos';
+                    document.getElementById('header-subtitle').textContent = 'Gerencie todos os seus produtos';
+                    renderCadastroProdutos();
+                } else if (viewName === 'relatorios') {
+                    document.getElementById('header-title').textContent = 'Relatórios';
+                    document.getElementById('header-subtitle').textContent = 'Análises e exportações';
+                    renderReports();
+                } else if (viewName === 'clientes') {
+                    document.getElementById('header-title').textContent = 'Clientes';
+                    document.getElementById('header-subtitle').textContent = 'Histórico de pedidos por cliente';
+                    renderClients();
+                } else if (viewName === 'configuracoes') {
+                    document.getElementById('header-title').textContent = 'Configurações';
+                    document.getElementById('header-subtitle').textContent = 'Personalize sua experiência';
+                }
             }
 
             // Activate current nav item
             event.target.closest('.nav-item').classList.add('active');
             currentView = viewName;
-
-            // Update view-specific content
-            if (viewName === 'clientes') {
-                renderClients();
-            } else if (viewName === 'relatorios') {
-                renderReports();
-            }
         }
 
         // === CLIENTES VIEW ===
@@ -1848,19 +2404,19 @@ _Alipel Papelaria Criativa_
                 clientsMap[order.client].totalSpent += order.value;
             });
 
-            const clients = Object.values(clientsMap);
+            const clientsList = Object.values(clientsMap);
 
-            if (clients.length === 0) {
+            if (clientsList.length === 0) {
                 clientsGrid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
-                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📋 Nenhum cliente cadastrado ainda</p>
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📋 Nenhum cliente com pedidos ainda</p>
                         <p style="font-size: 0.9rem;">Os clientes aparecerão aqui conforme você adiciona pedidos.</p>
                     </div>
                 `;
                 return;
             }
 
-            clientsGrid.innerHTML = clients.map(client => `
+            clientsGrid.innerHTML = clientsList.map(client => `
                 <div class="client-card">
                     <div class="client-name">${client.name}</div>
                     <div class="client-stats">
@@ -2091,12 +2647,9 @@ _Alipel Papelaria Criativa_
 
             // Add welcome message if no orders
             if (orders.length === 0) {
-                console.log('%c✨ StationeryOS Premium', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
+                console.log('%c✨ StationeryOS Premium v3.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
                 console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
-                console.log('%cAtalhos de teclado:', 'color: #2C3E50; font-size: 12px; font-weight: bold;');
-                console.log('%c  • Ctrl/Cmd + N: Novo Pedido', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • ESC: Fechar modal', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • Duplo clique no card: Editar', 'color: #636e72; font-size: 11px;');
+                console.log('%cNovidades: Cadastro de Clientes e Produtos', 'color: #7B6BA8; font-size: 12px; font-weight: bold;');
             }
         });
 
