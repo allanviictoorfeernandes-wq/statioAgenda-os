@@ -1,2070 +1,428 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alipel Papelaria Criativa | Sistema de Produção</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Premium Craft Palette - Alipel Papelaria Criativa */
-            --cream: #FAF7F0;
-            --kraft-light: #E8DCC4;
-            --kraft: #D4C5A9;
-            --kraft-dark: #B5A88F;
-            
-            /* Cores da Alipel (Roxo da Logo) */
-            --purple-primary: #7B6BA8;
-            --purple-light: #9B8BC0;
-            --purple-dark: #5D4E82;
-            --pink-accent: #E8A4B8;
-            --sage: #9CAF88;
-            --sage-dark: #7A9070;
-            
-            --terracotta: #C97064;
-            --blush: #E8B4A0;
-            --navy: #2C3E50;
-            --charcoal: #1A1A1A;
-            --gold: #D4AF37;
-            
-            /* Shadows & Effects */
-            --shadow-paper: 0 2px 8px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-            --shadow-lift: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.08);
-            --shadow-float: 0 16px 48px rgba(0, 0, 0, 0.16), 0 8px 16px rgba(0, 0, 0, 0.08);
-            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            --radius: 16px;
-            --radius-sm: 12px;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--cream) 0%, #F5F1E8 100%);
-            color: var(--charcoal);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Textura de papel sutil */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(0, 0, 0, 0.015) 2px,
-                    rgba(0, 0, 0, 0.015) 4px
-                );
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* === SIDEBAR === */
-        aside {
-            width: 280px;
-            background: linear-gradient(180deg, #FFFFFF 0%, #FAFAF8 100%);
-            border-right: 1px solid rgba(0, 0, 0, 0.08);
-            display: flex;
-            flex-direction: column;
-            padding: 2.5rem 1.5rem;
-            z-index: 10;
-            position: relative;
-            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04);
-        }
-
-        .logo {
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        .logo h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--charcoal);
-            letter-spacing: -0.02em;
-            margin-bottom: 0.25rem;
-        }
-
-        .logo p {
-            font-size: 0.75rem;
-            color: var(--sage-dark);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .nav-menu {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .nav-item {
-            padding: 1rem 1.25rem;
-            border-radius: var(--radius-sm);
-            color: var(--navy);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            transition: var(--transition);
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 3px;
-            height: 100%;
-            background: var(--purple-primary);
-            transform: scaleY(0);
-            transition: var(--transition);
-        }
-
-        .nav-item.active {
-            background: linear-gradient(135deg, rgba(123, 107, 168, 0.12) 0%, rgba(123, 107, 168, 0.08) 100%);
-            color: var(--purple-dark);
-            font-weight: 600;
-        }
-
-        .nav-item.active::before {
-            transform: scaleY(1);
-        }
-
-        .nav-item:hover:not(.active) {
-            background: rgba(0, 0, 0, 0.03);
-            transform: translateX(4px);
-        }
-
-        .sidebar-footer {
-            margin-top: auto;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.06);
-        }
-
-        .stats-mini {
-            display: flex;
-            justify-content: space-between;
-            padding: 1rem;
-            background: linear-gradient(135deg, var(--kraft-light) 0%, var(--kraft) 100%);
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-paper);
-        }
-
-        .stat-mini {
-            text-align: center;
-        }
-
-        .stat-mini span {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--navy);
-            opacity: 0.7;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.25rem;
-        }
-
-        .stat-mini strong {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
-        }
-
-        /* === MAIN CONTENT === */
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Header com glassmorphism */
-        header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            padding: 1.5rem 3rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 5;
-        }
-
-        header::after {
-            content: '';
-            position: absolute;
-            bottom: -1px;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            background: linear-gradient(90deg, 
-                transparent 0%, 
-                var(--gold) 30%, 
-                var(--gold) 70%, 
-                transparent 100%);
-            opacity: 0.3;
-        }
-
-        .header-left h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
-            margin-bottom: 0.25rem;
-        }
-
-        .header-left p {
-            font-size: 0.85rem;
-            color: var(--sage-dark);
-        }
-
-        .btn-create {
-            background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--shadow-paper);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-create::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
-        }
-
-        .btn-create:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lift);
-        }
-
-        .btn-create:hover::before {
-            left: 100%;
-        }
-
-        .btn-create:active {
-            transform: translateY(0);
-        }
-
-        /* === KANBAN BOARD === */
-        .kanban-container {
-            display: flex;
-            gap: 1.5rem;
-            padding: 2.5rem 3rem;
-            overflow-x: auto;
-            flex: 1;
-            position: relative;
-        }
-
-        .kanban-container::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .kanban-container::-webkit-scrollbar-track {
-            background: rgba(0, 0, 0, 0.03);
-            border-radius: 4px;
-        }
-
-        .kanban-container::-webkit-scrollbar-thumb {
-            background: var(--kraft);
-            border-radius: 4px;
-            transition: background 0.3s;
-        }
-
-        .kanban-container::-webkit-scrollbar-thumb:hover {
-            background: var(--kraft-dark);
-        }
-
-        .column {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(10px);
-            min-width: 320px;
-            width: 320px;
-            border-radius: var(--radius);
-            display: flex;
-            flex-direction: column;
-            max-height: 100%;
-            transition: var(--transition);
-            border: 2px solid rgba(0, 0, 0, 0.06);
-            box-shadow: var(--shadow-paper);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Efeitos visuais por coluna */
-        .column[data-status="novos"] {
-            border-top: 3px solid var(--blush);
-        }
-
-        .column[data-status="producao"] {
-            border-top: 3px solid var(--terracotta);
-        }
-
-        .column[data-status="acabamento"] {
-            border-top: 3px solid var(--sage);
-        }
-
-        .column[data-status="pronto"] {
-            border-top: 3px solid var(--gold);
-        }
-
-        .column.drag-over {
-            background: rgba(156, 175, 136, 0.15);
-            border-color: var(--sage);
-            transform: scale(1.02);
-            box-shadow: var(--shadow-float);
-        }
-
-        .column-header {
-            padding: 1.5rem;
-            font-weight: 700;
-            font-size: 0.8rem;
-            color: var(--navy);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.5) 100%);
-        }
-
-        .count-badge {
-            background: var(--kraft);
-            color: var(--charcoal);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .task-list {
-            padding: 1rem;
-            flex: 1;
-            overflow-y: auto;
-            min-height: 200px;
-        }
-
-        .task-list::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .task-list::-webkit-scrollbar-track {
-            background: transparent;
-        }
-
-        .task-list::-webkit-scrollbar-thumb {
-            background: var(--kraft-light);
-            border-radius: 3px;
-        }
-
-        /* === CARDS === */
-        .card {
-            background: white;
-            border-radius: var(--radius-sm);
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: var(--shadow-paper);
-            cursor: grab;
-            transition: var(--transition);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            position: relative;
-            overflow: hidden;
-            animation: cardSlideIn 0.4s ease-out;
-        }
-
-        @keyframes cardSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(180deg, var(--sage) 0%, var(--sage-dark) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .card:hover {
-            transform: translateY(-4px) rotate(0.5deg);
-            box-shadow: var(--shadow-lift);
-            border-color: var(--purple-light);
-        }
-
-        .card:hover::before {
-            opacity: 1;
-        }
-
-        .card:active {
-            cursor: grabbing;
-        }
-
-        .card.dragging {
-            opacity: 0.5;
-            transform: rotate(2deg);
-        }
-
-        .btn-delete-card {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: rgba(255, 255, 255, 0.9);
-            border: none;
-            color: var(--kraft-dark);
-            cursor: pointer;
-            font-size: 1.25rem;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            opacity: 0;
-            transform: scale(0.8);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .card:hover .btn-delete-card {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .btn-delete-card:hover {
-            background: var(--terracotta);
-            color: white;
-            transform: scale(1.1) rotate(90deg);
-        }
-
-        .card-tag {
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 0.35rem 0.85rem;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .tag-order {
-            background: linear-gradient(135deg, var(--blush) 0%, #E0A090 100%);
-            color: white;
-        }
-
-        .tag-prod {
-            background: linear-gradient(135deg, var(--terracotta) 0%, #B85F53 100%);
-            color: white;
-        }
-
-        .tag-finish {
-            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%);
-            color: white;
-        }
-
-        .tag-ready {
-            background: linear-gradient(135deg, var(--gold) 0%, #C19B2E 100%);
-            color: white;
-        }
-
-        .card-title {
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: var(--charcoal);
-            line-height: 1.3;
-        }
-
-        .card-client {
-            font-size: 0.85rem;
-            color: var(--sage-dark);
-            margin-bottom: 1.25rem;
-            font-weight: 500;
-        }
-
-        .card-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px dashed rgba(0, 0, 0, 0.1);
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-        }
-
-        .card-value {
-            font-weight: 700;
-            color: var(--sage-dark);
-            font-size: 1rem;
-        }
-
-        .card-date {
-            color: var(--navy);
-            display: flex;
-            align-items: center;
-            gap: 0.35rem;
-            opacity: 0.8;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-notify {
-            flex: 1;
-            padding: 0.7rem;
-            font-size: 0.75rem;
-            font-weight: 700;
-            border: 2px solid var(--purple-primary);
-            border-radius: var(--radius-sm);
-            background: linear-gradient(135deg, rgba(123, 107, 168, 0.1) 0%, rgba(123, 107, 168, 0.05) 100%);
-            color: var(--purple-dark);
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .btn-notify:hover {
-            background: var(--purple-primary);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-paper);
-        }
-
-        /* === MODAL === */
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(8px);
-            z-index: 100;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: white;
-            width: 500px;
-            max-width: 90vw;
-            border-radius: var(--radius);
-            padding: 3rem;
-            box-shadow: var(--shadow-float);
-            animation: modalSlideUp 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-        }
-
-        @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .modal h2 {
-            font-family: 'Playfair Display', serif;
-            margin-bottom: 2rem;
-            font-size: 1.75rem;
-            color: var(--charcoal);
-            font-weight: 700;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            margin-bottom: 0.6rem;
-            color: var(--navy);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 0.95rem 1.25rem;
-            border: 2px solid var(--kraft-light);
-            border-radius: var(--radius-sm);
-            outline: none;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: all 0.3s;
-            background: white;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: var(--purple-primary);
-            box-shadow: 0 0 0 4px rgba(123, 107, 168, 0.1);
-        }
-
-        input::placeholder {
-            color: var(--kraft-dark);
-        }
-
-        .modal-footer {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2.5rem;
-        }
-
-        .btn-cancel {
-            flex: 1;
-            padding: 1rem;
-            border-radius: var(--radius-sm);
-            border: 2px solid var(--kraft);
-            background: white;
-            color: var(--navy);
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.95rem;
-        }
-
-        .btn-cancel:hover {
-            background: var(--kraft-light);
-            border-color: var(--kraft-dark);
-        }
-
-        .btn-save {
-            flex: 2;
-            padding: 1rem;
-            border-radius: var(--radius-sm);
-            border: none;
-            background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
-            color: white;
-            font-weight: 700;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--shadow-paper);
-            font-size: 0.95rem;
-        }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lift);
-        }
-
-        .btn-save:active {
-            transform: translateY(0);
-        }
-
-        /* === CONTENT VIEWS === */
-        .content-view {
-            padding: 2.5rem 3rem;
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .view-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .view-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--charcoal);
-            margin-bottom: 0.5rem;
-        }
-
-        .view-header p {
-            color: var(--sage-dark);
-            font-size: 0.95rem;
-        }
-
-        /* === CLIENTES === */
-        .clients-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .client-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-paper);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            transition: var(--transition);
-        }
-
-        .client-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lift);
-        }
-
-        .client-name {
-            font-weight: 700;
-            font-size: 1.1rem;
-            color: var(--charcoal);
-            margin-bottom: 0.5rem;
-        }
-
-        .client-stats {
-            display: flex;
-            gap: 1.5rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgba(0, 0, 0, 0.06);
-            font-size: 0.85rem;
-        }
-
-        .client-stat span {
-            display: block;
-            color: var(--sage-dark);
-            margin-bottom: 0.25rem;
-        }
-
-        .client-stat strong {
-            font-size: 1.1rem;
-            color: var(--charcoal);
-        }
-
-        /* === RELATÓRIOS === */
-        .reports-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 3rem;
-        }
-
-        .stat-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            box-shadow: var(--shadow-paper);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            display: flex;
-            align-items: center;
-            gap: 1.25rem;
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lift);
-        }
-
-        .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.75rem;
-            flex-shrink: 0;
-        }
-
-        .stat-info {
-            flex: 1;
-        }
-
-        .stat-label {
-            display: block;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--navy);
-            opacity: 0.7;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            display: block;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--charcoal);
-        }
-
-        .btn-export {
-            background: linear-gradient(135deg, var(--purple-primary) 0%, var(--purple-dark) 100%);
-            color: white;
-            border: none;
-            padding: 0.9rem 1.75rem;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--shadow-paper);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-export:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lift);
-        }
-
-        .reports-table {
-            background: white;
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: var(--shadow-paper);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-        }
-
-        .reports-table h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.35rem;
-            margin-bottom: 1.5rem;
-            color: var(--charcoal);
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead {
-            background: var(--kraft-light);
-        }
-
-        th {
-            text-align: left;
-            padding: 1rem;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--navy);
-            font-weight: 700;
-        }
-
-        td {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-            color: var(--charcoal);
-        }
-
-        tbody tr:hover {
-            background: rgba(156, 175, 136, 0.05);
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            display: inline-block;
-        }
-
-        .status-novos { background: var(--blush); color: white; }
-        .status-producao { background: var(--terracotta); color: white; }
-        .status-acabamento { background: var(--sage); color: white; }
-        .status-pronto { background: var(--gold); color: white; }
-
-        /* === CONFIGURAÇÕES === */
-        .settings-container {
-            max-width: 800px;
-        }
-
-        .settings-group {
-            background: white;
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: var(--shadow-paper);
-            border: 1px solid rgba(0, 0, 0, 0.04);
-            margin-bottom: 1.5rem;
-        }
-
-        .settings-group h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-            color: var(--charcoal);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, var(--terracotta) 0%, #B85F53 100%);
-            color: white;
-            border: none;
-            padding: 0.9rem 1.75rem;
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            cursor: pointer;
-            transition: var(--transition);
-            box-shadow: var(--shadow-paper);
-        }
-
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lift);
-        }
-
-        /* === RESPONSIVE === */
-        @media (max-width: 1024px) {
-            aside {
-                width: 240px;
-            }
-
-            header {
-                padding: 1.25rem 2rem;
-            }
-
-            .kanban-container {
-                padding: 2rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-
-            aside {
-                width: 100%;
-                padding: 1.5rem;
-                border-right: none;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            }
-
-            .logo h1 {
-                font-size: 1.5rem;
-            }
-
-            .nav-menu {
-                flex-direction: row;
-                overflow-x: auto;
-                gap: 0.5rem;
-            }
-
-            .nav-item {
-                white-space: nowrap;
-            }
-
-            .sidebar-footer {
-                display: none;
-            }
-
-            header {
-                flex-direction: column;
-                gap: 1rem;
-                align-items: stretch;
-            }
-
-            .kanban-container {
-                padding: 1.5rem;
-            }
-
-            .column {
-                min-width: 280px;
-                width: 280px;
-            }
-
-            .modal-content {
-                padding: 2rem;
-            }
-        }
-
-        /* === LOADING ANIMATION === */
-        @keyframes shimmer {
-            0% {
-                background-position: -1000px 0;
-            }
-            100% {
-                background-position: 1000px 0;
-            }
-        }
-
-        .loading {
-            background: linear-gradient(
-                90deg,
-                var(--kraft-light) 0%,
-                var(--kraft) 50%,
-                var(--kraft-light) 100%
-            );
-            background-size: 1000px 100%;
-            animation: shimmer 2s infinite;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StationeryOS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+background:#FDFCF0;
+font-family:'Poppins',sans-serif;
+color:#333;
+}
+
+header{
+padding:24px;
+text-align:center;
+font-size:28px;
+font-weight:700;
+letter-spacing:1px;
+}
+
+.topbar{
+display:flex;
+justify-content:center;
+margin-bottom:20px;
+}
+
+.primary-btn{
+padding:12px 22px;
+border:none;
+border-radius:16px;
+background:linear-gradient(135deg,#f6d365,#fda085);
+color:#fff;
+font-weight:600;
+cursor:pointer;
+transition:all .2s ease;
+}
+
+.primary-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 20px rgba(0,0,0,0.15);
+}
+
+.board{
+display:flex;
+gap:20px;
+padding:20px;
+justify-content:space-between;
+}
+
+.column{
+background:#EAE7E1;
+flex:1;
+border-radius:16px;
+padding:16px;
+min-height:500px;
+display:flex;
+flex-direction:column;
+}
+
+.column-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+font-weight:600;
+}
+
+.count{
+background:#fff;
+padding:4px 10px;
+border-radius:12px;
+font-size:12px;
+}
+
+.task{
+background:#fff;
+border-radius:16px;
+padding:14px;
+margin-bottom:12px;
+box-shadow:0 4px 6px -1px rgba(0,0,0,0.1);
+cursor:grab;
+transition:all .2s ease;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.task:hover{
+transform:scale(1.02);
+}
+
+.task.dragging{
+opacity:.4;
+}
+
+.task-title{
+font-weight:600;
+font-size:14px;
+}
+
+.task-meta{
+font-size:12px;
+opacity:.7;
+}
+
+.badge{
+display:inline-block;
+padding:3px 8px;
+border-radius:10px;
+font-size:11px;
+color:#fff;
+}
+
+.low{background:#7ed6df;}
+.medium{background:#f6b93b;}
+.high{background:#eb4d4b;}
+
+.task-actions{
+display:flex;
+justify-content:space-between;
+margin-top:8px;
+}
+
+.icon-btn{
+border:none;
+padding:6px 10px;
+border-radius:12px;
+cursor:pointer;
+font-size:12px;
+transition:.2s;
+background:linear-gradient(135deg,#a1c4fd,#c2e9fb);
+}
+
+.icon-btn:hover{
+transform:translateY(-2px);
+box-shadow:0 4px 10px rgba(0,0,0,.15);
+}
+
+.delete{
+background:linear-gradient(135deg,#ff9a9e,#fecfef);
+}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.3);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-content{
+background:#fff;
+border-radius:16px;
+padding:24px;
+width:400px;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.modal-content input,
+.modal-content textarea,
+.modal-content select{
+padding:10px;
+border-radius:12px;
+border:1px solid #ccc;
+font-family:'Poppins';
+}
+
+.modal-content textarea{
+resize:none;
+height:80px;
+}
+
+.modal-footer{
+display:flex;
+justify-content:space-between;
+margin-top:10px;
+}
+
+</style>
 </head>
 <body>
 
-    <aside>
-        <div class="logo">
-            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                <svg width="40" height="40" viewBox="0 0 100 100" style="flex-shrink: 0;">
-                    <!-- Logo Simplificada Alipel -->
-                    <circle cx="50" cy="35" r="8" fill="#7B6BA8"/>
-                    <path d="M 35 45 L 50 70 L 65 45" stroke="#7B6BA8" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M 40 55 L 60 55" stroke="#E8A4B8" stroke-width="3" stroke-linecap="round"/>
-                    <circle cx="35" cy="45" r="3" fill="#E8A4B8"/>
-                    <circle cx="65" cy="45" r="3" fill="#E8A4B8"/>
-                </svg>
-                <h1 style="margin: 0;">Alipel</h1>
-            </div>
-            <p>Papelaria Criativa</p>
-        </div>
-
-        <nav class="nav-menu">
-            <a class="nav-item active" onclick="showView('producao')">
-                <span>📦</span>
-                <span>Produção</span>
-            </a>
-            <a class="nav-item" onclick="showView('clientes')">
-                <span>💎</span>
-                <span>Clientes</span>
-            </a>
-            <a class="nav-item" onclick="showView('relatorios')">
-                <span>📊</span>
-                <span>Relatórios</span>
-            </a>
-            <a class="nav-item" onclick="showView('configuracoes')">
-                <span>⚙️</span>
-                <span>Configurações</span>
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            <div class="stats-mini">
-                <div class="stat-mini">
-                    <span>Total</span>
-                    <strong id="sidebar-total">0</strong>
-                </div>
-                <div class="stat-mini">
-                    <span>Urgente</span>
-                    <strong id="sidebar-urgent" style="color: var(--terracotta)">0</strong>
-                </div>
-            </div>
-        </div>
-    </aside>
-
-    <main>
-        <header>
-            <div class="header-left">
-                <h2>Quadro de Produção</h2>
-                <p>Gerencie seus pedidos com elegância e eficiência</p>
-            </div>
-            <button class="btn-create" onclick="openModal()">
-                <span>✨</span> Novo Pedido
-            </button>
-        </header>
-
-        <section id="view-producao" class="kanban-container">
-            <div class="column" data-status="novos">
-                <div class="column-header">
-                    <span>Novos Pedidos</span>
-                    <span class="count-badge">0</span>
-                </div>
-                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-            </div>
-
-            <div class="column" data-status="producao">
-                <div class="column-header">
-                    <span>Em Produção</span>
-                    <span class="count-badge">0</span>
-                </div>
-                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-            </div>
-
-            <div class="column" data-status="acabamento">
-                <div class="column-header">
-                    <span>Acabamento</span>
-                    <span class="count-badge">0</span>
-                </div>
-                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-            </div>
-
-            <div class="column" data-status="pronto">
-                <div class="column-header">
-                    <span>Pronto / Envio</span>
-                    <span class="count-badge">0</span>
-                </div>
-                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-            </div>
-        </section>
-
-        <!-- VIEW: CLIENTES -->
-        <section id="view-clientes" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Gestão de Clientes</h2>
-                    <p>Lista completa de clientes e histórico de pedidos</p>
-                </div>
-            </div>
-            <div class="clients-grid" id="clientsGrid"></div>
-        </section>
-
-        <!-- VIEW: RELATÓRIOS -->
-        <section id="view-relatorios" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Relatórios e Análises</h2>
-                    <p>Exportação e visualização de dados de vendas</p>
-                </div>
-                <button class="btn-export" onclick="exportReport()">
-                    <span>📥</span> Exportar Relatório
-                </button>
-            </div>
-            
-            <div class="reports-stats">
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--blush);">💰</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Receita Total</span>
-                        <strong class="stat-value" id="total-revenue">R$ 0,00</strong>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--sage);">📦</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Pedidos Concluídos</span>
-                        <strong class="stat-value" id="completed-orders">0</strong>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--terracotta);">⏳</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Em Andamento</span>
-                        <strong class="stat-value" id="ongoing-orders">0</strong>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon" style="background: var(--gold);">📊</div>
-                    <div class="stat-info">
-                        <span class="stat-label">Ticket Médio</span>
-                        <strong class="stat-value" id="avg-ticket">R$ 0,00</strong>
-                    </div>
-                </div>
-            </div>
-
-            <div class="reports-table">
-                <h3>Histórico de Pedidos</h3>
-                <div class="table-container">
-                    <table id="ordersTable">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Data</th>
-                                <th>Cliente</th>
-                                <th>Produto</th>
-                                <th>Valor</th>
-                                <th>Status</th>
-                                <th>Prazo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ordersTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW: CONFIGURAÇÕES -->
-        <section id="view-configuracoes" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Configurações do Sistema</h2>
-                    <p>Personalize sua experiência no StationeryOS</p>
-                </div>
-            </div>
-            
-            <div class="settings-container">
-                <div class="settings-group">
-                    <h3>Informações da Empresa</h3>
-                    <div class="form-group">
-                        <label for="empresa-nome">Nome da Empresa</label>
-                        <input type="text" id="empresa-nome" value="Alipel Papelaria Criativa">
-                    </div>
-                    <div class="form-group">
-                        <label for="empresa-email">E-mail de Contato</label>
-                        <input type="email" id="empresa-email" placeholder="contato@alipelpapelaria.com.br">
-                    </div>
-                    <div class="form-group">
-                        <label for="empresa-telefone">Telefone</label>
-                        <input type="tel" id="empresa-telefone" value="(41) 99693-1010">
-                    </div>
-                    <div class="form-group">
-                        <label for="empresa-endereco">Endereço</label>
-                        <input type="text" id="empresa-endereco" value="Rua Xambre, 47 - Curitiba - PR">
-                    </div>
-                    <div class="form-group">
-                        <label for="empresa-instagram">Instagram</label>
-                        <input type="text" id="empresa-instagram" value="@alipel_papelaria">
-                    </div>
-                </div>
-
-                <div class="settings-group">
-                    <h3>Gestão de Dados</h3>
-                    <button class="btn-danger" onclick="clearAllData()">
-                        🗑️ Limpar Todos os Dados
-                    </button>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
-                        Esta ação não pode ser desfeita. Todos os pedidos serão removidos permanentemente.
-                    </p>
-                </div>
-
-                <div class="settings-group">
-                    <h3>Sobre o Sistema</h3>
-                    <p style="color: var(--navy); margin-bottom: 0.5rem;">
-                        <strong>Alipel Papelaria Criativa</strong><br>
-                        Sistema de Gestão de Produção v2.0
-                    </p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Desenvolvido com ❤️ para transformar a gestão da sua papelaria artesanal.
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="modal" class="modal" onclick="closeModalOnOverlay(event)">
-        <div class="modal-content">
-            <h2 id="modalTitle">Novo Pedido</h2>
-            <form id="orderForm">
-                <input type="hidden" id="orderId">
-                
-                <div class="form-group">
-                    <label for="product">Produto / Serviço</label>
-                    <input 
-                        type="text" 
-                        id="product" 
-                        placeholder="Ex: Agenda 2026 Floral Premium" 
-                        required
-                        autocomplete="off">
-                </div>
-
-                <div class="form-group">
-                    <label for="client">Cliente</label>
-                    <input 
-                        type="text" 
-                        id="client" 
-                        placeholder="Ex: Maria Oliveira" 
-                        required
-                        autocomplete="off">
-                </div>
-
-                <div style="display: flex; gap: 1rem">
-                    <div class="form-group" style="flex: 1">
-                        <label for="value">Valor (R$)</label>
-                        <input 
-                            type="number" 
-                            step="0.01" 
-                            id="value" 
-                            placeholder="0,00" 
-                            required
-                            min="0">
-                    </div>
-                    <div class="form-group" style="flex: 1">
-                        <label for="deadline">Prazo de Entrega</label>
-                        <input 
-                            type="date" 
-                            id="deadline" 
-                            required>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar Pedido</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        // === CONFIGURAÇÕES ===
-        const EMPRESA_NOME = "Alipel Papelaria Criativa";
-        const STORAGE_KEY = 'alipel_stationery_v2';
-
-        // === STATE ===
-        let orders = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        let draggedCard = null;
-
-        // === UTILITY FUNCTIONS ===
-        function generateOrderId() {
-            const prefix = 'ORD';
-            const timestamp = Date.now();
-            const random = Math.floor(Math.random() * 1000);
-            return `${prefix}-${timestamp}-${random}`;
-        }
-
-        function formatCurrency(value) {
-            return new Intl.NumberFormat('pt-BR', {
-                style: 'currency',
-                currency: 'BRL'
-            }).format(value);
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            const [year, month, day] = dateString.split('-');
-            return `${day}/${month}/${year}`;
-        }
-
-        function isUrgent(deadline) {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const deadlineDate = new Date(deadline);
-            const diffTime = deadlineDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            return diffDays <= 3 && diffDays >= 0;
-        }
-
-        function save() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
-            render();
-            updateStats();
-        }
-
-        // === MODAL FUNCTIONS ===
-        function openModal(orderId = null) {
-            const modal = document.getElementById('modal');
-            const form = document.getElementById('orderForm');
-            const title = document.getElementById('modalTitle');
-
-            form.reset();
-
-            if (orderId) {
-                const order = orders.find(o => o.id === orderId);
-                if (order) {
-                    title.textContent = 'Editar Pedido';
-                    document.getElementById('orderId').value = order.id;
-                    document.getElementById('product').value = order.product;
-                    document.getElementById('client').value = order.client;
-                    document.getElementById('value').value = order.value;
-                    document.getElementById('deadline').value = order.deadline;
-                }
-            } else {
-                title.textContent = 'Novo Pedido';
-                document.getElementById('orderId').value = '';
-                
-                // Set default deadline to 7 days from now
-                const defaultDeadline = new Date();
-                defaultDeadline.setDate(defaultDeadline.getDate() + 7);
-                document.getElementById('deadline').value = defaultDeadline.toISOString().split('T')[0];
-            }
-
-            modal.style.display = 'flex';
-            document.getElementById('product').focus();
-        }
-
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        function closeModalOnOverlay(event) {
-            if (event.target.id === 'modal') {
-                closeModal();
-            }
-        }
-
-        // === FORM HANDLING ===
-        document.getElementById('orderForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const orderId = document.getElementById('orderId').value;
-            const orderData = {
-                product: document.getElementById('product').value.trim(),
-                client: document.getElementById('client').value.trim(),
-                value: parseFloat(document.getElementById('value').value),
-                deadline: document.getElementById('deadline').value
-            };
-
-            if (orderId) {
-                // Update existing order
-                orders = orders.map(o => 
-                    o.id === orderId 
-                        ? { ...o, ...orderData } 
-                        : o
-                );
-            } else {
-                // Create new order
-                orders.push({
-                    id: generateOrderId(),
-                    status: 'novos',
-                    createdAt: new Date().toISOString(),
-                    ...orderData
-                });
-            }
-
-            save();
-            closeModal();
-        });
-
-        // === ORDER OPERATIONS ===
-        function deleteOrder(orderId) {
-            if (confirm('Deseja realmente excluir este pedido?\n\nEsta ação não pode ser desfeita.')) {
-                orders = orders.filter(o => o.id !== orderId);
-                save();
-            }
-        }
-
-        function notifyClient(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (!order) return;
-
-            const statusMessages = {
-                'novos': 'Recebido e aguardando início da produção',
-                'producao': 'Em processo de produção',
-                'acabamento': 'Em fase de acabamento e montagem',
-                'pronto': 'Pronto para retirada ou envio'
-            };
-
-            const statusName = statusMessages[order.status] || order.status;
-            const subject = encodeURIComponent(`Atualização do Pedido: ${order.product}`);
-            
-            const body = encodeURIComponent(
-`Olá ${order.client},
-
-Temos boas notícias sobre o seu pedido!
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📦 INFORMAÇÕES DO PEDIDO
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Produto: ${order.product}
-Status Atual: ${statusName}
-Previsão de Entrega: ${formatDate(order.deadline)}
-Valor: ${formatCurrency(order.value)}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Estamos trabalhando com todo carinho e atenção aos detalhes para que seu pedido fique perfeito!
-
-Em caso de dúvidas, estamos à disposição.
-
-Com carinho,
-${EMPRESA_NOME}
-
-✨ Transformando papel em arte desde 2020`
-            );
-
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
-        }
-
-        // === DRAG AND DROP ===
-        function allowDrop(event) {
-            event.preventDefault();
-            const column = event.target.closest('.column');
-            if (column) {
-                column.classList.add('drag-over');
-            }
-        }
-
-        function dragLeave(event) {
-            const column = event.target.closest('.column');
-            if (column && !column.contains(event.relatedTarget)) {
-                column.classList.remove('drag-over');
-            }
-        }
-
-        function drag(event) {
-            draggedCard = event.target;
-            event.target.classList.add('dragging');
-            event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('text/html', event.target.innerHTML);
-        }
-
-        function dragEnd(event) {
-            event.target.classList.remove('dragging');
-            draggedCard = null;
-            
-            // Remove all drag-over classes
-            document.querySelectorAll('.column').forEach(col => {
-                col.classList.remove('drag-over');
-            });
-        }
-
-        function drop(event) {
-            event.preventDefault();
-            
-            const column = event.target.closest('.column');
-            if (!column || !draggedCard) return;
-
-            column.classList.remove('drag-over');
-            
-            const orderId = draggedCard.id;
-            const newStatus = column.dataset.status;
-
-            // Update order status
-            orders = orders.map(o => 
-                o.id === orderId 
-                    ? { ...o, status: newStatus } 
-                    : o
-            );
-
-            save();
-        }
-
-        // === RENDER ===
-        function render() {
-            // Clear all lists
-            document.querySelectorAll('.task-list').forEach(list => {
-                list.innerHTML = '';
-            });
-
-            // Sort orders by deadline (urgent first)
-            const sortedOrders = [...orders].sort((a, b) => {
-                const aUrgent = isUrgent(a.deadline);
-                const bUrgent = isUrgent(b.deadline);
-                if (aUrgent && !bUrgent) return -1;
-                if (!aUrgent && bUrgent) return 1;
-                return new Date(a.deadline) - new Date(b.deadline);
-            });
-
-            // Render each order
-            sortedOrders.forEach(order => {
-                const card = createCard(order);
-                const column = document.querySelector(`[data-status="${order.status}"] .task-list`);
-                if (column) {
-                    column.appendChild(card);
-                }
-            });
-
-            updateColumnCounts();
-        }
-
-        function createCard(order) {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.id = order.id;
-            card.draggable = true;
-            card.ondragstart = drag;
-            card.ondragend = dragEnd;
-            card.ondblclick = () => openModal(order.id);
-
-            // Determine tag class
-            const tagClasses = {
-                'novos': 'tag-order',
-                'producao': 'tag-prod',
-                'acabamento': 'tag-finish',
-                'pronto': 'tag-ready'
-            };
-            const tagClass = tagClasses[order.status] || 'tag-order';
-
-            // Determine tag text
-            const tagTexts = {
-                'novos': 'Novo',
-                'producao': 'Produção',
-                'acabamento': 'Acabamento',
-                'pronto': 'Pronto'
-            };
-            const tagText = tagTexts[order.status] || order.status;
-
-            // Check if urgent
-            const urgent = isUrgent(order.deadline);
-            const urgentIndicator = urgent ? ' 🔥' : '';
-
-            card.innerHTML = `
-                <button class="btn-delete-card" onclick="event.stopPropagation(); deleteOrder('${order.id}')" title="Excluir pedido">×</button>
-                <span class="card-tag ${tagClass}">${tagText}</span>
-                <div class="card-title">${order.product}</div>
-                <div class="card-client">👤 ${order.client}</div>
-                <div class="card-meta">
-                    <span class="card-value">${formatCurrency(order.value)}</span>
-                    <span class="card-date">📅 ${formatDate(order.deadline)}${urgentIndicator}</span>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-notify" onclick="event.stopPropagation(); notifyClient('${order.id}')" title="Enviar e-mail para o cliente">
-                        ✉️ Notificar Cliente
-                    </button>
-                </div>
-            `;
-
-            return card;
-        }
-
-        function updateColumnCounts() {
-            document.querySelectorAll('.column').forEach(column => {
-                const status = column.dataset.status;
-                const count = orders.filter(o => o.status === status).length;
-                const badge = column.querySelector('.count-badge');
-                if (badge) {
-                    badge.textContent = count;
-                }
-            });
-        }
-
-        function updateStats() {
-            // Update sidebar stats
-            const total = orders.length;
-            const urgent = orders.filter(o => 
-                isUrgent(o.deadline) && o.status !== 'pronto'
-            ).length;
-
-            document.getElementById('sidebar-total').textContent = total;
-            document.getElementById('sidebar-urgent').textContent = urgent;
-        }
-
-        // === KEYBOARD SHORTCUTS ===
-        document.addEventListener('keydown', (e) => {
-            // ESC to close modal
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-
-            // Ctrl/Cmd + N to create new order
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                openModal();
-            }
-        });
-
-        // === INITIALIZATION ===
-        document.addEventListener('DOMContentLoaded', () => {
-            render();
-            updateStats();
-
-            // Add welcome message if no orders
-            if (orders.length === 0) {
-                console.log('%c✨ StationeryOS Premium', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
-                console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
-                console.log('%cAtalhos de teclado:', 'color: #2C3E50; font-size: 12px; font-weight: bold;');
-                console.log('%c  • Ctrl/Cmd + N: Novo Pedido', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • ESC: Fechar modal', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • Duplo clique no card: Editar', 'color: #636e72; font-size: 11px;');
-            }
-        });
-
-        // === VIEW NAVIGATION ===
-        let currentView = 'producao';
-
-        function showView(viewName) {
-            // Hide all views
-            document.querySelectorAll('.kanban-container, .content-view').forEach(view => {
-                view.style.display = 'none';
-            });
-
-            // Update nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            // Show selected view
-            if (viewName === 'producao') {
-                document.getElementById('view-producao').style.display = 'flex';
-            } else {
-                document.getElementById(`view-${viewName}`).style.display = 'block';
-            }
-
-            // Activate current nav item
-            event.target.closest('.nav-item').classList.add('active');
-            currentView = viewName;
-
-            // Update view-specific content
-            if (viewName === 'clientes') {
-                renderClients();
-            } else if (viewName === 'relatorios') {
-                renderReports();
-            }
-        }
-
-        // === CLIENTES VIEW ===
-        function renderClients() {
-            const clientsGrid = document.getElementById('clientsGrid');
-            
-            // Group orders by client
-            const clientsMap = {};
-            orders.forEach(order => {
-                if (!clientsMap[order.client]) {
-                    clientsMap[order.client] = {
-                        name: order.client,
-                        orders: [],
-                        totalSpent: 0
-                    };
-                }
-                clientsMap[order.client].orders.push(order);
-                clientsMap[order.client].totalSpent += order.value;
-            });
-
-            const clients = Object.values(clientsMap);
-
-            if (clients.length === 0) {
-                clientsGrid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
-                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📋 Nenhum cliente cadastrado ainda</p>
-                        <p style="font-size: 0.9rem;">Os clientes aparecerão aqui conforme você adiciona pedidos.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            clientsGrid.innerHTML = clients.map(client => `
-                <div class="client-card">
-                    <div class="client-name">${client.name}</div>
-                    <div class="client-stats">
-                        <div class="client-stat">
-                            <span>Pedidos</span>
-                            <strong>${client.orders.length}</strong>
-                        </div>
-                        <div class="client-stat">
-                            <span>Total Gasto</span>
-                            <strong>${formatCurrency(client.totalSpent)}</strong>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // === RELATÓRIOS VIEW ===
-        function renderReports() {
-            // Calculate statistics
-            const totalRevenue = orders.reduce((sum, order) => sum + order.value, 0);
-            const completedOrders = orders.filter(o => o.status === 'pronto').length;
-            const ongoingOrders = orders.filter(o => o.status !== 'pronto').length;
-            const avgTicket = orders.length > 0 ? totalRevenue / orders.length : 0;
-
-            // Update stats
-            document.getElementById('total-revenue').textContent = formatCurrency(totalRevenue);
-            document.getElementById('completed-orders').textContent = completedOrders;
-            document.getElementById('ongoing-orders').textContent = ongoingOrders;
-            document.getElementById('avg-ticket').textContent = formatCurrency(avgTicket);
-
-            // Render table
-            const tableBody = document.getElementById('ordersTableBody');
-            
-            if (orders.length === 0) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
-                            Nenhum pedido registrado ainda
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            const statusLabels = {
-                'novos': 'Novo',
-                'producao': 'Produção',
-                'acabamento': 'Acabamento',
-                'pronto': 'Pronto'
-            };
-
-            tableBody.innerHTML = orders
-                .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-                .map(order => `
-                    <tr>
-                        <td><strong>${order.id.substring(0, 12)}...</strong></td>
-                        <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-'}</td>
-                        <td>${order.client}</td>
-                        <td>${order.product}</td>
-                        <td><strong>${formatCurrency(order.value)}</strong></td>
-                        <td><span class="status-badge status-${order.status}">${statusLabels[order.status]}</span></td>
-                        <td>${formatDate(order.deadline)}</td>
-                    </tr>
-                `).join('');
-        }
-
-        // === EXPORT REPORT ===
-        function exportReport() {
-            if (orders.length === 0) {
-                alert('Não há pedidos para exportar.');
-                return;
-            }
-
-            // Calculate totals
-            const totalRevenue = orders.reduce((sum, order) => sum + order.value, 0);
-            const completedOrders = orders.filter(o => o.status === 'pronto').length;
-            const avgTicket = totalRevenue / orders.length;
-
-            // Create CSV content
-            let csvContent = 'RELATÓRIO DE VENDAS - ALIPEL PAPELARIA CRIATIVA\n';
-            csvContent += `Data de Geração: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}\n\n`;
-            
-            csvContent += 'RESUMO GERAL\n';
-            csvContent += `Total de Pedidos: ${orders.length}\n`;
-            csvContent += `Pedidos Concluídos: ${completedOrders}\n`;
-            csvContent += `Receita Total: ${formatCurrency(totalRevenue)}\n`;
-            csvContent += `Ticket Médio: ${formatCurrency(avgTicket)}\n\n`;
-
-            csvContent += 'DETALHAMENTO DE PEDIDOS\n';
-            csvContent += 'ID;Data Criação;Cliente;Produto;Valor;Status;Prazo de Entrega\n';
-
-            orders.forEach(order => {
-                const createdDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-';
-                const statusLabels = {
-                    'novos': 'Novo Pedido',
-                    'producao': 'Em Produção',
-                    'acabamento': 'Em Acabamento',
-                    'pronto': 'Pronto para Envio'
-                };
-                
-                csvContent += `${order.id};${createdDate};${order.client};${order.product};R$ ${order.value.toFixed(2)};${statusLabels[order.status]};${formatDate(order.deadline)}\n`;
-            });
-
-            // Group by status
-            csvContent += '\n\nPEDIDOS POR STATUS\n';
-            const byStatus = {
-                'novos': orders.filter(o => o.status === 'novos'),
-                'producao': orders.filter(o => o.status === 'producao'),
-                'acabamento': orders.filter(o => o.status === 'acabamento'),
-                'pronto': orders.filter(o => o.status === 'pronto')
-            };
-
-            Object.entries(byStatus).forEach(([status, items]) => {
-                const statusLabels = {
-                    'novos': 'Novos Pedidos',
-                    'producao': 'Em Produção',
-                    'acabamento': 'Em Acabamento',
-                    'pronto': 'Prontos para Envio'
-                };
-                csvContent += `\n${statusLabels[status]}: ${items.length} pedidos\n`;
-                items.forEach(item => {
-                    csvContent += `  - ${item.client} | ${item.product} | ${formatCurrency(item.value)}\n`;
-                });
-            });
-
-            // Group by client
-            csvContent += '\n\nTOP CLIENTES\n';
-            const clientsMap = {};
-            orders.forEach(order => {
-                if (!clientsMap[order.client]) {
-                    clientsMap[order.client] = { count: 0, total: 0 };
-                }
-                clientsMap[order.client].count++;
-                clientsMap[order.client].total += order.value;
-            });
-
-            const topClients = Object.entries(clientsMap)
-                .sort((a, b) => b[1].total - a[1].total)
-                .slice(0, 10);
-
-            topClients.forEach(([client, data], index) => {
-                csvContent += `${index + 1}. ${client} - ${data.count} pedidos - ${formatCurrency(data.total)}\n`;
-            });
-
-            // Create download
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            const fileName = `Alipel_Relatorio_${new Date().toISOString().split('T')[0]}.csv`;
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', fileName);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Show success message
-            showNotification('✓ Relatório exportado com sucesso!', 'success');
-        }
-
-        // === CONFIGURAÇÕES ===
-        function clearAllData() {
-            const confirmed = confirm(
-                '⚠️ ATENÇÃO!\n\n' +
-                'Esta ação irá EXCLUIR PERMANENTEMENTE todos os pedidos do sistema.\n\n' +
-                'Tem certeza que deseja continuar?\n\n' +
-                'Esta ação NÃO PODE ser desfeita!'
-            );
-
-            if (confirmed) {
-                const doubleConfirm = confirm(
-                    'CONFIRMAÇÃO FINAL\n\n' +
-                    'Digite "CONFIRMAR" mentalmente e clique em OK para prosseguir.\n\n' +
-                    'Todos os ' + orders.length + ' pedidos serão APAGADOS.'
-                );
-
-                if (doubleConfirm) {
-                    orders = [];
-                    save();
-                    showNotification('Todos os dados foram removidos.', 'warning');
-                    
-                    // Return to production view
-                    showView('producao');
-                    document.querySelector('.nav-item').click();
-                }
-            }
-        }
-
-        // === NOTIFICATION SYSTEM ===
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            const colors = {
-                'success': 'var(--purple-primary)',
-                'warning': 'var(--terracotta)',
-                'info': 'var(--pink-accent)'
-            };
-
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                bottom: 2rem;
-                right: 2rem;
-                background: ${colors[type] || colors.success};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: var(--radius-sm);
-                box-shadow: var(--shadow-lift);
-                font-weight: 600;
-                font-size: 0.95rem;
-                animation: slideInUp 0.3s ease-out;
-                z-index: 10000;
-            `;
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.3s ease-out';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-
-        // === INITIALIZATION ===
-        document.addEventListener('DOMContentLoaded', () => {
-            render();
-            updateStats();
-
-            // Add welcome message if no orders
-            if (orders.length === 0) {
-                console.log('%c✨ StationeryOS Premium', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
-                console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
-                console.log('%cAtalhos de teclado:', 'color: #2C3E50; font-size: 12px; font-weight: bold;');
-                console.log('%c  • Ctrl/Cmd + N: Novo Pedido', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • ESC: Fechar modal', 'color: #636e72; font-size: 11px;');
-                console.log('%c  • Duplo clique no card: Editar', 'color: #636e72; font-size: 11px;');
-            }
-        });
-
-        // Auto-save indicator (visual feedback)
-        let saveTimeout;
-        const originalSave = save;
-        save = function() {
-            originalSave();
-            
-            // Clear previous timeout
-            clearTimeout(saveTimeout);
-            
-            // Show save indicator
-            const indicator = document.createElement('div');
-            indicator.textContent = '✓ Salvo';
-            indicator.style.cssText = `
-                position: fixed;
-                bottom: 2rem;
-                right: 2rem;
-                background: var(--sage);
-                color: white;
-                padding: 0.75rem 1.5rem;
-                border-radius: var(--radius-sm);
-                box-shadow: var(--shadow-lift);
-                font-weight: 600;
-                font-size: 0.9rem;
-                animation: slideInUp 0.3s ease-out;
-                z-index: 1000;
-            `;
-            
-            document.body.appendChild(indicator);
-            
-            saveTimeout = setTimeout(() => {
-                indicator.style.animation = 'fadeOut 0.3s ease-out';
-                setTimeout(() => indicator.remove(), 300);
-            }, 2000);
-        };
-
-        // Add animations to style
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            
-            @keyframes fadeOut {
-                from {
-                    opacity: 1;
-                }
-                to {
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+<header>StationeryOS</header>
+
+<div class="topbar">
+<button class="primary-btn" id="newTaskBtn">Novo Pedido</button>
+</div>
+
+<div class="board">
+
+<div class="column" data-status="Recebido">
+<div class="column-header">
+<span>Recebido</span>
+<span class="count">0</span>
+</div>
+</div>
+
+<div class="column" data-status="Produção">
+<div class="column-header">
+<span>Produção</span>
+<span class="count">0</span>
+</div>
+</div>
+
+<div class="column" data-status="Acabamento">
+<div class="column-header">
+<span>Acabamento</span>
+<span class="count">0</span>
+</div>
+</div>
+
+<div class="column" data-status="Expedição">
+<div class="column-header">
+<span>Expedição</span>
+<span class="count">0</span>
+</div>
+</div>
+
+</div>
+
+<div class="modal" id="taskModal">
+<div class="modal-content">
+<h3 id="modalTitle">Novo Pedido</h3>
+<input type="text" id="taskName" placeholder="Nome do Cliente">
+<input type="email" id="taskEmail" placeholder="Email do Cliente">
+<textarea id="taskDesc" placeholder="Descrição do Pedido"></textarea>
+<select id="taskPriority">
+<option value="low">Baixa</option>
+<option value="medium">Média</option>
+<option value="high">Alta</option>
+</select>
+<div class="modal-footer">
+<button class="icon-btn" id="cancelBtn">Cancelar</button>
+<button class="primary-btn" id="saveTaskBtn">Salvar</button>
+</div>
+</div>
+</div>
+
+<script>
+
+let tasks = JSON.parse(localStorage.getItem("stationeryOS_v2")) || [];
+let editingId = null;
+
+function saveStorage(){
+localStorage.setItem("stationeryOS_v2",JSON.stringify(tasks));
+}
+
+function openModal(editTask=null){
+document.getElementById("taskModal").style.display="flex";
+if(editTask){
+editingId=editTask.id;
+document.getElementById("modalTitle").innerText="Editar Pedido";
+document.getElementById("taskName").value=editTask.name;
+document.getElementById("taskEmail").value=editTask.email;
+document.getElementById("taskDesc").value=editTask.description;
+document.getElementById("taskPriority").value=editTask.priority;
+}else{
+editingId=null;
+document.getElementById("modalTitle").innerText="Novo Pedido";
+document.getElementById("taskName").value="";
+document.getElementById("taskEmail").value="";
+document.getElementById("taskDesc").value="";
+document.getElementById("taskPriority").value="low";
+}
+}
+
+function closeModal(){
+document.getElementById("taskModal").style.display="none";
+}
+
+function render(){
+document.querySelectorAll(".column").forEach(col=>{
+col.querySelectorAll(".task").forEach(t=>t.remove());
+});
+
+tasks.forEach(task=>{
+const col=document.querySelector(`.column[data-status="${task.status}"]`);
+const div=document.createElement("div");
+div.className="task";
+div.draggable=true;
+div.dataset.id=task.id;
+
+const title=document.createElement("div");
+title.className="task-title";
+title.innerText=task.name;
+
+const meta=document.createElement("div");
+meta.className="task-meta";
+meta.innerText=task.description;
+
+const badge=document.createElement("span");
+badge.className="badge "+task.priority;
+badge.innerText=task.priority.toUpperCase();
+
+const actions=document.createElement("div");
+actions.className="task-actions";
+
+const notify=document.createElement("button");
+notify.className="icon-btn";
+notify.innerText="✉";
+notify.onclick=function(){
+let subject=encodeURIComponent("Seu pedido "+task.name+" atualizou!");
+let body=encodeURIComponent("Olá "+task.name+",%0D%0A%0D%0AO seu pedido está em: "+task.status+"%0D%0APrioridade: "+task.priority+"%0D%0A%0D%0AEquipe StationeryOS");
+window.location.href="mailto:"+task.email+"?subject="+subject+"&body="+body;
+};
+
+const edit=document.createElement("button");
+edit.className="icon-btn";
+edit.innerText="Editar";
+edit.onclick=function(){openModal(task);};
+
+const del=document.createElement("button");
+del.className="icon-btn delete";
+del.innerText="Excluir";
+del.onclick=function(){
+if(confirm("Deseja excluir este pedido?")){
+tasks=tasks.filter(t=>t.id!==task.id);
+saveStorage();
+render();
+}
+};
+
+actions.appendChild(notify);
+actions.appendChild(edit);
+actions.appendChild(del);
+
+div.appendChild(title);
+div.appendChild(meta);
+div.appendChild(badge);
+div.appendChild(actions);
+
+div.addEventListener("dragstart",function(){
+div.classList.add("dragging");
+});
+
+div.addEventListener("dragend",function(){
+div.classList.remove("dragging");
+});
+
+col.appendChild(div);
+});
+
+document.querySelectorAll(".column").forEach(col=>{
+let count=col.querySelectorAll(".task").length;
+col.querySelector(".count").innerText=count;
+});
+}
+
+document.getElementById("newTaskBtn").onclick=function(){
+openModal();
+};
+
+document.getElementById("cancelBtn").onclick=function(){
+closeModal();
+};
+
+document.getElementById("saveTaskBtn").onclick=function(){
+let name=document.getElementById("taskName").value.trim();
+let email=document.getElementById("taskEmail").value.trim();
+let desc=document.getElementById("taskDesc").value.trim();
+let priority=document.getElementById("taskPriority").value;
+
+if(name===""||email===""){
+alert("Nome e Email são obrigatórios");
+return;
+}
+
+if(editingId){
+let task=tasks.find(t=>t.id===editingId);
+task.name=name;
+task.email=email;
+task.description=desc;
+task.priority=priority;
+}else{
+tasks.push({
+id:Date.now(),
+name:name,
+email:email,
+description:desc,
+priority:priority,
+status:"Recebido",
+createdAt:new Date().toISOString()
+});
+}
+
+saveStorage();
+closeModal();
+render();
+};
+
+document.querySelectorAll(".column").forEach(column=>{
+column.addEventListener("dragover",function(e){
+e.preventDefault();
+const dragging=document.querySelector(".dragging");
+if(dragging){
+column.appendChild(dragging);
+}
+});
+column.addEventListener("drop",function(){
+const dragging=document.querySelector(".dragging");
+if(dragging){
+let id=Number(dragging.dataset.id);
+let task=tasks.find(t=>t.id===id);
+task.status=column.dataset.status;
+saveStorage();
+render();
+}
+});
+});
+
+render();
+
+</script>
+
 </body>
 </html>
