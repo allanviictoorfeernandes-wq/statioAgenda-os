@@ -2185,6 +2185,22 @@
             const statusName = statusMessages[order.status] || order.status;
             const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
             
+            // Adicionar link do PDF se existir
+            let pdfLink = '';
+            if (order.pdfAttachment) {
+                pdfLink = `
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📎 ANEXO DO PEDIDO
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Arquivo anexado: ${order.pdfAttachment.name}
+
+(O arquivo PDF está salvo no sistema. Entre em contato 
+para solicitar o envio por WhatsApp ou e-mail)
+`;
+            }
+            
             // E-mail SEM ASCII ART (NÃO ALTERAR)
             const emailBody = encodeURIComponent(
 `Olá ${order.client}! 👋
@@ -2215,7 +2231,7 @@ Em caso de dúvidas, estamos à disposição:
 Com carinho,
 Equipe Alipel Papelaria Criativa
 
-✨ Transformando papel em arte desde 2025
+✨ Transformando papel em arte desde 2025${pdfLink}
 `
             );
 
