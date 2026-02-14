@@ -1530,17 +1530,9 @@
             const statusName = statusMessages[order.status] || order.status;
             const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
             
-            // E-mail com logo em ASCII art
+            // E-mail SEM ASCII ART
             const emailBody = encodeURIComponent(
-`
-   ╔═══════════════════════════════════════════╗
-   ║                                           ║
-   ║        ✂️  ALIPEL PAPELARIA CRIATIVA       ║
-   ║                                           ║
-   ╚═══════════════════════════════════════════╝
-
-
-Olá ${order.client}! 👋
+`Olá ${order.client}! 👋
 
 Temos boas notícias sobre o seu pedido!
 
@@ -1569,11 +1561,10 @@ Com carinho,
 Equipe Alipel Papelaria Criativa
 
 ✨ Transformando papel em arte desde 2025
-
 `
             );
 
-            // WhatsApp message (otimizada)
+            // WhatsApp message
             const whatsappMessage = encodeURIComponent(
 `✨ *ALIPEL PAPELARIA CRIATIVA* ✨
 
@@ -1595,49 +1586,29 @@ _Alipel Papelaria Criativa_
 📷 @alipel_papelaria`
             );
 
-            // ABRE WHATSAPP (usando whatsapp:// para abrir no app do PC)
+            // ABRE OS DOIS JUNTOS (window.open para ambos)
+            let opened = false;
+
+            // ABRE WHATSAPP
             if (order.clientWhatsApp) {
                 const phone = order.clientWhatsApp.replace(/\D/g, '');
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
-                
-                // Tenta abrir no app do WhatsApp Desktop primeiro
-                window.location.href = `whatsapp://send?phone=${fullPhone}&text=${whatsappMessage}`;
-                
-                // Fallback para WhatsApp Web após 1 segundo (caso não tenha o app)
-                setTimeout(() => {
-                    window.open(`https://web.whatsapp.com/send?phone=${fullPhone}&text=${whatsappMessage}`, '_blank');
-                }, 1000);
-                
+                window.open(`https://web.whatsapp.com/send?phone=${fullPhone}&text=${whatsappMessage}`, '_blank');
+                opened = true;
                 showNotification('💬 WhatsApp aberto!', 'success');
             }
             
-            // ABRE E-MAIL - MÉTODO GARANTIDO
+            // ABRE E-MAIL (mesmo tendo whatsapp)
             if (order.clientEmail) {
                 const mailtoLink = `mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`;
-                
-                // Cria um link invisível e clica nele
-                const emailLink = document.createElement('a');
-                emailLink.href = mailtoLink;
-                emailLink.style.display = 'none';
-                document.body.appendChild(emailLink);
-                
-                // Delay para não conflitar com WhatsApp
-                setTimeout(() => {
-                    emailLink.click();
-                    document.body.removeChild(emailLink);
-                    showNotification('📧 Cliente de e-mail aberto!', 'info');
-                }, order.clientWhatsApp ? 2000 : 100);
+                window.open(mailtoLink, '_blank');
+                opened = true;
+                showNotification('📧 E-mail aberto!', 'info');
             }
 
             // Se não tem nenhum contato
-            if (!order.clientEmail && !order.clientWhatsApp) {
-                const mailtoLink = `mailto:?subject=${subject}&body=${emailBody}`;
-                const emailLink = document.createElement('a');
-                emailLink.href = mailtoLink;
-                emailLink.style.display = 'none';
-                document.body.appendChild(emailLink);
-                emailLink.click();
-                document.body.removeChild(emailLink);
+            if (!opened) {
+                window.open(`mailto:?subject=${subject}&body=${emailBody}`, '_blank');
                 showNotification('⚠️ Adicione e-mail ou WhatsApp do cliente!', 'warning');
             }
         }
