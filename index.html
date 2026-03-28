@@ -296,6 +296,7 @@
             overflow-x: auto;
             flex: 1;
             position: relative;
+            justify-content: center;
         }
 
         .kanban-container::-webkit-scrollbar {
@@ -320,8 +321,8 @@
         .column {
             background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(10px);
-            min-width: 320px;
-            width: 320px;
+            min-width: 420px;
+            width: 420px;
             border-radius: var(--radius);
             display: flex;
             flex-direction: column;
@@ -333,17 +334,8 @@
             overflow: hidden;
         }
 
-        /* Efeitos visuais por coluna */
-        .column[data-status="novos"] {
-            border-top: 3px solid var(--blush);
-        }
-
         .column[data-status="producao"] {
             border-top: 3px solid var(--terracotta);
-        }
-
-        .column[data-status="acabamento"] {
-            border-top: 3px solid var(--sage);
         }
 
         .column[data-status="pronto"] {
@@ -528,6 +520,39 @@
             transform: scale(1.1);
         }
 
+        /* NOVO: Botão adicionar produto ao card */
+        .btn-add-product-card {
+            position: absolute;
+            top: 12px;
+            right: 84px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            color: var(--sage-dark);
+            cursor: pointer;
+            font-size: 1.1rem;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            opacity: 0;
+            transform: scale(0.8);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover .btn-add-product-card {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .btn-add-product-card:hover {
+            background: var(--sage);
+            color: white;
+            transform: scale(1.1);
+        }
+
         .card-tag {
             font-size: 0.65rem;
             font-weight: 800;
@@ -540,18 +565,8 @@
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .tag-order {
-            background: linear-gradient(135deg, var(--blush) 0%, #E0A090 100%);
-            color: white;
-        }
-
         .tag-prod {
             background: linear-gradient(135deg, var(--terracotta) 0%, #B85F53 100%);
-            color: white;
-        }
-
-        .tag-finish {
-            background: linear-gradient(135deg, var(--sage) 0%, var(--sage-dark) 100%);
             color: white;
         }
 
@@ -588,6 +603,28 @@
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
+        }
+
+        /* NOVO: Lista de produtos no card */
+        .card-products-list {
+            font-size: 0.8rem;
+            color: var(--navy);
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(123, 107, 168, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--purple-light);
+        }
+
+        .card-products-list .product-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.06);
+        }
+
+        .card-products-list .product-line:last-child {
+            border-bottom: none;
         }
 
         .card-meta {
@@ -661,7 +698,7 @@
 
         .modal-content {
             background: white;
-            width: 500px;
+            width: 550px;
             max-width: 90vw;
             max-height: 90vh;
             overflow-y: auto;
@@ -774,6 +811,54 @@
 
         .btn-save:active {
             transform: translateY(0);
+        }
+
+        /* === QUANTITY SELECTOR === */
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            border: 2px solid var(--kraft-light);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            width: fit-content;
+        }
+
+        .qty-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: var(--kraft-light);
+            color: var(--charcoal);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: var(--purple-primary);
+            color: white;
+        }
+
+        .qty-value {
+            width: 60px;
+            height: 44px;
+            border: none;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--charcoal);
+            background: white;
+            padding: 0;
+        }
+
+        .qty-value:focus {
+            box-shadow: none;
+            border: none;
         }
 
         /* === CONTENT VIEWS === */
@@ -986,10 +1071,66 @@
             display: inline-block;
         }
 
-        .status-novos { background: var(--blush); color: white; }
         .status-producao { background: var(--terracotta); color: white; }
-        .status-acabamento { background: var(--sage); color: white; }
         .status-pronto { background: var(--gold); color: white; }
+
+        /* === INSUMOS === */
+        .insumo-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-paper);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .insumo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lift);
+        }
+
+        .insumo-category {
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 0.3rem 0.75rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--pink-accent) 0%, #D48CA0 100%);
+            color: white;
+        }
+
+        .insumo-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--charcoal);
+            margin-bottom: 0.35rem;
+        }
+
+        .insumo-details {
+            font-size: 0.85rem;
+            color: var(--sage-dark);
+            margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .insumo-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .insumo-price {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--purple-dark);
+            margin-top: 0.75rem;
+        }
 
         /* === CONFIGURAÇÕES === */
         .settings-container {
@@ -1088,27 +1229,6 @@
             font-size: 0.85rem;
         }
 
-        .pdf-download-btn {
-            background: var(--purple-primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-            margin-top: 1rem;
-        }
-
-        .pdf-download-btn:hover {
-            background: var(--purple-dark);
-            transform: translateY(-2px);
-        }
-
-        /* NOVO: Botão de editar/excluir em cards */
         .btn-edit, .btn-delete {
             padding: 0.5rem 1rem;
             border-radius: var(--radius-sm);
@@ -1141,6 +1261,42 @@
             display: flex;
             gap: 0.5rem;
             margin-top: 1rem;
+        }
+
+        /* === ORDER PRODUCTS TABLE === */
+        .order-products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+        }
+
+        .order-products-table th {
+            background: var(--kraft-light);
+            padding: 0.6rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: left;
+        }
+
+        .order-products-table td {
+            padding: 0.6rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            font-size: 0.85rem;
+        }
+
+        .order-products-table .remove-item-btn {
+            background: none;
+            border: none;
+            color: var(--terracotta);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            transition: all 0.2s;
+        }
+
+        .order-products-table .remove-item-btn:hover {
+            transform: scale(1.2);
         }
 
         /* === RESPONSIVE === */
@@ -1199,8 +1355,8 @@
             }
 
             .column {
-                min-width: 280px;
-                width: 280px;
+                min-width: 300px;
+                width: 300px;
             }
 
             .modal-content {
@@ -1210,23 +1366,24 @@
 
         /* === LOADING ANIMATION === */
         @keyframes shimmer {
-            0% {
-                background-position: -1000px 0;
-            }
-            100% {
-                background-position: 1000px 0;
-            }
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
         }
 
         .loading {
-            background: linear-gradient(
-                90deg,
-                var(--kraft-light) 0%,
-                var(--kraft) 50%,
-                var(--kraft-light) 100%
-            );
+            background: linear-gradient(90deg, var(--kraft-light) 0%, var(--kraft) 50%, var(--kraft-light) 100%);
             background-size: 1000px 100%;
             animation: shimmer 2s infinite;
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
         }
     </style>
 </head>
@@ -1238,15 +1395,10 @@
                 <!-- Alicate Rosa inclinado -->
                 <svg width="30" height="50" viewBox="0 0 60 100" style="flex-shrink: 0; margin-top: -5px;">
                     <g transform="rotate(-30 30 50)">
-                        <!-- Braço esquerdo do alicate -->
                         <rect x="18" y="25" width="5" height="38" rx="2.5" fill="#E8A0A8"/>
-                        <!-- Braço direito do alicate -->
                         <rect x="27" y="25" width="5" height="38" rx="2.5" fill="#E8A0A8"/>
-                        <!-- Articulação superior -->
                         <ellipse cx="25" cy="27" rx="7" ry="5" fill="#D88898"/>
-                        <!-- Ponta esquerda -->
                         <path d="M 18 63 L 15 75 L 20 72 L 23 63 Z" fill="#E8A0A8"/>
-                        <!-- Ponta direita -->
                         <path d="M 27 63 L 32 72 L 37 75 L 32 63 Z" fill="#E8A0A8"/>
                     </g>
                 </svg>
@@ -1266,15 +1418,18 @@
                 <span>💎</span>
                 <span>Clientes</span>
             </a>
-            <!-- NOVO: Cadastro de Clientes -->
             <a class="nav-item" onclick="showView('cadastro-clientes')">
                 <span>👥</span>
                 <span>Cadastro Clientes</span>
             </a>
-            <!-- NOVO: Cadastro de Produtos -->
             <a class="nav-item" onclick="showView('cadastro-produtos')">
                 <span>📝</span>
                 <span>Cadastro Produtos</span>
+            </a>
+            <!-- NOVO: Insumos -->
+            <a class="nav-item" onclick="showView('insumos')">
+                <span>🧵</span>
+                <span>Insumos</span>
             </a>
             <a class="nav-item" onclick="showView('relatorios')">
                 <span>📊</span>
@@ -1315,26 +1470,11 @@
             </button>
         </header>
 
+        <!-- VIEW: PRODUÇÃO (ALTERADO: apenas 2 colunas) -->
         <section id="view-producao" class="kanban-container">
-            <div class="column" data-status="novos">
-                <div class="column-header">
-                    <span>Novos Pedidos</span>
-                    <span class="count-badge">0</span>
-                </div>
-                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-            </div>
-
             <div class="column" data-status="producao">
                 <div class="column-header">
                     <span>Em Produção</span>
-                    <span class="count-badge">0</span>
-                </div>
-                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
-            </div>
-
-            <div class="column" data-status="acabamento">
-                <div class="column-header">
-                    <span>Acabamento</span>
                     <span class="count-badge">0</span>
                 </div>
                 <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
@@ -1360,7 +1500,7 @@
             <div class="clients-grid" id="clientsGrid"></div>
         </section>
 
-        <!-- NOVO: VIEW CADASTRO DE CLIENTES -->
+        <!-- VIEW CADASTRO DE CLIENTES -->
         <section id="view-cadastro-clientes" class="content-view" style="display: none;">
             <div class="view-header">
                 <div>
@@ -1374,18 +1514,58 @@
             <div class="clients-grid" id="cadastroClientesGrid"></div>
         </section>
 
-        <!-- NOVO: VIEW CADASTRO DE PRODUTOS -->
+        <!-- VIEW CADASTRO DE PRODUTOS (ALTERADO: com preço) -->
         <section id="view-cadastro-produtos" class="content-view" style="display: none;">
             <div class="view-header">
                 <div>
                     <h2>Cadastro de Produtos</h2>
-                    <p>Gerencie todos os seus produtos</p>
+                    <p>Produtos finalizados com preço de venda</p>
                 </div>
                 <button class="btn-create" onclick="openProductModal()">
                     <span>📦</span> Novo Produto
                 </button>
             </div>
             <div class="clients-grid" id="cadastroProdutosGrid"></div>
+        </section>
+
+        <!-- NOVO: VIEW INSUMOS -->
+        <section id="view-insumos" class="content-view" style="display: none;">
+            <div class="view-header">
+                <div>
+                    <h2>Compra de Insumos</h2>
+                    <p>Controle de materiais para produção</p>
+                </div>
+                <button class="btn-create" onclick="openInsumoModal()">
+                    <span>🧵</span> Novo Insumo
+                </button>
+            </div>
+            
+            <!-- Resumo de gastos com insumos -->
+            <div class="reports-stats" id="insumos-stats" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--pink-accent);">🧵</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total de Insumos</span>
+                        <strong class="stat-value" id="insumos-count">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--blush);">💰</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Investido</span>
+                        <strong class="stat-value" id="insumos-total">R$ 0,00</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--sage);">📅</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Compras Este Mês</span>
+                        <strong class="stat-value" id="insumos-month">R$ 0,00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="clients-grid" id="insumosGrid"></div>
         </section>
 
         <!-- VIEW: RELATÓRIOS -->
@@ -1440,7 +1620,7 @@
                                 <th>ID</th>
                                 <th>Data</th>
                                 <th>Cliente</th>
-                                <th>Produto</th>
+                                <th>Produtos</th>
                                 <th>Valor</th>
                                 <th>Status</th>
                                 <th>Prazo</th>
@@ -1490,34 +1670,27 @@
 
             <!-- GRÁFICO PRINCIPAL: FATURAMENTO MENSAL -->
             <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper); margin-bottom: 2rem;">
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--charcoal);">💰 Faturamento Mensal - 2026</h3>
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 1.5rem; color: var(--charcoal);">💰 Faturamento Mensal</h3>
                 <canvas id="revenueChart" style="max-height: 300px;"></canvas>
             </div>
 
             <!-- LINHA COM 2 GRÁFICOS -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
-                <!-- PEDIDOS POR STATUS -->
                 <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
                     <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">📊 Pedidos por Status</h3>
                     <canvas id="statusChart" style="max-height: 250px;"></canvas>
                 </div>
-
-                <!-- TOP 5 PRODUTOS -->
                 <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
                     <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">🏆 Top 5 Produtos</h3>
                     <canvas id="productsChart" style="max-height: 250px;"></canvas>
                 </div>
             </div>
 
-            <!-- LINHA COM 2 GRÁFICOS -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
-                <!-- TOP 5 CLIENTES -->
                 <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
                     <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">👥 Top 5 Clientes</h3>
                     <canvas id="clientsChart" style="max-height: 250px;"></canvas>
                 </div>
-
-                <!-- PEDIDOS URGENTES -->
                 <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
                     <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem; color: var(--charcoal);">⚠️ Pedidos Urgentes</h3>
                     <div id="urgentOrders" style="max-height: 250px; overflow-y: auto;"></div>
@@ -1577,7 +1750,7 @@
                     <button class="btn-danger" onclick="clearAllData()">
                         🗑️ Limpar Todos os Dados
                     </button>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">
+                    <p style="font-size: 0.85rem; color: var(--sage-dark); margin-top: 0.5rem;">
                         Esta ação não pode ser desfeita. Todos os pedidos serão removidos permanentemente.
                     </p>
                 </div>
@@ -1586,9 +1759,9 @@
                     <h3>Sobre o Sistema</h3>
                     <p style="color: var(--navy); margin-bottom: 0.5rem;">
                         <strong>Alipel Papelaria Criativa</strong><br>
-                        Sistema de Gestão de Produção v3.0
+                        Sistema de Gestão de Produção v4.0
                     </p>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                    <p style="font-size: 0.85rem; color: var(--sage-dark);">
                         Desenvolvido com ❤️ para transformar a gestão da sua papelaria artesanal.
                     </p>
                 </div>
@@ -1596,14 +1769,16 @@
         </section>
     </main>
 
-    <!-- MODAL: PEDIDO -->
+    <!-- ============================================ -->
+    <!-- MODAL: PEDIDO (ALTERADO: multi-produto + qty) -->
+    <!-- ============================================ -->
     <div id="modal" class="modal" onclick="closeModalOnOverlay(event)">
-        <div class="modal-content">
+        <div class="modal-content" style="width: 620px;">
             <h2 id="modalTitle">Novo Pedido</h2>
             <form id="orderForm">
                 <input type="hidden" id="orderId">
-                
-                <!-- NOVO: Dropdown de Cliente -->
+
+                <!-- Seleção de Cliente -->
                 <div class="form-group">
                     <label for="clientSelect">Cliente</label>
                     <select id="clientSelect" onchange="fillClientData()">
@@ -1613,122 +1788,79 @@
 
                 <div class="form-group">
                     <label for="client">Nome do Cliente</label>
-                    <input 
-                        type="text" 
-                        id="client" 
-                        placeholder="Ex: Maria Oliveira" 
-                        required
-                        autocomplete="off"
-                        readonly>
+                    <input type="text" id="client" placeholder="Selecionado automaticamente" required readonly autocomplete="off">
                 </div>
 
                 <div style="display: flex; gap: 1rem">
                     <div class="form-group" style="flex: 1">
                         <label for="clientEmail">E-mail do Cliente</label>
-                        <input 
-                            type="email" 
-                            id="clientEmail" 
-                            placeholder="cliente@email.com"
-                            autocomplete="off"
-                            readonly>
+                        <input type="email" id="clientEmail" placeholder="cliente@email.com" autocomplete="off" readonly>
                     </div>
                     <div class="form-group" style="flex: 1">
                         <label for="clientWhatsApp">WhatsApp</label>
-                        <input 
-                            type="tel" 
-                            id="clientWhatsApp" 
-                            placeholder="(00) 00000-0000"
-                            autocomplete="off"
-                            readonly>
+                        <input type="tel" id="clientWhatsApp" placeholder="(00) 00000-0000" autocomplete="off" readonly>
                     </div>
                 </div>
 
-                <!-- NOVO: Dropdown de Produto -->
-                <div class="form-group">
-                    <label for="productSelect">Produto / Serviço</label>
-                    <select id="productSelect" onchange="fillProductData()">
-                        <option value="">Selecione um produto</option>
-                    </select>
+                <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
+
+                <!-- Seção de Produtos -->
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--purple-dark);">📦 Adicionar Produtos ao Pedido</h3>
+
+                <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                        <label for="orderProductSelect">Produto</label>
+                        <select id="orderProductSelect">
+                            <option value="">Selecione um produto</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 0; margin-bottom: 0;">
+                        <label>Qtd.</label>
+                        <div class="qty-selector">
+                            <button type="button" class="qty-btn" onclick="changeQty(-1)">▼</button>
+                            <input type="number" class="qty-value" id="orderQty" value="1" min="1" readonly>
+                            <button type="button" class="qty-btn" onclick="changeQty(1)">▲</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addProductToOrder()" style="padding: 0.95rem 1.25rem; background: var(--sage); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; transition: all 0.3s; white-space: nowrap; height: 48px;" onmouseover="this.style.background='var(--sage-dark)'" onmouseout="this.style.background='var(--sage)'">+ Adicionar</button>
                 </div>
 
-                <div class="form-group">
-                    <label for="product">Nome do Produto</label>
-                    <input 
-                        type="text" 
-                        id="product" 
-                        placeholder="Ex: Agenda 2026 Floral Premium" 
-                        required
-                        autocomplete="off"
-                        readonly>
-                </div>
-
-                <!-- NOVOS CAMPOS DO PRODUTO (preenchidos automaticamente) -->
-                <div style="display: flex; gap: 1rem">
-                    <div class="form-group" style="flex: 1">
-                        <label for="productPages">Qtd. Folhas</label>
-                        <input type="number" id="productPages" readonly>
-                    </div>
-                    <div class="form-group" style="flex: 1">
-                        <label for="productSize">Tamanho</label>
-                        <input type="text" id="productSize" readonly>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 1rem">
-                    <div class="form-group" style="flex: 1">
-                        <label for="productCover">Capa</label>
-                        <input type="text" id="productCover" readonly>
-                    </div>
-                    <div class="form-group" style="flex: 1">
-                        <label for="productBinding">Encadernação</label>
-                        <input type="text" id="productBinding" readonly>
-                    </div>
-                </div>
-
-                <div style="display: flex; gap: 1rem">
-                    <div class="form-group" style="flex: 1">
-                        <label for="productPaper">Tipo de Folha</label>
-                        <input type="text" id="productPaper" readonly>
-                    </div>
-                    <div class="form-group" style="flex: 1">
-                        <label for="productWire">Tipo de Arame</label>
-                        <input type="text" id="productWire" readonly>
+                <!-- Lista de produtos adicionados ao pedido -->
+                <div id="orderItemsList" style="margin-top: 1.5rem;">
+                    <table class="order-products-table" id="orderItemsTable" style="display: none;">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd.</th>
+                                <th>Unit.</th>
+                                <th>Subtotal</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody id="orderItemsBody"></tbody>
+                        <tfoot>
+                            <tr style="background: var(--kraft-light); font-weight: 700;">
+                                <td colspan="3" style="text-align: right;">TOTAL DO PEDIDO:</td>
+                                <td id="orderTotalDisplay" style="color: var(--purple-dark); font-size: 1.1rem;">R$ 0,00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div id="orderItemsEmpty" style="text-align: center; padding: 2rem; color: var(--kraft-dark); font-size: 0.9rem;">
+                        Nenhum produto adicionado ainda. Selecione um produto acima.
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 1rem">
-                    <div class="form-group" style="flex: 1">
-                        <label for="value">Valor (R$)</label>
-                        <input 
-                            type="number" 
-                            step="0.01" 
-                            id="value" 
-                            placeholder="0,00" 
-                            required
-                            min="0">
-                    </div>
-                    <div class="form-group" style="flex: 1">
-                        <label for="deadline">Prazo de Entrega</label>
-                        <input 
-                            type="date" 
-                            id="deadline" 
-                            required>
-                    </div>
-                </div>
+                <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
 
                 <div class="form-group">
-                    <label for="pdfAttachment">📎 Anexar PDF (Opcional)</label>
-                    <input type="file" id="pdfAttachment" accept=".pdf" style="padding: 0.75rem 1.25rem;">
-                    <div id="pdfPreview" style="margin-top: 0.5rem; font-size: 0.85rem; color: var(--sage-dark);"></div>
+                    <label for="deadline">Prazo de Entrega</label>
+                    <input type="date" id="deadline" required>
                 </div>
 
                 <div class="form-group">
                     <label for="observations">📝 Observações Internas (Opcional)</label>
-                    <textarea 
-                        id="observations" 
-                        rows="3" 
-                        placeholder="Ex: Capa rosa com nome dourado, folhas coloridas..."
-                        style="width: 100%; padding: 0.95rem 1.25rem; border: 2px solid var(--kraft-light); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                    <textarea id="observations" rows="3" placeholder="Ex: Capa rosa com nome dourado, folhas coloridas, detalhes do produto..." style="width: 100%; padding: 0.95rem 1.25rem; border: 2px solid var(--kraft-light); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
                     <p style="font-size: 0.8rem; color: var(--sage-dark); margin-top: 0.5rem;">💡 Essas observações são apenas para uso interno e não serão enviadas ao cliente.</p>
                 </div>
 
@@ -1740,7 +1872,44 @@
         </div>
     </div>
 
-    <!-- NOVO: MODAL DE CLIENTE -->
+    <!-- NOVO: MODAL ADICIONAR PRODUTO A PEDIDO EXISTENTE -->
+    <div id="modalAddProduct" class="modal" onclick="if(event.target.id==='modalAddProduct') closeAddProductModal()">
+        <div class="modal-content" style="width: 500px;">
+            <h2>➕ Adicionar Produto ao Pedido</h2>
+            <input type="hidden" id="addProductOrderId">
+
+            <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                <div class="form-group" style="flex: 2; margin-bottom: 0;">
+                    <label for="addProductSelect">Produto</label>
+                    <select id="addProductSelect" onchange="updateAddProductPreview()">
+                        <option value="">Selecione um produto</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex: 0; margin-bottom: 0;">
+                    <label>Qtd.</label>
+                    <div class="qty-selector">
+                        <button type="button" class="qty-btn" onclick="changeAddQty(-1)">▼</button>
+                        <input type="number" class="qty-value" id="addProductQty" value="1" min="1" readonly>
+                        <button type="button" class="qty-btn" onclick="changeAddQty(1)">▲</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="addProductPreview" style="margin-top: 1rem; padding: 1rem; background: rgba(123,107,168,0.05); border-radius: 8px; display: none;">
+                <div style="display: flex; justify-content: space-between; font-size: 0.9rem;">
+                    <span id="addProductName"></span>
+                    <strong id="addProductSubtotal" style="color: var(--purple-dark);"></strong>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeAddProductModal()">Cancelar</button>
+                <button type="button" class="btn-save" onclick="confirmAddProduct()">Adicionar ao Pedido</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CLIENTE -->
     <div id="modalClient" class="modal" onclick="closeClientModalOnOverlay(event)">
         <div class="modal-content">
             <h2 id="modalClientTitle">Novo Cliente</h2>
@@ -1776,7 +1945,7 @@
         </div>
     </div>
 
-    <!-- NOVO: MODAL DE PRODUTO -->
+    <!-- MODAL: PRODUTO (ALTERADO: com preço de venda) -->
     <div id="modalProduct" class="modal" onclick="closeProductModalOnOverlay(event)">
         <div class="modal-content">
             <h2 id="modalProductTitle">Novo Produto</h2>
@@ -1786,6 +1955,12 @@
                 <div class="form-group">
                     <label for="productName">Nome do Produto</label>
                     <input type="text" id="productName" required autocomplete="off">
+                </div>
+
+                <!-- NOVO: Preço de venda do produto -->
+                <div class="form-group">
+                    <label for="productPrice">💰 Preço de Venda (R$)</label>
+                    <input type="number" step="0.01" id="productPrice" placeholder="0,00" required min="0">
                 </div>
 
                 <div style="display: flex; gap: 1rem">
@@ -1845,6 +2020,82 @@
         </div>
     </div>
 
+    <!-- NOVO: MODAL INSUMO -->
+    <div id="modalInsumo" class="modal" onclick="if(event.target.id==='modalInsumo') closeInsumoModal()">
+        <div class="modal-content">
+            <h2 id="modalInsumoTitle">Novo Insumo</h2>
+            <form id="insumoForm">
+                <input type="hidden" id="insumoId">
+                
+                <div class="form-group">
+                    <label for="insumoName">Nome do Insumo</label>
+                    <input type="text" id="insumoName" required placeholder="Ex: Resma Sulfite A4 75g">
+                </div>
+
+                <div class="form-group">
+                    <label for="insumoCategory">Categoria</label>
+                    <select id="insumoCategory" required>
+                        <option value="">Selecione</option>
+                        <option value="Folha/Papel">📄 Folha / Papel</option>
+                        <option value="Arame">🔩 Arame</option>
+                        <option value="Cola">🧴 Cola</option>
+                        <option value="Tinta">🎨 Tinta</option>
+                        <option value="Encadernação">🔗 Encadernação</option>
+                        <option value="Embalagem">📦 Embalagem</option>
+                        <option value="Ferramenta">🔧 Ferramenta</option>
+                        <option value="Outros">📌 Outros</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="insumoQty">Quantidade</label>
+                        <input type="number" id="insumoQty" min="1" value="1" required>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="insumoUnit">Unidade</label>
+                        <select id="insumoUnit">
+                            <option value="un">Unidade</option>
+                            <option value="resma">Resma</option>
+                            <option value="rolo">Rolo</option>
+                            <option value="kg">Kg</option>
+                            <option value="litro">Litro</option>
+                            <option value="metro">Metro</option>
+                            <option value="pacote">Pacote</option>
+                            <option value="caixa">Caixa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="insumoPrice">Preço Unitário (R$)</label>
+                        <input type="number" step="0.01" id="insumoPrice" placeholder="0,00" required min="0">
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="insumoDate">Data da Compra</label>
+                        <input type="date" id="insumoDate" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="insumoSupplier">Fornecedor (Opcional)</label>
+                    <input type="text" id="insumoSupplier" placeholder="Ex: Kalunga, Mercado Livre">
+                </div>
+
+                <div class="form-group">
+                    <label for="insumoObs">Observações (Opcional)</label>
+                    <textarea id="insumoObs" rows="2" placeholder="Notas sobre a compra..." style="width: 100%; padding: 0.95rem 1.25rem; border: 2px solid var(--kraft-light); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeInsumoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Insumo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL DE VISUALIZAÇÃO DO PEDIDO -->
     <div id="viewModal" class="modal" onclick="closeViewModalOnOverlay(event)">
         <div class="view-modal-content">
@@ -1857,13 +2108,18 @@
     </div>
 
     <script>
+        // =============================================
         // === CONFIGURAÇÕES ===
+        // =============================================
         const EMPRESA_NOME = "Alipel Papelaria Criativa";
-        const STORAGE_KEY = 'alipel_stationery_v3';
-        const CLIENTS_KEY = 'alipel_clients_v3';
-        const PRODUCTS_KEY = 'alipel_products_v3';
+        const STORAGE_KEY = 'alipel_stationery_v4';
+        const CLIENTS_KEY = 'alipel_clients_v4';
+        const PRODUCTS_KEY = 'alipel_products_v4';
+        const INSUMOS_KEY = 'alipel_insumos_v1';
 
-        // === GOOGLE DRIVE API ===
+        // =============================================
+        // === GOOGLE DRIVE API (mantido original) ===
+        // =============================================
         const API_KEY = 'AIzaSyBSELS-bX2Dt7nwxdudkhTzl4X8gWf9UU8';
         const CLIENT_ID = '440625825031-l7npcu772o47p0951pi336n5k19v0a47.apps.googleusercontent.com';
         const DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
@@ -1874,26 +2130,25 @@
         let tokenClient;
         let googleDriveReady = false;
 
+        // =============================================
         // === STATE ===
+        // =============================================
         let orders = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
         let clients = JSON.parse(localStorage.getItem(CLIENTS_KEY)) || [];
         let products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
+        let insumos = JSON.parse(localStorage.getItem(INSUMOS_KEY)) || [];
         let draggedCard = null;
 
+        // Itens temporários do pedido sendo criado/editado no modal
+        let currentOrderItems = [];
+
+        // =============================================
         // === UTILITY FUNCTIONS ===
-        function generateOrderId() {
-            const prefix = 'ORD';
+        // =============================================
+        function generateId(prefix) {
             const timestamp = Date.now();
             const random = Math.floor(Math.random() * 1000);
             return `${prefix}-${timestamp}-${random}`;
-        }
-
-        function generateClientId() {
-            return 'CLI-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
-        }
-
-        function generateProductId() {
-            return 'PRO-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
         }
 
         function formatCurrency(value) {
@@ -1918,7 +2173,9 @@
             return diffDays <= 3 && diffDays >= 0;
         }
 
-        // === GOOGLE DRIVE INTEGRATION ===
+        // =============================================
+        // === GOOGLE DRIVE INTEGRATION (ORIGINAL) ===
+        // =============================================
         function gapiLoaded() {
             gapi.load('client', initializeGapiClient);
         }
@@ -1984,13 +2241,11 @@
                     return null;
                 }
 
-                // Retorna o link da primeira pasta encontrada
                 return folders[0].webViewLink;
             } catch (err) {
                 console.error('Erro ao buscar pasta:', err);
                 showNotification('❌ Erro ao acessar Google Drive!', 'warning');
                 
-                // Se der erro de autenticação, pede login novamente
                 if (err.status === 401 || err.status === 403) {
                     handleAuthClick();
                 }
@@ -1999,30 +2254,49 @@
         }
 
         // Inicializar APIs quando a página carregar
+        // Usando try/catch para evitar erro se os scripts não carregaram ainda
         window.addEventListener('load', () => {
-            gapiLoaded();
-            gisLoaded();
+            try {
+                if (typeof gapi !== 'undefined') {
+                    gapiLoaded();
+                }
+            } catch(e) {
+                console.log('Google API não disponível:', e);
+            }
+            
+            try {
+                if (typeof google !== 'undefined' && google.accounts) {
+                    gisLoaded();
+                }
+            } catch(e) {
+                console.log('Google Identity Services não disponível:', e);
+            }
         });
 
+        // =============================================
         // === STORAGE ===
+        // =============================================
         function save() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
             localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
             localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+            localStorage.setItem(INSUMOS_KEY, JSON.stringify(insumos));
             render();
             updateStats();
         }
 
-        // === MODAL FUNCTIONS - PEDIDO ===
+        // =============================================
+        // === MODAL PEDIDO (ALTERADO: multi-produto) ===
+        // =============================================
         function openModal(orderId = null) {
             const modal = document.getElementById('modal');
             const form = document.getElementById('orderForm');
             const title = document.getElementById('modalTitle');
 
             form.reset();
-            document.getElementById('pdfPreview').innerHTML = '';
+            currentOrderItems = [];
             loadClientOptions();
-            loadProductOptions();
+            loadProductOptions('orderProductSelect');
 
             if (orderId) {
                 const order = orders.find(o => o.id === orderId);
@@ -2032,20 +2306,11 @@
                     document.getElementById('client').value = order.client;
                     document.getElementById('clientEmail').value = order.clientEmail || '';
                     document.getElementById('clientWhatsApp').value = order.clientWhatsApp || '';
-                    document.getElementById('product').value = order.product;
-                    document.getElementById('productPages').value = order.productPages || '';
-                    document.getElementById('productSize').value = order.productSize || '';
-                    document.getElementById('productCover').value = order.productCover || '';
-                    document.getElementById('productBinding').value = order.productBinding || '';
-                    document.getElementById('productPaper').value = order.productPaper || '';
-                    document.getElementById('productWire').value = order.productWire || '';
-                    document.getElementById('value').value = order.value;
                     document.getElementById('deadline').value = order.deadline;
                     document.getElementById('observations').value = order.observations || '';
                     
-                    if (order.pdfAttachment) {
-                        document.getElementById('pdfPreview').innerHTML = `✅ Anexo: ${order.pdfAttachment.name}`;
-                    }
+                    // Carregar itens existentes do pedido
+                    currentOrderItems = JSON.parse(JSON.stringify(order.items || []));
                 }
             } else {
                 title.textContent = 'Novo Pedido';
@@ -2057,6 +2322,8 @@
                 document.getElementById('deadline').value = defaultDeadline.toISOString().split('T')[0];
             }
 
+            document.getElementById('orderQty').value = 1;
+            renderOrderItems();
             modal.style.display = 'flex';
         }
 
@@ -2081,13 +2348,13 @@
             });
         }
 
-        function loadProductOptions() {
-            const select = document.getElementById('productSelect');
+        function loadProductOptions(selectId) {
+            const select = document.getElementById(selectId);
             select.innerHTML = '<option value="">Selecione um produto</option>';
             products.forEach(product => {
                 const option = document.createElement('option');
                 option.value = product.id;
-                option.textContent = product.name;
+                option.textContent = `${product.name} — ${formatCurrency(product.price || 0)}`;
                 select.appendChild(option);
             });
         }
@@ -2109,32 +2376,226 @@
             }
         }
 
-        function fillProductData() {
-            const productId = document.getElementById('productSelect').value;
-            if (!productId) {
-                document.getElementById('product').value = '';
-                document.getElementById('productPages').value = '';
-                document.getElementById('productSize').value = '';
-                document.getElementById('productCover').value = '';
-                document.getElementById('productBinding').value = '';
-                document.getElementById('productPaper').value = '';
-                document.getElementById('productWire').value = '';
-                return;
-            }
-            
-            const product = products.find(p => p.id === productId);
-            if (product) {
-                document.getElementById('product').value = product.name;
-                document.getElementById('productPages').value = product.pages || '';
-                document.getElementById('productSize').value = product.size || '';
-                document.getElementById('productCover').value = product.cover || '';
-                document.getElementById('productBinding').value = product.binding || '';
-                document.getElementById('productPaper').value = product.paper || '';
-                document.getElementById('productWire').value = product.wire || '';
-            }
+        // === QUANTITY SELECTOR ===
+        function changeQty(delta) {
+            const input = document.getElementById('orderQty');
+            let value = parseInt(input.value) + delta;
+            if (value < 1) value = 1;
+            input.value = value;
         }
 
-        // === MODAL FUNCTIONS - CLIENTE ===
+        // === ADICIONAR PRODUTO AO PEDIDO (no modal de criação) ===
+        function addProductToOrder() {
+            const select = document.getElementById('orderProductSelect');
+            const productId = select.value;
+            if (!productId) {
+                showNotification('Selecione um produto!', 'warning');
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const qty = parseInt(document.getElementById('orderQty').value) || 1;
+
+            // Verificar se já existe o produto no pedido
+            const existing = currentOrderItems.find(i => i.productId === productId);
+            if (existing) {
+                existing.qty += qty;
+                existing.subtotal = existing.qty * existing.unitPrice;
+            } else {
+                currentOrderItems.push({
+                    productId: productId,
+                    name: product.name,
+                    unitPrice: product.price || 0,
+                    qty: qty,
+                    subtotal: qty * (product.price || 0)
+                });
+            }
+
+            // Reset
+            document.getElementById('orderQty').value = 1;
+            select.value = '';
+            renderOrderItems();
+            showNotification(`${product.name} adicionado!`, 'success');
+        }
+
+        function removeOrderItem(index) {
+            currentOrderItems.splice(index, 1);
+            renderOrderItems();
+        }
+
+        function renderOrderItems() {
+            const table = document.getElementById('orderItemsTable');
+            const empty = document.getElementById('orderItemsEmpty');
+            const body = document.getElementById('orderItemsBody');
+            const totalDisplay = document.getElementById('orderTotalDisplay');
+
+            if (currentOrderItems.length === 0) {
+                table.style.display = 'none';
+                empty.style.display = 'block';
+                return;
+            }
+
+            table.style.display = 'table';
+            empty.style.display = 'none';
+
+            let total = 0;
+            body.innerHTML = currentOrderItems.map((item, index) => {
+                total += item.subtotal;
+                return `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.qty}</td>
+                    <td>${formatCurrency(item.unitPrice)}</td>
+                    <td><strong>${formatCurrency(item.subtotal)}</strong></td>
+                    <td><button type="button" class="remove-item-btn" onclick="removeOrderItem(${index})">✕</button></td>
+                </tr>`;
+            }).join('');
+
+            totalDisplay.textContent = formatCurrency(total);
+        }
+
+        // === SUBMIT PEDIDO ===
+        document.getElementById('orderForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            if (currentOrderItems.length === 0) {
+                showNotification('Adicione pelo menos um produto ao pedido!', 'warning');
+                return;
+            }
+
+            const orderId = document.getElementById('orderId').value;
+            const totalValue = currentOrderItems.reduce((sum, item) => sum + item.subtotal, 0);
+
+            const orderData = {
+                client: document.getElementById('client').value.trim(),
+                clientEmail: document.getElementById('clientEmail').value.trim(),
+                clientWhatsApp: document.getElementById('clientWhatsApp').value.trim(),
+                items: currentOrderItems,
+                value: totalValue,
+                deadline: document.getElementById('deadline').value,
+                observations: document.getElementById('observations').value.trim()
+            };
+
+            if (orderId) {
+                // Update existing order
+                orders = orders.map(o => 
+                    o.id === orderId 
+                        ? { ...o, ...orderData } 
+                        : o
+                );
+            } else {
+                // Create new order - vai direto para "Em Produção"
+                orders.push({
+                    id: generateId('ORD'),
+                    status: 'producao',
+                    createdAt: new Date().toISOString(),
+                    ...orderData
+                });
+            }
+
+            save();
+            closeModal();
+            showNotification('Pedido salvo com sucesso!', 'success');
+        });
+
+        // =============================================
+        // === ADICIONAR PRODUTO A PEDIDO EXISTENTE ===
+        // =============================================
+        function openAddProductModal(orderId) {
+            const order = orders.find(o => o.id === orderId);
+            if (!order) return;
+
+            // Não permite adicionar a pedidos finalizados
+            if (order.status === 'pronto') {
+                showNotification('Pedidos finalizados não podem ser alterados!', 'warning');
+                return;
+            }
+
+            document.getElementById('addProductOrderId').value = orderId;
+            loadProductOptions('addProductSelect');
+            document.getElementById('addProductQty').value = 1;
+            document.getElementById('addProductPreview').style.display = 'none';
+            document.getElementById('modalAddProduct').style.display = 'flex';
+        }
+
+        function closeAddProductModal() {
+            document.getElementById('modalAddProduct').style.display = 'none';
+        }
+
+        function changeAddQty(delta) {
+            const input = document.getElementById('addProductQty');
+            let value = parseInt(input.value) + delta;
+            if (value < 1) value = 1;
+            input.value = value;
+            updateAddProductPreview();
+        }
+
+        function updateAddProductPreview() {
+            const productId = document.getElementById('addProductSelect').value;
+            const preview = document.getElementById('addProductPreview');
+            
+            if (!productId) {
+                preview.style.display = 'none';
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const qty = parseInt(document.getElementById('addProductQty').value) || 1;
+            const subtotal = qty * (product.price || 0);
+
+            document.getElementById('addProductName').textContent = `${product.name} × ${qty}`;
+            document.getElementById('addProductSubtotal').textContent = formatCurrency(subtotal);
+            preview.style.display = 'block';
+        }
+
+        function confirmAddProduct() {
+            const orderId = document.getElementById('addProductOrderId').value;
+            const productId = document.getElementById('addProductSelect').value;
+            
+            if (!productId) {
+                showNotification('Selecione um produto!', 'warning');
+                return;
+            }
+
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const qty = parseInt(document.getElementById('addProductQty').value) || 1;
+
+            orders = orders.map(o => {
+                if (o.id !== orderId) return o;
+
+                const items = o.items || [];
+                const existing = items.find(i => i.productId === productId);
+
+                if (existing) {
+                    existing.qty += qty;
+                    existing.subtotal = existing.qty * existing.unitPrice;
+                } else {
+                    items.push({
+                        productId: productId,
+                        name: product.name,
+                        unitPrice: product.price || 0,
+                        qty: qty,
+                        subtotal: qty * (product.price || 0)
+                    });
+                }
+
+                const newTotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+                return { ...o, items: items, value: newTotal };
+            });
+
+            save();
+            closeAddProductModal();
+            showNotification(`${product.name} adicionado ao pedido!`, 'success');
+        }
+
+        // =============================================
+        // === MODAL CLIENTE ===
+        // =============================================
         function openClientModal(clientId = null) {
             const modal = document.getElementById('modalClient');
             const form = document.getElementById('clientForm');
@@ -2171,7 +2632,47 @@
             }
         }
 
-        // === MODAL FUNCTIONS - PRODUTO ===
+        // === FORM HANDLING - CLIENTE ===
+        document.getElementById('clientForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const clientId = document.getElementById('clientId').value;
+            const clientData = {
+                name: document.getElementById('clientName').value.trim(),
+                address: document.getElementById('clientAddress').value.trim(),
+                email: document.getElementById('clientEmailCad').value.trim(),
+                phone: document.getElementById('clientPhoneCad').value.trim()
+            };
+
+            if (clientId) {
+                clients = clients.map(c => 
+                    c.id === clientId ? { ...c, ...clientData } : c
+                );
+            } else {
+                clients.push({
+                    id: generateId('CLI'),
+                    ...clientData
+                });
+            }
+
+            save();
+            closeClientModal();
+            renderCadastroClientes();
+            showNotification('Cliente salvo com sucesso!', 'success');
+        });
+
+        function deleteClient(clientId) {
+            if (confirm('Deseja realmente excluir este cliente?')) {
+                clients = clients.filter(c => c.id !== clientId);
+                save();
+                renderCadastroClientes();
+                showNotification('Cliente excluído!', 'warning');
+            }
+        }
+
+        // =============================================
+        // === MODAL PRODUTO (ALTERADO: com preço) ===
+        // =============================================
         function openProductModal(productId = null) {
             const modal = document.getElementById('modalProduct');
             const form = document.getElementById('productForm');
@@ -2185,6 +2686,7 @@
                     title.textContent = 'Editar Produto';
                     document.getElementById('productId').value = product.id;
                     document.getElementById('productName').value = product.name;
+                    document.getElementById('productPrice').value = product.price || '';
                     document.getElementById('productPagesCad').value = product.pages || '';
                     document.getElementById('productSizeCad').value = product.size || '';
                     document.getElementById('productCoverCad').value = product.cover || '';
@@ -2211,120 +2713,6 @@
             }
         }
 
-        // === FORM HANDLING - PEDIDO ===
-        document.getElementById('orderForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const orderId = document.getElementById('orderId').value;
-            const orderData = {
-                product: document.getElementById('product').value.trim(),
-                client: document.getElementById('client').value.trim(),
-                clientEmail: document.getElementById('clientEmail').value.trim(),
-                clientWhatsApp: document.getElementById('clientWhatsApp').value.trim(),
-                productPages: document.getElementById('productPages').value,
-                productSize: document.getElementById('productSize').value,
-                productCover: document.getElementById('productCover').value,
-                productBinding: document.getElementById('productBinding').value,
-                productPaper: document.getElementById('productPaper').value,
-                productWire: document.getElementById('productWire').value,
-                value: parseFloat(document.getElementById('value').value),
-                deadline: document.getElementById('deadline').value,
-                observations: document.getElementById('observations').value.trim()
-            };
-
-            // SALVAR PDF ANEXADO
-            const pdfInput = document.getElementById('pdfAttachment');
-            if (pdfInput.files && pdfInput.files[0]) {
-                const file = pdfInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    orderData.pdfAttachment = {
-                        name: file.name,
-                        data: e.target.result,
-                        type: file.type
-                    };
-                    saveOrder();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                saveOrder();
-            }
-
-            function saveOrder() {
-                if (orderId) {
-                    // Update existing order
-                    orders = orders.map(o => 
-                        o.id === orderId 
-                            ? { ...o, ...orderData } 
-                            : o
-                    );
-                } else {
-                    // Create new order
-                    orders.push({
-                        id: generateOrderId(),
-                        status: 'novos',
-                        createdAt: new Date().toISOString(),
-                        ...orderData
-                    });
-                }
-
-                save();
-                closeModal();
-                
-                // ENVIA NOTIFICAÇÕES AUTOMATICAMENTE AO SALVAR
-                const savedOrderId = orderId || orders[orders.length - 1].id;
-                if (orderData.clientEmail || orderData.clientWhatsApp) {
-                    setTimeout(() => {
-                        notifyClient(savedOrderId);
-                    }, 300);
-                }
-            }
-        });
-
-        // Preview do PDF ao selecionar
-        document.getElementById('pdfAttachment').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            const preview = document.getElementById('pdfPreview');
-            if (file) {
-                preview.innerHTML = `✅ Selecionado: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
-            } else {
-                preview.innerHTML = '';
-            }
-        });
-
-        // === FORM HANDLING - CLIENTE ===
-        document.getElementById('clientForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const clientId = document.getElementById('clientId').value;
-            const clientData = {
-                name: document.getElementById('clientName').value.trim(),
-                address: document.getElementById('clientAddress').value.trim(),
-                email: document.getElementById('clientEmailCad').value.trim(),
-                phone: document.getElementById('clientPhoneCad').value.trim()
-            };
-
-            if (clientId) {
-                // Update existing client
-                clients = clients.map(c => 
-                    c.id === clientId 
-                        ? { ...c, ...clientData } 
-                        : c
-                );
-            } else {
-                // Create new client
-                clients.push({
-                    id: generateClientId(),
-                    ...clientData
-                });
-            }
-
-            save();
-            closeClientModal();
-            renderCadastroClientes();
-            showNotification('Cliente salvo com sucesso!', 'success');
-        });
-
         // === FORM HANDLING - PRODUTO ===
         document.getElementById('productForm').addEventListener('submit', (e) => {
             e.preventDefault();
@@ -2332,6 +2720,7 @@
             const productId = document.getElementById('productId').value;
             const productData = {
                 name: document.getElementById('productName').value.trim(),
+                price: parseFloat(document.getElementById('productPrice').value) || 0,
                 pages: document.getElementById('productPagesCad').value,
                 size: document.getElementById('productSizeCad').value,
                 cover: document.getElementById('productCoverCad').value,
@@ -2341,16 +2730,12 @@
             };
 
             if (productId) {
-                // Update existing product
                 products = products.map(p => 
-                    p.id === productId 
-                        ? { ...p, ...productData } 
-                        : p
+                    p.id === productId ? { ...p, ...productData } : p
                 );
             } else {
-                // Create new product
                 products.push({
-                    id: generateProductId(),
+                    id: generateId('PRO'),
                     ...productData
                 });
             }
@@ -2361,16 +2746,6 @@
             showNotification('Produto salvo com sucesso!', 'success');
         });
 
-        // === DELETE FUNCTIONS ===
-        function deleteClient(clientId) {
-            if (confirm('Deseja realmente excluir este cliente?')) {
-                clients = clients.filter(c => c.id !== clientId);
-                save();
-                renderCadastroClientes();
-                showNotification('Cliente excluído!', 'warning');
-            }
-        }
-
         function deleteProduct(productId) {
             if (confirm('Deseja realmente excluir este produto?')) {
                 products = products.filter(p => p.id !== productId);
@@ -2380,7 +2755,94 @@
             }
         }
 
+        // =============================================
+        // === NOVO: MODAL INSUMO ===
+        // =============================================
+        function openInsumoModal(insumoId = null) {
+            const modal = document.getElementById('modalInsumo');
+            const form = document.getElementById('insumoForm');
+            const title = document.getElementById('modalInsumoTitle');
+
+            form.reset();
+
+            if (insumoId) {
+                const insumo = insumos.find(i => i.id === insumoId);
+                if (insumo) {
+                    title.textContent = 'Editar Insumo';
+                    document.getElementById('insumoId').value = insumo.id;
+                    document.getElementById('insumoName').value = insumo.name;
+                    document.getElementById('insumoCategory').value = insumo.category || '';
+                    document.getElementById('insumoQty').value = insumo.qty || 1;
+                    document.getElementById('insumoUnit').value = insumo.unit || 'un';
+                    document.getElementById('insumoPrice').value = insumo.price || '';
+                    document.getElementById('insumoDate').value = insumo.date || '';
+                    document.getElementById('insumoSupplier').value = insumo.supplier || '';
+                    document.getElementById('insumoObs').value = insumo.obs || '';
+                }
+            } else {
+                title.textContent = 'Novo Insumo';
+                document.getElementById('insumoId').value = '';
+                // Data padrão = hoje
+                document.getElementById('insumoDate').value = new Date().toISOString().split('T')[0];
+            }
+
+            modal.style.display = 'flex';
+            document.getElementById('insumoName').focus();
+        }
+
+        function closeInsumoModal() {
+            document.getElementById('modalInsumo').style.display = 'none';
+        }
+
+        // === FORM HANDLING - INSUMO ===
+        document.getElementById('insumoForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const insumoId = document.getElementById('insumoId').value;
+            const insumoData = {
+                name: document.getElementById('insumoName').value.trim(),
+                category: document.getElementById('insumoCategory').value,
+                qty: parseInt(document.getElementById('insumoQty').value) || 1,
+                unit: document.getElementById('insumoUnit').value,
+                price: parseFloat(document.getElementById('insumoPrice').value) || 0,
+                date: document.getElementById('insumoDate').value,
+                supplier: document.getElementById('insumoSupplier').value.trim(),
+                obs: document.getElementById('insumoObs').value.trim()
+            };
+
+            // Calcular total
+            insumoData.total = insumoData.qty * insumoData.price;
+
+            if (insumoId) {
+                insumos = insumos.map(i => 
+                    i.id === insumoId ? { ...i, ...insumoData } : i
+                );
+            } else {
+                insumos.push({
+                    id: generateId('INS'),
+                    createdAt: new Date().toISOString(),
+                    ...insumoData
+                });
+            }
+
+            save();
+            closeInsumoModal();
+            renderInsumos();
+            showNotification('Insumo salvo com sucesso!', 'success');
+        });
+
+        function deleteInsumo(insumoId) {
+            if (confirm('Deseja realmente excluir este insumo?')) {
+                insumos = insumos.filter(i => i.id !== insumoId);
+                save();
+                renderInsumos();
+                showNotification('Insumo excluído!', 'warning');
+            }
+        }
+
+        // =============================================
         // === ORDER OPERATIONS ===
+        // =============================================
         function deleteOrder(orderId) {
             if (confirm('Deseja realmente excluir este pedido?\n\nEsta ação não pode ser desfeita.')) {
                 orders = orders.filter(o => o.id !== orderId);
@@ -2393,38 +2855,37 @@
             if (!order) return;
 
             const statusMessages = {
-                'novos': 'Recebido e aguardando início da produção',
                 'producao': 'Em processo de produção',
-                'acabamento': 'Em fase de acabamento e montagem',
                 'pronto': 'Pronto para retirada ou envio'
             };
 
             const statusName = statusMessages[order.status] || order.status;
-            const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.product}`);
+            const subject = encodeURIComponent(`✨ Atualização do Pedido: ${order.client}`);
+
+            // Montar lista de produtos
+            const itemsList = (order.items || []).map(i => 
+                `• ${i.name} (×${i.qty}) — ${formatCurrency(i.subtotal)}`
+            ).join('\n');
             
-            // Buscar link do Google Drive APENAS para pedidos novos (primeira notificação)
-            const isFirstNotification = order.status === 'novos' && !order.notificationSent;
-            let driveLink = null;
+            // Buscar link do Google Drive APENAS para primeira notificação
+            const isFirstNotification = !order.notificationSent;
+            let driveLink = order.driveLink || null;
             
             if (isFirstNotification && order.client) {
                 showNotification('🔍 Buscando pasta do cliente no Drive...', 'info');
                 driveLink = await findClientFolder(order.client);
                 
-                // Salvar o link no pedido para não precisar buscar novamente
                 if (driveLink) {
                     orders = orders.map(o => 
                         o.id === orderId ? { ...o, driveLink: driveLink } : o
                     );
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
                 }
-            } else if (order.driveLink) {
-                // Se já tem o link salvo, usa ele
-                driveLink = order.driveLink;
             }
             
-            let orçamentoSection = '';
+            let orcamentoSection = '';
             if (isFirstNotification && driveLink) {
-                orçamentoSection = `
+                orcamentoSection = `
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📎 ORÇAMENTO E MATERIAIS
@@ -2434,9 +2895,6 @@ O orçamento detalhado e materiais de referência estão
 disponíveis para download em nossa pasta compartilhada:
 
 🔗 ${driveLink}
-
-Acesse o link acima para visualizar todos os arquivos 
-relacionados ao seu pedido.
 `;
             }
             
@@ -2450,17 +2908,16 @@ Temos boas notícias sobre o seu pedido!
 📦 INFORMAÇÕES DO PEDIDO
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Produto: ${order.product}
+Produtos:
+${itemsList}
+
+Total: ${formatCurrency(order.value)}
 Status Atual: ${statusName}
-Previsão de Entrega: ${formatDate(order.deadline)}
-Valor: ${formatCurrency(order.value)}${orçamentoSection}
+Previsão de Entrega: ${formatDate(order.deadline)}${orcamentoSection}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Estamos trabalhando com todo carinho e atenção 
-aos detalhes para que seu pedido fique perfeito! ✨
-
-Em caso de dúvidas, estamos à disposição:
+Estamos trabalhando com todo carinho! ✨
 
 📱 WhatsApp: (41) 99693-1010
 📧 E-mail: contato@alipelpapelaria.com.br
@@ -2469,26 +2926,20 @@ Em caso de dúvidas, estamos à disposição:
 
 Com carinho,
 Equipe Alipel Papelaria Criativa
-
-✨ Transformando papel em arte desde 2025
 `
             );
 
-            // WhatsApp - adicionar link APENAS na primeira notificação
+            // WhatsApp
             let whatsappOrcamento = '';
             if (isFirstNotification && driveLink) {
                 whatsappOrcamento = `
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📎 *ORÇAMENTO E MATERIAIS*
-
-O orçamento detalhado está disponível para download:
-
-🔗 ${driveLink}
-
-Acesse o link acima para visualizar todos os arquivos do seu pedido.`;
+📎 *MATERIAIS:* ${driveLink}`;
             }
+
+            const whatsappItemsList = (order.items || []).map(i => 
+                `• ${i.name} (×${i.qty}) — ${formatCurrency(i.subtotal)}`
+            ).join('\n');
 
             const whatsappMessage = encodeURIComponent(
 `✨ *ALIPEL PAPELARIA CRIATIVA* ✨
@@ -2497,21 +2948,21 @@ Olá *${order.client}*! 👋
 
 Seu pedido está atualizado:
 
-📦 *Produto:* ${order.product}
+📦 *Produtos:*
+${whatsappItemsList}
+
+💰 *Total:* ${formatCurrency(order.value)}
 📍 *Status:* ${statusName}
-📅 *Entrega prevista:* ${formatDate(order.deadline)}
-💰 *Valor:* ${formatCurrency(order.value)}${whatsappOrcamento}
+📅 *Entrega prevista:* ${formatDate(order.deadline)}${whatsappOrcamento}
 
 Estamos preparando tudo com muito carinho! 💜
-
-Qualquer dúvida, é só chamar! 😊
 
 _Alipel Papelaria Criativa_
 📍 Rua Xambre, 47 - Curitiba
 📷 @alipel_papelaria`
             );
 
-            // Marcar que a notificação foi enviada
+            // Marcar notificação enviada
             if (isFirstNotification) {
                 orders = orders.map(o => 
                     o.id === orderId ? { ...o, notificationSent: true } : o
@@ -2522,7 +2973,6 @@ _Alipel Papelaria Criativa_
             // ABRE OS DOIS JUNTOS
             let opened = false;
 
-            // ABRE WHATSAPP
             if (order.clientWhatsApp) {
                 const phone = order.clientWhatsApp.replace(/\D/g, '');
                 const fullPhone = phone.startsWith('55') ? phone : '55' + phone;
@@ -2531,7 +2981,6 @@ _Alipel Papelaria Criativa_
                 showNotification('💬 WhatsApp aberto!', 'success');
             }
             
-            // ABRE E-MAIL
             if (order.clientEmail) {
                 const mailtoLink = `mailto:${order.clientEmail}?subject=${subject}&body=${emailBody}`;
                 window.open(mailtoLink, '_blank');
@@ -2539,14 +2988,14 @@ _Alipel Papelaria Criativa_
                 showNotification('📧 E-mail aberto!', 'info');
             }
 
-            // Se não tem nenhum contato
             if (!opened) {
-                window.open(`mailto:?subject=${subject}&body=${emailBody}`, '_blank');
                 showNotification('⚠️ Adicione e-mail ou WhatsApp do cliente!', 'warning');
             }
         }
 
+        // =============================================
         // === DRAG AND DROP ===
+        // =============================================
         function allowDrop(event) {
             event.preventDefault();
             const column = event.target.closest('.column');
@@ -2573,7 +3022,6 @@ _Alipel Papelaria Criativa_
             event.target.classList.remove('dragging');
             draggedCard = null;
             
-            // Remove all drag-over classes
             document.querySelectorAll('.column').forEach(col => {
                 col.classList.remove('drag-over');
             });
@@ -2590,7 +3038,6 @@ _Alipel Papelaria Criativa_
             const orderId = draggedCard.id;
             const newStatus = column.dataset.status;
 
-            // Update order status
             orders = orders.map(o => 
                 o.id === orderId 
                     ? { ...o, status: newStatus } 
@@ -2600,7 +3047,9 @@ _Alipel Papelaria Criativa_
             save();
         }
 
-        // === RENDER ===
+        // =============================================
+        // === RENDER FUNCTIONS ===
+        // =============================================
         function render() {
             // Clear all lists
             document.querySelectorAll('.task-list').forEach(list => {
@@ -2637,29 +3086,23 @@ _Alipel Papelaria Criativa_
             card.ondragend = dragEnd;
             card.ondblclick = () => openModal(order.id);
 
-            // Determine tag class
-            const tagClasses = {
-                'novos': 'tag-order',
-                'producao': 'tag-prod',
-                'acabamento': 'tag-finish',
-                'pronto': 'tag-ready'
-            };
-            const tagClass = tagClasses[order.status] || 'tag-order';
+            const tagClass = order.status === 'pronto' ? 'tag-ready' : 'tag-prod';
+            const tagText = order.status === 'pronto' ? 'Pronto' : 'Produção';
 
-            // Determine tag text
-            const tagTexts = {
-                'novos': 'Novo',
-                'producao': 'Produção',
-                'acabamento': 'Acabamento',
-                'pronto': 'Pronto'
-            };
-            const tagText = tagTexts[order.status] || order.status;
-
-            // Check if urgent
             const urgent = isUrgent(order.deadline);
             const urgentIndicator = urgent ? ' 🔥' : '';
 
-            // Preparar observações (limitar a 2 linhas)
+            // Build products list
+            const items = order.items || [];
+            let productsHTML = '';
+            if (items.length > 0) {
+                const lines = items.map(i => 
+                    `<div class="product-line"><span>${i.name} × ${i.qty}</span><span>${formatCurrency(i.subtotal)}</span></div>`
+                ).join('');
+                productsHTML = `<div class="card-products-list">${lines}</div>`;
+            }
+
+            // Observações
             let observationsHTML = '';
             if (order.observations && order.observations.trim()) {
                 const maxLength = 60;
@@ -2669,19 +3112,25 @@ _Alipel Papelaria Criativa_
                 observationsHTML = `<div class="card-observations">📝 ${obs}</div>`;
             }
 
+            // Botão de adicionar produto (só aparece se NÃO estiver pronto)
+            const addBtnHTML = order.status !== 'pronto' 
+                ? `<button class="btn-add-product-card" onclick="event.stopPropagation(); openAddProductModal('${order.id}')" title="Adicionar produto ao pedido">➕</button>` 
+                : '';
+
             card.innerHTML = `
+                ${addBtnHTML}
                 <button class="btn-view-card" onclick="event.stopPropagation(); openViewModal('${order.id}')" title="Visualizar pedido">👁️</button>
                 <button class="btn-delete-card" onclick="event.stopPropagation(); deleteOrder('${order.id}')" title="Excluir pedido">×</button>
                 <span class="card-tag ${tagClass}">${tagText}</span>
-                <div class="card-title">${order.product}</div>
-                <div class="card-client">👤 ${order.client}</div>
+                <div class="card-title">Pedido — ${order.client}</div>
+                ${productsHTML}
                 ${observationsHTML}
                 <div class="card-meta">
                     <span class="card-value">${formatCurrency(order.value)}</span>
                     <span class="card-date">📅 ${formatDate(order.deadline)}${urgentIndicator}</span>
                 </div>
                 <div class="card-actions">
-                    <button class="btn-notify" onclick="event.stopPropagation(); notifyClient('${order.id}')" title="Enviar e-mail para o cliente">
+                    <button class="btn-notify" onclick="event.stopPropagation(); notifyClient('${order.id}')" title="Notificar cliente">
                         ✉️ Notificar Cliente
                     </button>
                 </div>
@@ -2702,7 +3151,6 @@ _Alipel Papelaria Criativa_
         }
 
         function updateStats() {
-            // Update sidebar stats
             const total = orders.length;
             const urgent = orders.filter(o => 
                 isUrgent(o.deadline) && o.status !== 'pronto'
@@ -2712,13 +3160,13 @@ _Alipel Papelaria Criativa_
             document.getElementById('sidebar-urgent').textContent = urgent;
         }
 
-        // === RENDER CADASTROS ===
+        // === RENDER CADASTRO CLIENTES ===
         function renderCadastroClientes() {
             const grid = document.getElementById('cadastroClientesGrid');
             
             if (clients.length === 0) {
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--kraft-dark);">
                         <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">👥 Nenhum cliente cadastrado ainda</p>
                         <p style="font-size: 0.9rem;">Clique em "Novo Cliente" para começar.</p>
                     </div>
@@ -2742,12 +3190,13 @@ _Alipel Papelaria Criativa_
             `).join('');
         }
 
+        // === RENDER CADASTRO PRODUTOS (ALTERADO: com preço) ===
         function renderCadastroProdutos() {
             const grid = document.getElementById('cadastroProdutosGrid');
             
             if (products.length === 0) {
                 grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--kraft-dark);">
                         <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📦 Nenhum produto cadastrado ainda</p>
                         <p style="font-size: 0.9rem;">Clique em "Novo Produto" para começar.</p>
                     </div>
@@ -2758,6 +3207,7 @@ _Alipel Papelaria Criativa_
             grid.innerHTML = products.map(product => `
                 <div class="client-card">
                     <div class="client-name">${product.name}</div>
+                    <div class="insumo-price">${formatCurrency(product.price || 0)}</div>
                     <div style="font-size: 0.85rem; color: var(--sage-dark); margin-top: 0.5rem;">
                         ${product.pages ? `📄 ${product.pages} folhas<br>` : ''}
                         ${product.size ? `📏 ${product.size}<br>` : ''}
@@ -2774,82 +3224,60 @@ _Alipel Papelaria Criativa_
             `).join('');
         }
 
-        // === KEYBOARD SHORTCUTS ===
-        document.addEventListener('keydown', (e) => {
-            // ESC to close modal
-            if (e.key === 'Escape') {
-                closeModal();
-                closeClientModal();
-                closeProductModal();
-                closeViewModal();
+        // === NOVO: RENDER INSUMOS ===
+        function renderInsumos() {
+            const grid = document.getElementById('insumosGrid');
+
+            // Calcular estatísticas
+            const totalInsumos = insumos.length;
+            const totalInvestido = insumos.reduce((sum, i) => sum + (i.total || 0), 0);
+            const now = new Date();
+            const monthTotal = insumos.filter(i => {
+                const d = new Date(i.date);
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }).reduce((sum, i) => sum + (i.total || 0), 0);
+
+            document.getElementById('insumos-count').textContent = totalInsumos;
+            document.getElementById('insumos-total').textContent = formatCurrency(totalInvestido);
+            document.getElementById('insumos-month').textContent = formatCurrency(monthTotal);
+
+            if (insumos.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--kraft-dark);">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">🧵 Nenhum insumo cadastrado ainda</p>
+                        <p style="font-size: 0.9rem;">Clique em "Novo Insumo" para registrar suas compras de materiais.</p>
+                    </div>
+                `;
+                return;
             }
 
-            // Ctrl/Cmd + N to create new order
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                openModal();
-            }
-        });
+            // Ordenar por data mais recente
+            const sorted = [...insumos].sort((a, b) => new Date(b.date) - new Date(a.date));
 
-        // === VIEW NAVIGATION ===
-        let currentView = 'producao';
-
-        function showView(viewName) {
-            // Hide all views
-            document.querySelectorAll('.kanban-container, .content-view').forEach(view => {
-                view.style.display = 'none';
-            });
-
-            // Update nav items
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-            });
-
-            // Show selected view
-            if (viewName === 'producao') {
-                document.getElementById('view-producao').style.display = 'flex';
-                document.getElementById('header-title').textContent = 'Quadro de Produção';
-                document.getElementById('header-subtitle').textContent = 'Gerencie seus pedidos com elegância e eficiência';
-            } else {
-                document.getElementById(`view-${viewName}`).style.display = 'block';
-                
-                // Update header based on view
-                if (viewName === 'cadastro-clientes') {
-                    document.getElementById('header-title').textContent = 'Cadastro de Clientes';
-                    document.getElementById('header-subtitle').textContent = 'Gerencie todos os seus clientes';
-                    renderCadastroClientes();
-                } else if (viewName === 'cadastro-produtos') {
-                    document.getElementById('header-title').textContent = 'Cadastro de Produtos';
-                    document.getElementById('header-subtitle').textContent = 'Gerencie todos os seus produtos';
-                    renderCadastroProdutos();
-                } else if (viewName === 'relatorios') {
-                    document.getElementById('header-title').textContent = 'Relatórios';
-                    document.getElementById('header-subtitle').textContent = 'Análises e exportações';
-                    renderReports();
-                } else if (viewName === 'dashboard') {
-                    document.getElementById('header-title').textContent = 'Dashboard';
-                    document.getElementById('header-subtitle').textContent = 'Visão geral e análise do negócio';
-                    renderDashboard();
-                } else if (viewName === 'clientes') {
-                    document.getElementById('header-title').textContent = 'Clientes';
-                    document.getElementById('header-subtitle').textContent = 'Histórico de pedidos por cliente';
-                    renderClients();
-                } else if (viewName === 'configuracoes') {
-                    document.getElementById('header-title').textContent = 'Configurações';
-                    document.getElementById('header-subtitle').textContent = 'Personalize sua experiência';
-                }
-            }
-
-            // Activate current nav item
-            event.target.closest('.nav-item').classList.add('active');
-            currentView = viewName;
+            grid.innerHTML = sorted.map(insumo => `
+                <div class="insumo-card">
+                    <span class="insumo-category">${insumo.category || 'Outros'}</span>
+                    <div class="insumo-name">${insumo.name}</div>
+                    <div class="insumo-details">
+                        <span class="insumo-detail">📦 ${insumo.qty} ${insumo.unit}</span>
+                        <span class="insumo-detail">💲 ${formatCurrency(insumo.price)}/${insumo.unit}</span>
+                        <span class="insumo-detail">📅 ${formatDate(insumo.date)}</span>
+                        ${insumo.supplier ? `<span class="insumo-detail">🏪 ${insumo.supplier}</span>` : ''}
+                    </div>
+                    <div class="insumo-price">Total: ${formatCurrency(insumo.total || 0)}</div>
+                    ${insumo.obs ? `<div style="font-size: 0.8rem; color: var(--sage); margin-top: 0.5rem; font-style: italic;">📝 ${insumo.obs}</div>` : ''}
+                    <div class="card-actions-grid">
+                        <button class="btn-edit" onclick="openInsumoModal('${insumo.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="deleteInsumo('${insumo.id}')">🗑️ Excluir</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        // === CLIENTES VIEW ===
+        // === RENDER CLIENTES VIEW (relatório) ===
         function renderClients() {
             const clientsGrid = document.getElementById('clientsGrid');
             
-            // Group orders by client
             const clientsMap = {};
             orders.forEach(order => {
                 if (!clientsMap[order.client]) {
@@ -2867,7 +3295,7 @@ _Alipel Papelaria Criativa_
 
             if (clientsList.length === 0) {
                 clientsGrid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-muted);">
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--kraft-dark);">
                         <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">📋 Nenhum cliente com pedidos ainda</p>
                         <p style="font-size: 0.9rem;">Os clientes aparecerão aqui conforme você adiciona pedidos.</p>
                     </div>
@@ -2892,27 +3320,24 @@ _Alipel Papelaria Criativa_
             `).join('');
         }
 
-        // === RELATÓRIOS VIEW ===
+        // === RENDER RELATÓRIOS ===
         function renderReports() {
-            // Calculate statistics
-            const totalRevenue = orders.reduce((sum, order) => sum + order.value, 0);
+            const totalRevenue = orders.reduce((sum, o) => sum + o.value, 0);
             const completedOrders = orders.filter(o => o.status === 'pronto').length;
             const ongoingOrders = orders.filter(o => o.status !== 'pronto').length;
             const avgTicket = orders.length > 0 ? totalRevenue / orders.length : 0;
 
-            // Update stats
             document.getElementById('total-revenue').textContent = formatCurrency(totalRevenue);
             document.getElementById('completed-orders').textContent = completedOrders;
             document.getElementById('ongoing-orders').textContent = ongoingOrders;
             document.getElementById('avg-ticket').textContent = formatCurrency(avgTicket);
 
-            // Render table
             const tableBody = document.getElementById('ordersTableBody');
             
             if (orders.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <td colspan="7" style="text-align: center; padding: 2rem; color: var(--kraft-dark);">
                             Nenhum pedido registrado ainda
                         </td>
                     </tr>
@@ -2921,159 +3346,56 @@ _Alipel Papelaria Criativa_
             }
 
             const statusLabels = {
-                'novos': 'Novo',
                 'producao': 'Produção',
-                'acabamento': 'Acabamento',
                 'pronto': 'Pronto'
             };
 
             tableBody.innerHTML = orders
                 .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
-                .map(order => `
-                    <tr>
-                        <td><strong>${order.id.substring(0, 12)}...</strong></td>
-                        <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-'}</td>
-                        <td>${order.client}</td>
-                        <td>${order.product}</td>
-                        <td><strong>${formatCurrency(order.value)}</strong></td>
-                        <td><span class="status-badge status-${order.status}">${statusLabels[order.status]}</span></td>
-                        <td>${formatDate(order.deadline)}</td>
-                    </tr>
-                `).join('');
+                .map(order => {
+                    const itemNames = (order.items || []).map(i => `${i.name} ×${i.qty}`).join(', ') || '-';
+                    return `
+                        <tr>
+                            <td><strong>${order.id.substring(0, 12)}...</strong></td>
+                            <td>${order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-'}</td>
+                            <td>${order.client}</td>
+                            <td>${itemNames}</td>
+                            <td><strong>${formatCurrency(order.value)}</strong></td>
+                            <td><span class="status-badge status-${order.status}">${statusLabels[order.status] || order.status}</span></td>
+                            <td>${formatDate(order.deadline)}</td>
+                        </tr>
+                    `;
+                }).join('');
         }
 
-        // === EXPORT REPORT ===
-        function exportReport() {
-            if (orders.length === 0) {
-                alert('Não há pedidos para exportar.');
-                return;
-            }
-
-            // Calculate totals
-            const totalRevenue = orders.reduce((sum, order) => sum + order.value, 0);
-            const completedOrders = orders.filter(o => o.status === 'pronto').length;
-            const avgTicket = totalRevenue / orders.length;
-
-            // Create CSV content
-            let csvContent = 'RELATÓRIO DE VENDAS - ALIPEL PAPELARIA CRIATIVA\n';
-            csvContent += `Data de Geração: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}\n\n`;
-            
-            csvContent += 'RESUMO GERAL\n';
-            csvContent += `Total de Pedidos: ${orders.length}\n`;
-            csvContent += `Pedidos Concluídos: ${completedOrders}\n`;
-            csvContent += `Receita Total: ${formatCurrency(totalRevenue)}\n`;
-            csvContent += `Ticket Médio: ${formatCurrency(avgTicket)}\n\n`;
-
-            csvContent += 'DETALHAMENTO DE PEDIDOS\n';
-            csvContent += 'ID;Data Criação;Cliente;Produto;Valor;Status;Prazo de Entrega\n';
-
-            orders.forEach(order => {
-                const createdDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-';
-                const statusLabels = {
-                    'novos': 'Novo Pedido',
-                    'producao': 'Em Produção',
-                    'acabamento': 'Em Acabamento',
-                    'pronto': 'Pronto para Envio'
-                };
-                
-                csvContent += `${order.id};${createdDate};${order.client};${order.product};R$ ${order.value.toFixed(2)};${statusLabels[order.status]};${formatDate(order.deadline)}\n`;
-            });
-
-            // Group by status
-            csvContent += '\n\nPEDIDOS POR STATUS\n';
-            const byStatus = {
-                'novos': orders.filter(o => o.status === 'novos'),
-                'producao': orders.filter(o => o.status === 'producao'),
-                'acabamento': orders.filter(o => o.status === 'acabamento'),
-                'pronto': orders.filter(o => o.status === 'pronto')
-            };
-
-            Object.entries(byStatus).forEach(([status, items]) => {
-                const statusLabels = {
-                    'novos': 'Novos Pedidos',
-                    'producao': 'Em Produção',
-                    'acabamento': 'Em Acabamento',
-                    'pronto': 'Prontos para Envio'
-                };
-                csvContent += `\n${statusLabels[status]}: ${items.length} pedidos\n`;
-                items.forEach(item => {
-                    csvContent += `  - ${item.client} | ${item.product} | ${formatCurrency(item.value)}\n`;
-                });
-            });
-
-            // Group by client
-            csvContent += '\n\nTOP CLIENTES\n';
-            const clientsMap = {};
-            orders.forEach(order => {
-                if (!clientsMap[order.client]) {
-                    clientsMap[order.client] = { count: 0, total: 0 };
-                }
-                clientsMap[order.client].count++;
-                clientsMap[order.client].total += order.value;
-            });
-
-            const topClients = Object.entries(clientsMap)
-                .sort((a, b) => b[1].total - a[1].total)
-                .slice(0, 10);
-
-            topClients.forEach(([client, data], index) => {
-                csvContent += `${index + 1}. ${client} - ${data.count} pedidos - ${formatCurrency(data.total)}\n`;
-            });
-
-            // Create download
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            const url = URL.createObjectURL(blob);
-            
-            const fileName = `Alipel_Relatorio_${new Date().toISOString().split('T')[0]}.csv`;
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', fileName);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Show success message
-            showNotification('✓ Relatório exportado com sucesso!', 'success');
-        }
-
-        // === DASHBOARD ===
+        // === RENDER DASHBOARD ===
         let dashboardCharts = {};
 
         function renderDashboard() {
-            // Destruir gráficos anteriores se existirem
+            // Destruir gráficos anteriores
             Object.values(dashboardCharts).forEach(chart => {
                 if (chart) chart.destroy();
             });
             dashboardCharts = {};
 
-            // Calcular dados
             const currentYear = new Date().getFullYear();
             const yearOrders = orders.filter(o => {
                 const orderYear = new Date(o.createdAt).getFullYear();
                 return orderYear === currentYear;
             });
 
-            // CARD 1: Receita Total
-            const totalRevenue = yearOrders
-                .filter(o => o.status === 'pronto')
-                .reduce((sum, o) => sum + o.value, 0);
-            document.getElementById('dash-total-revenue').textContent = formatCurrency(totalRevenue);
-
-            // CARD 2: Pedidos Concluídos
+            // Cards
+            const totalRevenue = yearOrders.filter(o => o.status === 'pronto').reduce((sum, o) => sum + o.value, 0);
             const completedOrders = yearOrders.filter(o => o.status === 'pronto').length;
-            document.getElementById('dash-total-orders').textContent = completedOrders;
-
-            // CARD 3: Em Andamento
             const activeOrders = orders.filter(o => o.status !== 'pronto').length;
-            document.getElementById('dash-active-orders').textContent = activeOrders;
-
-            // CARD 4: Ticket Médio
             const avgTicket = completedOrders > 0 ? totalRevenue / completedOrders : 0;
+
+            document.getElementById('dash-total-revenue').textContent = formatCurrency(totalRevenue);
+            document.getElementById('dash-total-orders').textContent = completedOrders;
+            document.getElementById('dash-active-orders').textContent = activeOrders;
             document.getElementById('dash-avg-ticket').textContent = formatCurrency(avgTicket);
 
-            // GRÁFICO 1: Faturamento Mensal
+            // Faturamento Mensal
             const monthlyRevenue = Array(12).fill(0);
             yearOrders.forEach(order => {
                 if (order.status === 'pronto') {
@@ -3111,19 +3433,15 @@ _Alipel Papelaria Criativa_
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: {
-                                callback: (value) => 'R$ ' + value.toFixed(0)
-                            }
+                            ticks: { callback: (value) => 'R$ ' + value.toFixed(0) }
                         }
                     }
                 }
             });
 
-            // GRÁFICO 2: Pedidos por Status
+            // Pedidos por Status
             const statusCount = {
-                'novos': orders.filter(o => o.status === 'novos').length,
                 'producao': orders.filter(o => o.status === 'producao').length,
-                'acabamento': orders.filter(o => o.status === 'acabamento').length,
                 'pronto': orders.filter(o => o.status === 'pronto').length
             };
 
@@ -3131,28 +3449,26 @@ _Alipel Papelaria Criativa_
             dashboardCharts.status = new Chart(statusCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Novos', 'Produção', 'Acabamento', 'Pronto'],
+                    labels: ['Produção', 'Pronto'],
                     datasets: [{
-                        data: [statusCount.novos, statusCount.producao, statusCount.acabamento, statusCount.pronto],
-                        backgroundColor: ['#FFD700', '#C9765F', '#8FA998', '#7B6BA8'],
+                        data: [statusCount.producao, statusCount.pronto],
+                        backgroundColor: ['#C9765F', '#7B6BA8'],
                         borderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
+                    plugins: { legend: { position: 'bottom' } }
                 }
             });
 
-            // GRÁFICO 3: Top 5 Produtos
+            // Top 5 Produtos (baseado nos itens dos pedidos)
             const productSales = {};
             orders.forEach(order => {
-                if (order.product) {
-                    productSales[order.product] = (productSales[order.product] || 0) + 1;
-                }
+                (order.items || []).forEach(item => {
+                    productSales[item.name] = (productSales[item.name] || 0) + item.qty;
+                });
             });
 
             const topProducts = Object.entries(productSales)
@@ -3175,16 +3491,12 @@ _Alipel Papelaria Criativa_
                     indexAxis: 'y',
                     responsive: true,
                     maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { beginAtZero: true }
-                    }
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
                 }
             });
 
-            // GRÁFICO 4: Top 5 Clientes
+            // Top 5 Clientes
             const clientRevenue = {};
             orders.forEach(order => {
                 if (order.client && order.status === 'pronto') {
@@ -3223,15 +3535,13 @@ _Alipel Papelaria Criativa_
                     scales: {
                         x: {
                             beginAtZero: true,
-                            ticks: {
-                                callback: (value) => 'R$ ' + value.toFixed(0)
-                            }
+                            ticks: { callback: (value) => 'R$ ' + value.toFixed(0) }
                         }
                     }
                 }
             });
 
-            // LISTA: Pedidos Urgentes
+            // Pedidos Urgentes
             const urgentContainer = document.getElementById('urgentOrders');
             const urgentOrders = orders.filter(o => {
                 const daysUntil = Math.ceil((new Date(o.deadline) - new Date()) / (1000 * 60 * 60 * 24));
@@ -3254,9 +3564,8 @@ _Alipel Papelaria Criativa_
                     
                     return `
                         <div style="border-left: 4px solid ${urgencyColor}; padding: 1rem; margin-bottom: 1rem; background: rgba(0,0,0,0.02); border-radius: 4px; cursor: pointer;" onclick="openViewModal('${order.id}')">
-                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${order.product}</div>
-                            <div style="font-size: 0.85rem; color: var(--sage-dark); margin-bottom: 0.5rem;">👤 ${order.client}</div>
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                            <div style="font-weight: 600; margin-bottom: 0.25rem;">${order.client}</div>
+                            <div style="font-size: 0.8rem; display: flex; justify-content: space-between; margin-top: 0.5rem;">
                                 <span style="color: ${urgencyColor}; font-weight: 600;">⚠️ ${urgencyText}</span>
                                 <span>${formatCurrency(order.value)}</span>
                             </div>
@@ -3266,35 +3575,9 @@ _Alipel Papelaria Criativa_
             }
         }
 
-        // === CONFIGURAÇÕES ===
-        function clearAllData() {
-            const confirmed = confirm(
-                '⚠️ ATENÇÃO!\n\n' +
-                'Esta ação irá EXCLUIR PERMANENTEMENTE todos os pedidos do sistema.\n\n' +
-                'Tem certeza que deseja continuar?\n\n' +
-                'Esta ação NÃO PODE ser desfeita!'
-            );
-
-            if (confirmed) {
-                const doubleConfirm = confirm(
-                    'CONFIRMAÇÃO FINAL\n\n' +
-                    'Digite "CONFIRMAR" mentalmente e clique em OK para prosseguir.\n\n' +
-                    'Todos os ' + orders.length + ' pedidos serão APAGADOS.'
-                );
-
-                if (doubleConfirm) {
-                    orders = [];
-                    save();
-                    showNotification('Todos os dados foram removidos.', 'warning');
-                    
-                    // Return to production view
-                    showView('producao');
-                    document.querySelector('.nav-item').click();
-                }
-            }
-        }
-
-        // === MODAL DE VISUALIZAÇÃO ===
+        // =============================================
+        // === VIEW MODAL (visualização do pedido) ===
+        // =============================================
         function openViewModal(orderId) {
             const order = orders.find(o => o.id === orderId);
             if (!order) return;
@@ -3303,18 +3586,47 @@ _Alipel Papelaria Criativa_
             const content = document.getElementById('viewContent');
 
             const statusMessages = {
-                'novos': 'Novo Pedido',
                 'producao': 'Em Produção',
-                'acabamento': 'Em Acabamento',
                 'pronto': 'Pronto para Envio'
             };
 
             const statusColors = {
-                'novos': 'var(--blush)',
                 'producao': 'var(--terracotta)',
-                'acabamento': 'var(--sage)',
                 'pronto': 'var(--gold)'
             };
+
+            // Tabela de itens do pedido
+            let itemsHTML = '';
+            if (order.items && order.items.length > 0) {
+                itemsHTML = `
+                    <table class="order-products-table" style="margin-top: 0.5rem;">
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Qtd.</th>
+                                <th>Unit.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${order.items.map(item => `
+                                <tr>
+                                    <td>${item.name}</td>
+                                    <td>${item.qty}</td>
+                                    <td>${formatCurrency(item.unitPrice)}</td>
+                                    <td><strong>${formatCurrency(item.subtotal)}</strong></td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: var(--kraft-light); font-weight: 700;">
+                                <td colspan="3" style="text-align: right;">TOTAL:</td>
+                                <td>${formatCurrency(order.value)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                `;
+            }
 
             let html = `
                 <div class="view-detail-group">
@@ -3340,7 +3652,7 @@ _Alipel Papelaria Criativa_
                         <div class="view-detail-value"><strong>${formatDate(order.deadline)}</strong></div>
                     </div>
                     <div class="view-detail-item">
-                        <div class="view-detail-label">Valor:</div>
+                        <div class="view-detail-label">Valor Total:</div>
                         <div class="view-detail-value"><strong style="color: var(--sage-dark); font-size: 1.2rem;">${formatCurrency(order.value)}</strong></div>
                     </div>
                 </div>
@@ -3364,17 +3676,8 @@ _Alipel Papelaria Criativa_
                 </div>
 
                 <div class="view-detail-group">
-                    <h3>📋 Produto</h3>
-                    <div class="view-detail-item">
-                        <div class="view-detail-label">Nome:</div>
-                        <div class="view-detail-value"><strong>${order.product}</strong></div>
-                    </div>
-                    ${order.productPages ? `<div class="view-detail-item"><div class="view-detail-label">Páginas:</div><div class="view-detail-value">${order.productPages}</div></div>` : ''}
-                    ${order.productCover ? `<div class="view-detail-item"><div class="view-detail-label">Capa:</div><div class="view-detail-value">${order.productCover}</div></div>` : ''}
-                    ${order.productBinding ? `<div class="view-detail-item"><div class="view-detail-label">Encadernação:</div><div class="view-detail-value">${order.productBinding}</div></div>` : ''}
-                    ${order.productPaper ? `<div class="view-detail-item"><div class="view-detail-label">Tipo de Folha:</div><div class="view-detail-value">${order.productPaper}</div></div>` : ''}
-                    ${order.productWire ? `<div class="view-detail-item"><div class="view-detail-label">Tipo de Arame:</div><div class="view-detail-value">${order.productWire}</div></div>` : ''}
-                    ${order.productSize ? `<div class="view-detail-item"><div class="view-detail-label">Tamanho:</div><div class="view-detail-value">${order.productSize}</div></div>` : ''}
+                    <h3>📋 Produtos do Pedido</h3>
+                    ${itemsHTML}
                 </div>
             `;
 
@@ -3384,23 +3687,6 @@ _Alipel Papelaria Criativa_
                         <h3>📝 Observações Internas</h3>
                         <div class="view-detail-item">
                             <div class="view-detail-value" style="width: 100%; white-space: pre-wrap;">${order.observations}</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (order.pdfAttachment) {
-                html += `
-                    <div class="view-detail-group">
-                        <h3>📎 Anexo</h3>
-                        <div class="view-detail-item">
-                            <div class="view-detail-label">Arquivo:</div>
-                            <div class="view-detail-value">
-                                <strong>${order.pdfAttachment.name}</strong>
-                                <button class="pdf-download-btn" onclick="downloadPDF('${order.id}')">
-                                    📥 Baixar PDF
-                                </button>
-                            </div>
                         </div>
                     </div>
                 `;
@@ -3418,17 +3704,165 @@ _Alipel Papelaria Criativa_
             if (event.target.id === 'viewModal') closeViewModal();
         }
 
-        function downloadPDF(orderId) {
-            const order = orders.find(o => o.id === orderId);
-            if (!order || !order.pdfAttachment) return;
+        // =============================================
+        // === VIEW NAVIGATION ===
+        // =============================================
+        let currentView = 'producao';
 
-            const link = document.createElement('a');
-            link.href = order.pdfAttachment.data;
-            link.download = order.pdfAttachment.name;
-            link.click();
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.kanban-container, .content-view').forEach(view => {
+                view.style.display = 'none';
+            });
+
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            const btnMain = document.getElementById('btn-main-action');
+
+            // Show selected view
+            if (viewName === 'producao') {
+                document.getElementById('view-producao').style.display = 'flex';
+                document.getElementById('header-title').textContent = 'Quadro de Produção';
+                document.getElementById('header-subtitle').textContent = 'Gerencie seus pedidos com elegância e eficiência';
+                btnMain.innerHTML = '<span>✨</span> Novo Pedido';
+                btnMain.onclick = () => openModal();
+                btnMain.style.display = '';
+            } else {
+                document.getElementById(`view-${viewName}`).style.display = 'block';
+                
+                if (viewName === 'cadastro-clientes') {
+                    document.getElementById('header-title').textContent = 'Cadastro de Clientes';
+                    document.getElementById('header-subtitle').textContent = 'Gerencie todos os seus clientes';
+                    renderCadastroClientes();
+                    btnMain.innerHTML = '<span>👤</span> Novo Cliente';
+                    btnMain.onclick = () => openClientModal();
+                    btnMain.style.display = '';
+                } else if (viewName === 'cadastro-produtos') {
+                    document.getElementById('header-title').textContent = 'Cadastro de Produtos';
+                    document.getElementById('header-subtitle').textContent = 'Produtos finalizados com preço de venda';
+                    renderCadastroProdutos();
+                    btnMain.innerHTML = '<span>📦</span> Novo Produto';
+                    btnMain.onclick = () => openProductModal();
+                    btnMain.style.display = '';
+                } else if (viewName === 'insumos') {
+                    document.getElementById('header-title').textContent = 'Compra de Insumos';
+                    document.getElementById('header-subtitle').textContent = 'Controle de materiais para produção';
+                    renderInsumos();
+                    btnMain.innerHTML = '<span>🧵</span> Novo Insumo';
+                    btnMain.onclick = () => openInsumoModal();
+                    btnMain.style.display = '';
+                } else if (viewName === 'relatorios') {
+                    document.getElementById('header-title').textContent = 'Relatórios';
+                    document.getElementById('header-subtitle').textContent = 'Análises e exportações';
+                    renderReports();
+                    btnMain.style.display = 'none';
+                } else if (viewName === 'dashboard') {
+                    document.getElementById('header-title').textContent = 'Dashboard';
+                    document.getElementById('header-subtitle').textContent = 'Visão geral e análise do negócio';
+                    renderDashboard();
+                    btnMain.style.display = 'none';
+                } else if (viewName === 'clientes') {
+                    document.getElementById('header-title').textContent = 'Clientes';
+                    document.getElementById('header-subtitle').textContent = 'Histórico de pedidos por cliente';
+                    renderClients();
+                    btnMain.style.display = 'none';
+                } else if (viewName === 'configuracoes') {
+                    document.getElementById('header-title').textContent = 'Configurações';
+                    document.getElementById('header-subtitle').textContent = 'Personalize sua experiência';
+                    btnMain.style.display = 'none';
+                }
+            }
+
+            // Activate current nav item
+            event.target.closest('.nav-item').classList.add('active');
+            currentView = viewName;
         }
 
+        // =============================================
+        // === EXPORT REPORT ===
+        // =============================================
+        function exportReport() {
+            if (orders.length === 0) {
+                alert('Não há pedidos para exportar.');
+                return;
+            }
+
+            const totalRevenue = orders.reduce((sum, order) => sum + order.value, 0);
+            const completedOrders = orders.filter(o => o.status === 'pronto').length;
+            const avgTicket = totalRevenue / orders.length;
+
+            let csvContent = 'RELATÓRIO DE VENDAS - ALIPEL PAPELARIA CRIATIVA\n';
+            csvContent += `Data de Geração: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}\n\n`;
+            
+            csvContent += 'RESUMO GERAL\n';
+            csvContent += `Total de Pedidos: ${orders.length}\n`;
+            csvContent += `Pedidos Concluídos: ${completedOrders}\n`;
+            csvContent += `Receita Total: ${formatCurrency(totalRevenue)}\n`;
+            csvContent += `Ticket Médio: ${formatCurrency(avgTicket)}\n\n`;
+
+            csvContent += 'DETALHAMENTO DE PEDIDOS\n';
+            csvContent += 'ID;Data Criação;Cliente;Produtos;Valor;Status;Prazo de Entrega\n';
+
+            orders.forEach(order => {
+                const createdDate = order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-';
+                const statusLabels = {
+                    'producao': 'Em Produção',
+                    'pronto': 'Pronto para Envio'
+                };
+                const itemNames = (order.items || []).map(i => `${i.name}(${i.qty})`).join(' + ');
+                
+                csvContent += `${order.id};${createdDate};${order.client};${itemNames};R$ ${order.value.toFixed(2)};${statusLabels[order.status] || order.status};${formatDate(order.deadline)}\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            
+            const fileName = `Alipel_Relatorio_${new Date().toISOString().split('T')[0]}.csv`;
+            
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showNotification('✓ Relatório exportado com sucesso!', 'success');
+        }
+
+        // =============================================
+        // === CONFIGURAÇÕES ===
+        // =============================================
+        function clearAllData() {
+            const confirmed = confirm(
+                '⚠️ ATENÇÃO!\n\n' +
+                'Esta ação irá EXCLUIR PERMANENTEMENTE todos os dados do sistema.\n\n' +
+                'Tem certeza que deseja continuar?'
+            );
+
+            if (confirmed) {
+                const doubleConfirm = confirm(
+                    'CONFIRMAÇÃO FINAL\n\n' +
+                    'Todos os ' + orders.length + ' pedidos, ' + clients.length + ' clientes, ' + products.length + ' produtos e ' + insumos.length + ' insumos serão APAGADOS.'
+                );
+
+                if (doubleConfirm) {
+                    orders = [];
+                    clients = [];
+                    products = [];
+                    insumos = [];
+                    save();
+                    showNotification('Todos os dados foram removidos.', 'warning');
+                }
+            }
+        }
+
+        // =============================================
         // === NOTIFICATION SYSTEM ===
+        // =============================================
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
             const colors = {
@@ -3461,29 +3895,47 @@ _Alipel Papelaria Criativa_
             }, 3000);
         }
 
+        // =============================================
+        // === KEYBOARD SHORTCUTS ===
+        // =============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeClientModal();
+                closeProductModal();
+                closeInsumoModal();
+                closeViewModal();
+                closeAddProductModal();
+            }
+
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                openModal();
+            }
+        });
+
+        // =============================================
         // === INITIALIZATION ===
+        // =============================================
         document.addEventListener('DOMContentLoaded', () => {
             render();
             updateStats();
 
-            // Add welcome message if no orders
             if (orders.length === 0) {
-                console.log('%c✨ StationeryOS Premium v3.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
+                console.log('%c✨ Alipel Papelaria Criativa v4.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
                 console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
-                console.log('%cNovidades: Cadastro de Clientes e Produtos', 'color: #7B6BA8; font-size: 12px; font-weight: bold;');
+                console.log('%cNovidades: Multi-produtos por pedido, Insumos, Preço no cadastro', 'color: #7B6BA8; font-size: 12px; font-weight: bold;');
             }
         });
 
-        // Auto-save indicator (visual feedback)
+        // Auto-save indicator
         let saveTimeout;
         const originalSave = save;
         save = function() {
             originalSave();
             
-            // Clear previous timeout
             clearTimeout(saveTimeout);
             
-            // Show save indicator
             const indicator = document.createElement('div');
             indicator.textContent = '✓ Salvo';
             indicator.style.cssText = `
@@ -3508,31 +3960,6 @@ _Alipel Papelaria Criativa_
                 setTimeout(() => indicator.remove(), 300);
             }, 2000);
         };
-
-        // Add animations to style
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            
-            @keyframes fadeOut {
-                from {
-                    opacity: 1;
-                }
-                to {
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>
