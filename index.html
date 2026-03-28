@@ -1491,49 +1491,25 @@
 
         <!-- VIEW: CLIENTES (relatório) -->
         <section id="view-clientes" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Histórico de Vendas / Pedidos</h2>
-                    <p>Lista completa de pedidos e histórico por cliente</p>
-                </div>
-            </div>
             <div class="clients-grid" id="clientsGrid"></div>
         </section>
 
         <!-- VIEW CADASTRO DE CLIENTES -->
         <section id="view-cadastro-clientes" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Cadastro de Clientes</h2>
-                    <p>Gerencie todos os seus clientes</p>
-                </div>
-            </div>
             <div class="clients-grid" id="cadastroClientesGrid"></div>
         </section>
 
         <!-- VIEW CADASTRO DE PRODUTOS (ALTERADO: com preço) -->
         <section id="view-cadastro-produtos" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Cadastro de Produtos</h2>
-                    <p>Produtos finalizados com preço de venda</p>
-                </div>
-            </div>
             <div class="clients-grid" id="cadastroProdutosGrid"></div>
         </section>
 
         <!-- NOVO: VIEW INSUMOS (tabela + dashboard) -->
         <section id="view-insumos" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Compra de Insumos</h2>
-                    <p>Controle de materiais para produção</p>
-                </div>
-                <div style="display: flex; gap: 0.75rem;">
-                    <button class="btn-export" onclick="toggleInsumoDashboard()">
-                        <span>📊</span> Dashboard Financeiro
-                    </button>
-                </div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
+                <button class="btn-export" onclick="toggleInsumoDashboard()">
+                    <span>📊</span> Dashboard Financeiro
+                </button>
             </div>
             
             <!-- Resumo de gastos com insumos -->
@@ -1653,11 +1629,7 @@
 
         <!-- VIEW: RELATÓRIOS -->
         <section id="view-relatorios" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Relatórios e Análises</h2>
-                    <p>Exportação e visualização de dados de vendas</p>
-                </div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
                 <button class="btn-export" onclick="exportReport()">
                     <span>📥</span> Exportar Relatório
                 </button>
@@ -1717,12 +1689,6 @@
 
         <!-- VIEW: DASHBOARD -->
         <section id="view-dashboard" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>📈 Dashboard</h2>
-                    <p>Visão geral e análise do negócio</p>
-                </div>
-            </div>
 
             <!-- CARDS NO TOPO -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
@@ -1783,12 +1749,6 @@
 
         <!-- VIEW: CONFIGURAÇÕES -->
         <section id="view-configuracoes" class="content-view" style="display: none;">
-            <div class="view-header">
-                <div>
-                    <h2>Configurações do Sistema</h2>
-                    <p>Personalize sua experiência no StationeryOS</p>
-                </div>
-            </div>
             
             <div class="settings-container">
                 <div class="settings-group">
@@ -3336,6 +3296,8 @@ Total: ${formatCurrency(order.value)}
 Status Atual: ${statusName}
 Previsão de Entrega: ${formatDate(order.deadline)}${orcamentoSection}
 
+💳 Forma de Pagamento: PIX - CNPJ: 65.159.599/0001-56
+
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Estamos trabalhando com todo carinho! ✨
@@ -3363,7 +3325,7 @@ Equipe Alipel Papelaria Personalizada
             ).join('\n');
 
             const whatsappMessage = encodeURIComponent(
-`✨ *ALIPEL PAPELARIA CRIATIVA* ✨
+`✨ *ALIPEL PAPELARIA PERSONALIZADA* ✨
 
 Olá *${order.client}*! 👋
 
@@ -3375,6 +3337,8 @@ ${whatsappItemsList}
 💰 *Total:* ${formatCurrency(order.value)}
 📍 *Status:* ${statusName}
 📅 *Entrega prevista:* ${formatDate(order.deadline)}${whatsappOrcamento}
+
+💳 *Forma de Pagamento:* PIX - CNPJ: 65.159.599/0001-56
 
 Estamos preparando tudo com muito carinho! 💜
 
@@ -4166,7 +4130,7 @@ _Alipel Papelaria Personalizada_
             const completedOrders = orders.filter(o => o.status === 'pronto').length;
             const avgTicket = totalRevenue / orders.length;
 
-            let csvContent = 'RELATÓRIO DE VENDAS - ALIPEL PAPELARIA CRIATIVA\n';
+            let csvContent = 'RELATÓRIO DE VENDAS - ALIPEL PAPELARIA PERSONALIZADA\n';
             csvContent += `Data de Geração: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}\n\n`;
             
             csvContent += 'RESUMO GERAL\n';
