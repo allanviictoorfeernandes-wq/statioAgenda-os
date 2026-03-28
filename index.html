@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alipel Papelaria Criativa | Sistema de Produção</title>
+    <title>Alipel Papelaria Personalizada | Sistema de Produção</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            /* Premium Craft Palette - Alipel Papelaria Criativa */
+            /* Premium Craft Palette - Alipel Papelaria Personalizada */
             --cream: #FAF7F0;
             --kraft-light: #E8DCC4;
             --kraft: #D4C5A9;
@@ -1404,7 +1404,7 @@
                 </svg>
                 <div style="margin-left: -3px;">
                     <h1 style="margin: 0; font-size: 1.85rem; color: #8B84B8; font-family: 'Playfair Display', serif; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1;">Alipel</h1>
-                    <p style="margin: 0; margin-top: 1px; font-size: 0.52rem; color: #E8A4B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; line-height: 1;">Papelaria Criativa</p>
+                    <p style="margin: 0; margin-top: 1px; font-size: 0.52rem; color: #E8A4B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; line-height: 1;">Papelaria Personalizada</p>
                 </div>
             </div>
         </div>
@@ -1415,8 +1415,8 @@
                 <span>Produção</span>
             </a>
             <a class="nav-item" onclick="showView('clientes')">
-                <span>💎</span>
-                <span>Clientes</span>
+                <span>📋</span>
+                <span>Histórico Vendas</span>
             </a>
             <a class="nav-item" onclick="showView('cadastro-clientes')">
                 <span>👥</span>
@@ -1493,8 +1493,8 @@
         <section id="view-clientes" class="content-view" style="display: none;">
             <div class="view-header">
                 <div>
-                    <h2>Gestão de Clientes</h2>
-                    <p>Lista completa de clientes e histórico de pedidos</p>
+                    <h2>Histórico de Vendas / Pedidos</h2>
+                    <p>Lista completa de pedidos e histórico por cliente</p>
                 </div>
             </div>
             <div class="clients-grid" id="clientsGrid"></div>
@@ -1795,7 +1795,7 @@
                     <h3>Informações da Empresa</h3>
                     <div class="form-group">
                         <label for="empresa-nome">Nome da Empresa</label>
-                        <input type="text" id="empresa-nome" value="Alipel Papelaria Criativa">
+                        <input type="text" id="empresa-nome" value="Alipel Papelaria Personalizada">
                     </div>
                     <div class="form-group">
                         <label for="empresa-email">E-mail de Contato</label>
@@ -1841,7 +1841,7 @@
                 <div class="settings-group">
                     <h3>Sobre o Sistema</h3>
                     <p style="color: var(--navy); margin-bottom: 0.5rem;">
-                        <strong>Alipel Papelaria Criativa</strong><br>
+                        <strong>Alipel Papelaria Personalizada</strong><br>
                         Sistema de Gestão de Produção v4.0
                     </p>
                     <p style="font-size: 0.85rem; color: var(--sage-dark);">
@@ -1936,9 +1936,16 @@
 
                 <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
 
-                <div class="form-group">
-                    <label for="deadline">Prazo de Entrega</label>
-                    <input type="date" id="deadline" required>
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label for="saleDate">📅 Data da Venda</label>
+                        <input type="date" id="saleDate" readonly style="background: var(--kraft-light); color: var(--navy); cursor: not-allowed;">
+                        <p style="font-size: 0.75rem; color: var(--sage-dark); margin-top: 0.3rem;">Preenchida automaticamente</p>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label for="deadline">Prazo de Entrega</label>
+                        <input type="date" id="deadline" required>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -1983,6 +1990,12 @@
                     <span id="addProductName"></span>
                     <strong id="addProductSubtotal" style="color: var(--purple-dark);"></strong>
                 </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1.5rem;">
+                <label for="addProductObs">📝 Observações Internas (Opcional)</label>
+                <textarea id="addProductObs" rows="3" placeholder="Adicione ou altere observações do pedido..." style="width: 100%; padding: 0.95rem 1.25rem; border: 2px solid var(--kraft-light); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                <p style="font-size: 0.75rem; color: var(--sage-dark); margin-top: 0.3rem;">💡 As observações existentes serão mantidas. Novo texto será adicionado ao final.</p>
             </div>
 
             <div class="modal-footer">
@@ -2203,7 +2216,7 @@
         // =============================================
         // === CONFIGURAÇÕES ===
         // =============================================
-        const EMPRESA_NOME = "Alipel Papelaria Criativa";
+        const EMPRESA_NOME = "Alipel Papelaria Personalizada";
         const STORAGE_KEY = 'alipel_stationery_v4';
         const CLIENTS_KEY = 'alipel_clients_v4';
         const PRODUCTS_KEY = 'alipel_products_v4';
@@ -2398,6 +2411,7 @@
                     document.getElementById('client').value = order.client;
                     document.getElementById('clientEmail').value = order.clientEmail || '';
                     document.getElementById('clientWhatsApp').value = order.clientWhatsApp || '';
+                    document.getElementById('saleDate').value = order.saleDate || (order.createdAt ? order.createdAt.split('T')[0] : '');
                     document.getElementById('deadline').value = order.deadline;
                     document.getElementById('observations').value = order.observations || '';
                     
@@ -2407,6 +2421,9 @@
             } else {
                 title.textContent = 'Novo Pedido';
                 document.getElementById('orderId').value = '';
+                
+                // Data da venda = hoje (automática)
+                document.getElementById('saleDate').value = new Date().toISOString().split('T')[0];
                 
                 // Set default deadline to 7 days from now
                 const defaultDeadline = new Date();
@@ -2565,6 +2582,7 @@
                 clientWhatsApp: document.getElementById('clientWhatsApp').value.trim(),
                 items: currentOrderItems,
                 value: totalValue,
+                saleDate: document.getElementById('saleDate').value,
                 deadline: document.getElementById('deadline').value,
                 observations: document.getElementById('observations').value.trim()
             };
@@ -2608,6 +2626,7 @@
             loadProductOptions('addProductSelect');
             document.getElementById('addProductQty').value = 1;
             document.getElementById('addProductPreview').style.display = 'none';
+            document.getElementById('addProductObs').value = order.observations || '';
             document.getElementById('modalAddProduct').style.display = 'flex';
         }
 
@@ -2646,6 +2665,7 @@
         function confirmAddProduct() {
             const orderId = document.getElementById('addProductOrderId').value;
             const productId = document.getElementById('addProductSelect').value;
+            const newObs = document.getElementById('addProductObs').value.trim();
             
             if (!productId) {
                 showNotification('Selecione um produto!', 'warning');
@@ -2677,7 +2697,7 @@
                 }
 
                 const newTotal = items.reduce((sum, item) => sum + item.subtotal, 0);
-                return { ...o, items: items, value: newTotal };
+                return { ...o, items: items, value: newTotal, observations: newObs };
             });
 
             save();
@@ -3055,8 +3075,11 @@
                 const currentYear = new Date().getFullYear();
                 const years = new Set();
                 years.add(currentYear);
-                insumos.forEach(i => years.add(new Date(i.date).getFullYear()));
-                orders.forEach(o => years.add(new Date(o.createdAt).getFullYear()));
+                insumos.forEach(i => { if (i.date) years.add(new Date(i.date + 'T00:00:00').getFullYear()); });
+                orders.forEach(o => {
+                    const sd = o.saleDate || (o.createdAt ? o.createdAt.split('T')[0] : null);
+                    if (sd) years.add(new Date(sd + 'T00:00:00').getFullYear());
+                });
                 
                 yearSelect.innerHTML = [...years].sort((a, b) => b - a).map(y => 
                     `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`
@@ -3080,16 +3103,18 @@
             const selectedMonth = parseInt(document.getElementById('dashInsumoMonth').value);
             const selectedYear = parseInt(document.getElementById('dashInsumoYear').value);
 
-            // Calcular vendas do mês (pedidos prontos)
+            // Calcular vendas do mês (todos os pedidos pela data da venda)
             const monthSales = orders.filter(o => {
-                if (o.status !== 'pronto') return false;
-                const d = new Date(o.createdAt);
+                const saleDate = o.saleDate || (o.createdAt ? o.createdAt.split('T')[0] : null);
+                if (!saleDate) return false;
+                const d = new Date(saleDate + 'T00:00:00');
                 return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
             }).reduce((sum, o) => sum + o.value, 0);
 
             // Calcular compras do mês
             const monthPurchases = insumos.filter(i => {
-                const d = new Date(i.date);
+                if (!i.date) return false;
+                const d = new Date(i.date + 'T00:00:00');
                 return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
             }).reduce((sum, i) => sum + (i.total || 0), 0);
 
@@ -3111,11 +3136,16 @@
             const salesByMonth = Array(12).fill(0);
             const purchasesByMonth = Array(12).fill(0);
 
-            orders.filter(o => o.status === 'pronto' && new Date(o.createdAt).getFullYear() === selectedYear)
-                .forEach(o => { salesByMonth[new Date(o.createdAt).getMonth()] += o.value; });
+            orders.filter(o => {
+                const sd = o.saleDate || (o.createdAt ? o.createdAt.split('T')[0] : null);
+                return sd && new Date(sd + 'T00:00:00').getFullYear() === selectedYear;
+            }).forEach(o => {
+                const sd = o.saleDate || o.createdAt.split('T')[0];
+                salesByMonth[new Date(sd + 'T00:00:00').getMonth()] += o.value;
+            });
 
-            insumos.filter(i => new Date(i.date).getFullYear() === selectedYear)
-                .forEach(i => { purchasesByMonth[new Date(i.date).getMonth()] += (i.total || 0); });
+            insumos.filter(i => i.date && new Date(i.date + 'T00:00:00').getFullYear() === selectedYear)
+                .forEach(i => { purchasesByMonth[new Date(i.date + 'T00:00:00').getMonth()] += (i.total || 0); });
 
             insumoDashCharts.compare = new Chart(document.getElementById('insumoCompareChart').getContext('2d'), {
                 type: 'bar',
@@ -3159,7 +3189,8 @@
             // Gráfico: Compras por Categoria (mês selecionado)
             const catTotals = {};
             insumos.filter(i => {
-                const d = new Date(i.date);
+                if (!i.date) return false;
+                const d = new Date(i.date + 'T00:00:00');
                 return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
             }).forEach(i => {
                 catTotals[i.category || 'Outros'] = (catTotals[i.category || 'Outros'] || 0) + (i.total || 0);
@@ -3315,7 +3346,7 @@ Estamos trabalhando com todo carinho! ✨
 📷 Instagram: @alipel_papelaria
 
 Com carinho,
-Equipe Alipel Papelaria Criativa
+Equipe Alipel Papelaria Personalizada
 `
             );
 
@@ -3347,7 +3378,7 @@ ${whatsappItemsList}
 
 Estamos preparando tudo com muito carinho! 💜
 
-_Alipel Papelaria Criativa_
+_Alipel Papelaria Personalizada_
 📍 Rua Xambre, 47 - Curitiba
 📷 @alipel_papelaria`
             );
@@ -3513,11 +3544,12 @@ _Alipel Papelaria Criativa_
                 <button class="btn-delete-card" onclick="event.stopPropagation(); deleteOrder('${order.id}')" title="Excluir pedido">×</button>
                 <span class="card-tag ${tagClass}">${tagText}</span>
                 <div class="card-title">Pedido — ${order.client}</div>
+                <div class="card-client">🛒 Venda: ${order.saleDate ? formatDate(order.saleDate) : (order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-')}</div>
                 ${productsHTML}
                 ${observationsHTML}
                 <div class="card-meta">
                     <span class="card-value">${formatCurrency(order.value)}</span>
-                    <span class="card-date">📅 ${formatDate(order.deadline)}${urgentIndicator}</span>
+                    <span class="card-date">📅 Entrega: ${formatDate(order.deadline)}${urgentIndicator}</span>
                 </div>
                 <div class="card-actions">
                     <button class="btn-notify" onclick="event.stopPropagation(); notifyClient('${order.id}')" title="Notificar cliente">
@@ -3984,8 +4016,8 @@ _Alipel Papelaria Criativa_
                         <div class="view-detail-value">${order.id}</div>
                     </div>
                     <div class="view-detail-item">
-                        <div class="view-detail-label">Data de Criação:</div>
-                        <div class="view-detail-value">${order.createdAt ? new Date(order.createdAt).toLocaleString('pt-BR') : '-'}</div>
+                        <div class="view-detail-label">Data da Venda:</div>
+                        <div class="view-detail-value">${order.saleDate ? formatDate(order.saleDate) : (order.createdAt ? new Date(order.createdAt).toLocaleDateString('pt-BR') : '-')}</div>
                     </div>
                     <div class="view-detail-item">
                         <div class="view-detail-label">Prazo de Entrega:</div>
@@ -4105,8 +4137,8 @@ _Alipel Papelaria Criativa_
                     renderDashboard();
                     btnMain.style.display = 'none';
                 } else if (viewName === 'clientes') {
-                    document.getElementById('header-title').textContent = 'Clientes';
-                    document.getElementById('header-subtitle').textContent = 'Histórico de pedidos por cliente';
+                    document.getElementById('header-title').textContent = 'Histórico de Vendas / Pedidos';
+                    document.getElementById('header-subtitle').textContent = 'Histórico completo de pedidos por cliente';
                     renderClients();
                     btnMain.style.display = 'none';
                 } else if (viewName === 'configuracoes') {
@@ -4262,7 +4294,7 @@ _Alipel Papelaria Criativa_
             updateStats();
 
             if (orders.length === 0) {
-                console.log('%c✨ Alipel Papelaria Criativa v4.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
+                console.log('%c✨ Alipel Papelaria Personalizada v4.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
                 console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
                 console.log('%cNovidades: Multi-produtos por pedido, Insumos, Preço no cadastro', 'color: #7B6BA8; font-size: 12px; font-weight: bold;');
             }
