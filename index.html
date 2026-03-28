@@ -1507,9 +1507,6 @@
                     <h2>Cadastro de Clientes</h2>
                     <p>Gerencie todos os seus clientes</p>
                 </div>
-                <button class="btn-create" onclick="openClientModal()">
-                    <span>👤</span> Novo Cliente
-                </button>
             </div>
             <div class="clients-grid" id="cadastroClientesGrid"></div>
         </section>
@@ -1521,23 +1518,22 @@
                     <h2>Cadastro de Produtos</h2>
                     <p>Produtos finalizados com preço de venda</p>
                 </div>
-                <button class="btn-create" onclick="openProductModal()">
-                    <span>📦</span> Novo Produto
-                </button>
             </div>
             <div class="clients-grid" id="cadastroProdutosGrid"></div>
         </section>
 
-        <!-- NOVO: VIEW INSUMOS -->
+        <!-- NOVO: VIEW INSUMOS (tabela + dashboard) -->
         <section id="view-insumos" class="content-view" style="display: none;">
             <div class="view-header">
                 <div>
                     <h2>Compra de Insumos</h2>
                     <p>Controle de materiais para produção</p>
                 </div>
-                <button class="btn-create" onclick="openInsumoModal()">
-                    <span>🧵</span> Novo Insumo
-                </button>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button class="btn-export" onclick="toggleInsumoDashboard()">
+                        <span>📊</span> Dashboard Financeiro
+                    </button>
+                </div>
             </div>
             
             <!-- Resumo de gastos com insumos -->
@@ -1565,7 +1561,94 @@
                 </div>
             </div>
 
-            <div class="clients-grid" id="insumosGrid"></div>
+            <!-- TABELA DE INSUMOS (estilo planilha) -->
+            <div class="reports-table" id="insumosTableContainer">
+                <h3>📋 Registro de Compras</h3>
+                <div class="table-container">
+                    <table id="insumosTable">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Insumo</th>
+                                <th>Categoria</th>
+                                <th>Qtd.</th>
+                                <th>Unid. Medida</th>
+                                <th>Qtd. por Unid.</th>
+                                <th>Total Unid.</th>
+                                <th>Preço Unit.</th>
+                                <th>Preço/Unid.</th>
+                                <th>Total</th>
+                                <th>Fornecedor</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="insumosTableBody"></tbody>
+                        <tfoot id="insumosTableFoot"></tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <!-- DASHBOARD FINANCEIRO (oculto por padrão) -->
+            <div id="insumoDashboard" style="display: none; margin-top: 2rem;">
+                <div style="background: white; border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow-paper); margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--charcoal);">📊 Dashboard Financeiro — Vendas × Compras</h3>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <select id="dashInsumoMonth" onchange="renderInsumoDashboard()" style="padding: 0.5rem 1rem; border: 2px solid var(--kraft-light); border-radius: 8px; font-family: inherit; font-size: 0.85rem;">
+                                <option value="0">Janeiro</option>
+                                <option value="1">Fevereiro</option>
+                                <option value="2">Março</option>
+                                <option value="3">Abril</option>
+                                <option value="4">Maio</option>
+                                <option value="5">Junho</option>
+                                <option value="6">Julho</option>
+                                <option value="7">Agosto</option>
+                                <option value="8">Setembro</option>
+                                <option value="9">Outubro</option>
+                                <option value="10">Novembro</option>
+                                <option value="11">Dezembro</option>
+                            </select>
+                            <select id="dashInsumoYear" onchange="renderInsumoDashboard()" style="padding: 0.5rem 1rem; border: 2px solid var(--kraft-light); border-radius: 8px; font-family: inherit; font-size: 0.85rem;">
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Cards do mês selecionado -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+                        <div style="background: linear-gradient(135deg, var(--sage), var(--sage-dark)); color: white; padding: 1.25rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em;">💰 Vendas no Mês</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;" id="dashInsumoVendas">R$ 0,00</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, var(--terracotta), #B85F53); color: white; padding: 1.25rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em;">🧵 Compras no Mês</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;" id="dashInsumoCompras">R$ 0,00</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, var(--purple-primary), var(--purple-dark)); color: white; padding: 1.25rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em;">📈 Lucro Bruto</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;" id="dashInsumoLucro">R$ 0,00</div>
+                        </div>
+                        <div style="background: linear-gradient(135deg, var(--gold), #C19B2E); color: white; padding: 1.25rem; border-radius: 12px;">
+                            <div style="font-size: 0.75rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 0.05em;">📊 Margem</div>
+                            <div style="font-size: 1.5rem; font-weight: 700; margin-top: 0.5rem;" id="dashInsumoMargem">0%</div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico comparativo -->
+                    <canvas id="insumoCompareChart" style="max-height: 300px;"></canvas>
+                </div>
+
+                <!-- Gráficos lado a lado -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                    <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem;">🧵 Compras por Categoria</h3>
+                        <canvas id="insumoCategoryChart" style="max-height: 250px;"></canvas>
+                    </div>
+                    <div style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-paper);">
+                        <h3 style="font-family: 'Playfair Display', serif; font-size: 1.1rem; margin-bottom: 1.5rem;">📅 Evolução Mensal</h3>
+                        <canvas id="insumoMonthlyChart" style="max-height: 250px;"></canvas>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- VIEW: RELATÓRIOS -->
@@ -2020,7 +2103,7 @@
         </div>
     </div>
 
-    <!-- NOVO: MODAL INSUMO -->
+    <!-- NOVO: MODAL INSUMO (atualizado com Unidade de Medida + sub-quantidade) -->
     <div id="modalInsumo" class="modal" onclick="if(event.target.id==='modalInsumo') closeInsumoModal()">
         <div class="modal-content">
             <h2 id="modalInsumoTitle">Novo Insumo</h2>
@@ -2053,8 +2136,8 @@
                         <input type="number" id="insumoQty" min="1" value="1" required>
                     </div>
                     <div class="form-group" style="flex: 1">
-                        <label for="insumoUnit">Unidade</label>
-                        <select id="insumoUnit">
+                        <label for="insumoUnit">Unidade de Medida</label>
+                        <select id="insumoUnit" onchange="toggleSubQtyField()">
                             <option value="un">Unidade</option>
                             <option value="resma">Resma</option>
                             <option value="rolo">Rolo</option>
@@ -2065,6 +2148,15 @@
                             <option value="caixa">Caixa</option>
                         </select>
                     </div>
+                </div>
+
+                <!-- Campo condicional: quantidade por unidade de medida -->
+                <div class="form-group" id="subQtyGroup" style="display: none;">
+                    <label for="insumoSubQty" id="subQtyLabel">Quantidade por Unidade de Medida</label>
+                    <input type="number" id="insumoSubQty" min="1" placeholder="Ex: 500 (folhas por resma)">
+                    <p style="font-size: 0.8rem; color: var(--sage-dark); margin-top: 0.5rem;" id="subQtyHint">
+                        💡 Informe quantas unidades individuais contém em cada unidade de medida.
+                    </p>
                 </div>
 
                 <div style="display: flex; gap: 1rem">
@@ -2756,14 +2848,43 @@
         }
 
         // =============================================
-        // === NOVO: MODAL INSUMO ===
+        // === NOVO: MODAL INSUMO (atualizado) ===
         // =============================================
+        
+        // Mostrar/esconder campo de sub-quantidade
+        function toggleSubQtyField() {
+            const unit = document.getElementById('insumoUnit').value;
+            const group = document.getElementById('subQtyGroup');
+            const label = document.getElementById('subQtyLabel');
+            const hint = document.getElementById('subQtyHint');
+            
+            if (unit === 'un') {
+                group.style.display = 'none';
+                document.getElementById('insumoSubQty').value = '';
+            } else {
+                group.style.display = 'block';
+                const unitLabels = {
+                    'resma': 'folhas por resma',
+                    'rolo': 'metros por rolo',
+                    'kg': 'gramas por kg',
+                    'litro': 'ml por litro',
+                    'metro': 'cm por metro',
+                    'pacote': 'unidades por pacote',
+                    'caixa': 'unidades por caixa'
+                };
+                const unitLabel = unitLabels[unit] || 'unidades por ' + unit;
+                label.textContent = `Quantidade por ${unit.charAt(0).toUpperCase() + unit.slice(1)}`;
+                hint.textContent = `💡 Informe quantas unidades individuais (${unitLabel}) contém em cada ${unit}.`;
+            }
+        }
+
         function openInsumoModal(insumoId = null) {
             const modal = document.getElementById('modalInsumo');
             const form = document.getElementById('insumoForm');
             const title = document.getElementById('modalInsumoTitle');
 
             form.reset();
+            document.getElementById('subQtyGroup').style.display = 'none';
 
             if (insumoId) {
                 const insumo = insumos.find(i => i.id === insumoId);
@@ -2774,15 +2895,16 @@
                     document.getElementById('insumoCategory').value = insumo.category || '';
                     document.getElementById('insumoQty').value = insumo.qty || 1;
                     document.getElementById('insumoUnit').value = insumo.unit || 'un';
+                    document.getElementById('insumoSubQty').value = insumo.subQty || '';
                     document.getElementById('insumoPrice').value = insumo.price || '';
                     document.getElementById('insumoDate').value = insumo.date || '';
                     document.getElementById('insumoSupplier').value = insumo.supplier || '';
                     document.getElementById('insumoObs').value = insumo.obs || '';
+                    toggleSubQtyField();
                 }
             } else {
                 title.textContent = 'Novo Insumo';
                 document.getElementById('insumoId').value = '';
-                // Data padrão = hoje
                 document.getElementById('insumoDate').value = new Date().toISOString().split('T')[0];
             }
 
@@ -2799,19 +2921,27 @@
             e.preventDefault();
 
             const insumoId = document.getElementById('insumoId').value;
+            const unit = document.getElementById('insumoUnit').value;
+            const qty = parseInt(document.getElementById('insumoQty').value) || 1;
+            const subQty = parseInt(document.getElementById('insumoSubQty').value) || 0;
+            const price = parseFloat(document.getElementById('insumoPrice').value) || 0;
+
             const insumoData = {
                 name: document.getElementById('insumoName').value.trim(),
                 category: document.getElementById('insumoCategory').value,
-                qty: parseInt(document.getElementById('insumoQty').value) || 1,
-                unit: document.getElementById('insumoUnit').value,
-                price: parseFloat(document.getElementById('insumoPrice').value) || 0,
+                qty: qty,
+                unit: unit,
+                subQty: (unit !== 'un' && subQty > 0) ? subQty : 0,
+                price: price,
                 date: document.getElementById('insumoDate').value,
                 supplier: document.getElementById('insumoSupplier').value.trim(),
                 obs: document.getElementById('insumoObs').value.trim()
             };
 
-            // Calcular total
-            insumoData.total = insumoData.qty * insumoData.price;
+            // Calcular total e total de unidades individuais
+            insumoData.total = qty * price;
+            insumoData.totalUnits = (unit !== 'un' && subQty > 0) ? qty * subQty : qty;
+            insumoData.pricePerUnit = insumoData.totalUnits > 0 ? insumoData.total / insumoData.totalUnits : price;
 
             if (insumoId) {
                 insumos = insumos.map(i => 
@@ -2838,6 +2968,266 @@
                 renderInsumos();
                 showNotification('Insumo excluído!', 'warning');
             }
+        }
+
+        // === RENDER INSUMOS (TABELA estilo planilha) ===
+        function renderInsumos() {
+            const tbody = document.getElementById('insumosTableBody');
+            const tfoot = document.getElementById('insumosTableFoot');
+
+            // Estatísticas
+            const totalInsumos = insumos.length;
+            const totalInvestido = insumos.reduce((sum, i) => sum + (i.total || 0), 0);
+            const now = new Date();
+            const monthTotal = insumos.filter(i => {
+                const d = new Date(i.date);
+                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+            }).reduce((sum, i) => sum + (i.total || 0), 0);
+
+            document.getElementById('insumos-count').textContent = totalInsumos;
+            document.getElementById('insumos-total').textContent = formatCurrency(totalInvestido);
+            document.getElementById('insumos-month').textContent = formatCurrency(monthTotal);
+
+            if (insumos.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="12" style="text-align: center; padding: 3rem; color: var(--kraft-dark);">
+                            🧵 Nenhum insumo cadastrado ainda. Clique em "Novo Insumo" para registrar suas compras.
+                        </td>
+                    </tr>
+                `;
+                tfoot.innerHTML = '';
+                return;
+            }
+
+            // Ordenar por data mais recente
+            const sorted = [...insumos].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            tbody.innerHTML = sorted.map(ins => {
+                const hasSubQty = ins.unit !== 'un' && ins.subQty > 0;
+                const totalUnits = hasSubQty ? ins.qty * ins.subQty : ins.qty;
+                const pricePerUnit = hasSubQty ? (ins.total / totalUnits) : ins.price;
+
+                return `<tr>
+                    <td>${formatDate(ins.date)}</td>
+                    <td><strong>${ins.name}</strong></td>
+                    <td><span class="status-badge" style="background: var(--pink-accent); color: white;">${ins.category || '-'}</span></td>
+                    <td style="text-align: center;">${ins.qty}</td>
+                    <td style="text-align: center;">${ins.unit}</td>
+                    <td style="text-align: center;">${hasSubQty ? ins.subQty : '-'}</td>
+                    <td style="text-align: center; font-weight: 600;">${totalUnits}</td>
+                    <td>${formatCurrency(ins.price)}</td>
+                    <td style="color: var(--purple-dark); font-weight: 600;">${hasSubQty ? formatCurrency(pricePerUnit) : '-'}</td>
+                    <td><strong>${formatCurrency(ins.total || 0)}</strong></td>
+                    <td>${ins.supplier || '-'}</td>
+                    <td>
+                        <div style="display: flex; gap: 0.25rem;">
+                            <button class="btn-edit" style="padding: 0.35rem 0.6rem; font-size: 0.7rem;" onclick="openInsumoModal('${ins.id}')">✏️</button>
+                            <button class="btn-delete" style="padding: 0.35rem 0.6rem; font-size: 0.7rem;" onclick="deleteInsumo('${ins.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // Rodapé com totais
+            tfoot.innerHTML = `
+                <tr style="background: var(--kraft-light); font-weight: 700;">
+                    <td colspan="9" style="text-align: right; padding: 1rem;">TOTAL INVESTIDO:</td>
+                    <td style="padding: 1rem; color: var(--purple-dark); font-size: 1.1rem;">${formatCurrency(totalInvestido)}</td>
+                    <td colspan="2"></td>
+                </tr>
+            `;
+        }
+
+        // === DASHBOARD FINANCEIRO DE INSUMOS ===
+        let insumoDashboardVisible = false;
+        let insumoDashCharts = {};
+
+        function toggleInsumoDashboard() {
+            const panel = document.getElementById('insumoDashboard');
+            insumoDashboardVisible = !insumoDashboardVisible;
+            
+            if (insumoDashboardVisible) {
+                panel.style.display = 'block';
+                
+                // Preencher anos disponíveis
+                const yearSelect = document.getElementById('dashInsumoYear');
+                const currentYear = new Date().getFullYear();
+                const years = new Set();
+                years.add(currentYear);
+                insumos.forEach(i => years.add(new Date(i.date).getFullYear()));
+                orders.forEach(o => years.add(new Date(o.createdAt).getFullYear()));
+                
+                yearSelect.innerHTML = [...years].sort((a, b) => b - a).map(y => 
+                    `<option value="${y}" ${y === currentYear ? 'selected' : ''}>${y}</option>`
+                ).join('');
+                
+                // Selecionar mês atual
+                document.getElementById('dashInsumoMonth').value = new Date().getMonth();
+                
+                renderInsumoDashboard();
+                panel.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                panel.style.display = 'none';
+            }
+        }
+
+        function renderInsumoDashboard() {
+            // Destruir gráficos anteriores
+            Object.values(insumoDashCharts).forEach(c => { if (c) c.destroy(); });
+            insumoDashCharts = {};
+
+            const selectedMonth = parseInt(document.getElementById('dashInsumoMonth').value);
+            const selectedYear = parseInt(document.getElementById('dashInsumoYear').value);
+
+            // Calcular vendas do mês (pedidos prontos)
+            const monthSales = orders.filter(o => {
+                if (o.status !== 'pronto') return false;
+                const d = new Date(o.createdAt);
+                return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+            }).reduce((sum, o) => sum + o.value, 0);
+
+            // Calcular compras do mês
+            const monthPurchases = insumos.filter(i => {
+                const d = new Date(i.date);
+                return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+            }).reduce((sum, i) => sum + (i.total || 0), 0);
+
+            const profit = monthSales - monthPurchases;
+            const margin = monthSales > 0 ? ((profit / monthSales) * 100) : 0;
+
+            // Atualizar cards
+            document.getElementById('dashInsumoVendas').textContent = formatCurrency(monthSales);
+            document.getElementById('dashInsumoCompras').textContent = formatCurrency(monthPurchases);
+            
+            const lucroEl = document.getElementById('dashInsumoLucro');
+            lucroEl.textContent = formatCurrency(profit);
+            lucroEl.style.color = profit >= 0 ? 'white' : '#FFB3B3';
+            
+            document.getElementById('dashInsumoMargem').textContent = margin.toFixed(1) + '%';
+
+            // Gráfico comparativo: Vendas × Compras (12 meses do ano selecionado)
+            const monthLabels = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+            const salesByMonth = Array(12).fill(0);
+            const purchasesByMonth = Array(12).fill(0);
+
+            orders.filter(o => o.status === 'pronto' && new Date(o.createdAt).getFullYear() === selectedYear)
+                .forEach(o => { salesByMonth[new Date(o.createdAt).getMonth()] += o.value; });
+
+            insumos.filter(i => new Date(i.date).getFullYear() === selectedYear)
+                .forEach(i => { purchasesByMonth[new Date(i.date).getMonth()] += (i.total || 0); });
+
+            insumoDashCharts.compare = new Chart(document.getElementById('insumoCompareChart').getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: monthLabels,
+                    datasets: [
+                        {
+                            label: 'Vendas (R$)',
+                            data: salesByMonth,
+                            backgroundColor: 'rgba(156, 175, 136, 0.8)',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Compras (R$)',
+                            data: purchasesByMonth,
+                            backgroundColor: 'rgba(201, 112, 100, 0.8)',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.dataset.label + ': ' + formatCurrency(ctx.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { callback: (v) => 'R$ ' + v.toFixed(0) }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico: Compras por Categoria (mês selecionado)
+            const catTotals = {};
+            insumos.filter(i => {
+                const d = new Date(i.date);
+                return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+            }).forEach(i => {
+                catTotals[i.category || 'Outros'] = (catTotals[i.category || 'Outros'] || 0) + (i.total || 0);
+            });
+
+            const catColors = ['#E8A4B8', '#7B6BA8', '#9CAF88', '#C97064', '#D4AF37', '#E8B4A0', '#5D4E82', '#B5A88F'];
+
+            insumoDashCharts.category = new Chart(document.getElementById('insumoCategoryChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(catTotals),
+                    datasets: [{
+                        data: Object.values(catTotals),
+                        backgroundColor: catColors.slice(0, Object.keys(catTotals).length),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => ctx.label + ': ' + formatCurrency(ctx.parsed)
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico: Evolução mensal (Lucro = Vendas - Compras)
+            const profitByMonth = salesByMonth.map((s, i) => s - purchasesByMonth[i]);
+
+            insumoDashCharts.monthly = new Chart(document.getElementById('insumoMonthlyChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'Lucro Bruto (R$)',
+                        data: profitByMonth,
+                        borderColor: '#7B6BA8',
+                        backgroundColor: profitByMonth.map(v => v >= 0 ? 'rgba(123,107,168,0.15)' : 'rgba(201,112,100,0.15)'),
+                        tension: 0.4,
+                        fill: true,
+                        borderWidth: 3,
+                        pointBackgroundColor: profitByMonth.map(v => v >= 0 ? '#7B6BA8' : '#C97064'),
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => 'Lucro: ' + formatCurrency(ctx.parsed.y)
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { callback: (v) => 'R$ ' + v.toFixed(0) }
+                        }
+                    }
+                }
+            });
         }
 
         // =============================================
@@ -3219,56 +3609,6 @@ _Alipel Papelaria Criativa_
                     <div class="card-actions-grid" style="margin-top: 1rem;">
                         <button class="btn-edit" onclick="openProductModal('${product.id}')">✏️ Editar</button>
                         <button class="btn-delete" onclick="deleteProduct('${product.id}')">🗑️ Excluir</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // === NOVO: RENDER INSUMOS ===
-        function renderInsumos() {
-            const grid = document.getElementById('insumosGrid');
-
-            // Calcular estatísticas
-            const totalInsumos = insumos.length;
-            const totalInvestido = insumos.reduce((sum, i) => sum + (i.total || 0), 0);
-            const now = new Date();
-            const monthTotal = insumos.filter(i => {
-                const d = new Date(i.date);
-                return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-            }).reduce((sum, i) => sum + (i.total || 0), 0);
-
-            document.getElementById('insumos-count').textContent = totalInsumos;
-            document.getElementById('insumos-total').textContent = formatCurrency(totalInvestido);
-            document.getElementById('insumos-month').textContent = formatCurrency(monthTotal);
-
-            if (insumos.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--kraft-dark);">
-                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">🧵 Nenhum insumo cadastrado ainda</p>
-                        <p style="font-size: 0.9rem;">Clique em "Novo Insumo" para registrar suas compras de materiais.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            // Ordenar por data mais recente
-            const sorted = [...insumos].sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            grid.innerHTML = sorted.map(insumo => `
-                <div class="insumo-card">
-                    <span class="insumo-category">${insumo.category || 'Outros'}</span>
-                    <div class="insumo-name">${insumo.name}</div>
-                    <div class="insumo-details">
-                        <span class="insumo-detail">📦 ${insumo.qty} ${insumo.unit}</span>
-                        <span class="insumo-detail">💲 ${formatCurrency(insumo.price)}/${insumo.unit}</span>
-                        <span class="insumo-detail">📅 ${formatDate(insumo.date)}</span>
-                        ${insumo.supplier ? `<span class="insumo-detail">🏪 ${insumo.supplier}</span>` : ''}
-                    </div>
-                    <div class="insumo-price">Total: ${formatCurrency(insumo.total || 0)}</div>
-                    ${insumo.obs ? `<div style="font-size: 0.8rem; color: var(--sage); margin-top: 0.5rem; font-style: italic;">📝 ${insumo.obs}</div>` : ''}
-                    <div class="card-actions-grid">
-                        <button class="btn-edit" onclick="openInsumoModal('${insumo.id}')">✏️ Editar</button>
-                        <button class="btn-delete" onclick="deleteInsumo('${insumo.id}')">🗑️ Excluir</button>
                     </div>
                 </div>
             `).join('');
