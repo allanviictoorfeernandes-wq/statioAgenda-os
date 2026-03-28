@@ -10,6 +10,7 @@
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <style>
         :root {
             /* Premium Craft Palette - Alipel Papelaria Personalizada */
@@ -1431,6 +1432,11 @@
                 <span>🧵</span>
                 <span>Insumos</span>
             </a>
+            <!-- NOVO: Orçamentos -->
+            <a class="nav-item" onclick="showView('orcamentos')">
+                <span>📄</span>
+                <span>Orçamentos</span>
+            </a>
             <a class="nav-item" onclick="showView('relatorios')">
                 <span>📊</span>
                 <span>Relatórios</span>
@@ -1628,6 +1634,55 @@
         </section>
 
         <!-- VIEW: RELATÓRIOS -->
+        <!-- NOVO: VIEW ORÇAMENTOS -->
+        <section id="view-orcamentos" class="content-view" style="display: none;">
+            <!-- Stats -->
+            <div class="reports-stats" style="margin-bottom: 2rem;">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--purple-light);">📄</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Total Orçamentos</span>
+                        <strong class="stat-value" id="orc-count">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--sage);">✅</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Aprovados</span>
+                        <strong class="stat-value" id="orc-approved">0</strong>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gold);">💰</div>
+                    <div class="stat-info">
+                        <span class="stat-label">Valor Total</span>
+                        <strong class="stat-value" id="orc-total">R$ 0,00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela de orçamentos -->
+            <div class="reports-table">
+                <h3>📄 Orçamentos</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Itens</th>
+                                <th>Valor</th>
+                                <th>Prazo</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orcamentosTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <section id="view-relatorios" class="content-view" style="display: none;">
             <div style="display: flex; justify-content: flex-end; margin-bottom: 1.5rem;">
                 <button class="btn-export" onclick="exportReport()">
@@ -1843,6 +1898,17 @@
                         <label for="clientWhatsApp">WhatsApp</label>
                         <input type="tel" id="clientWhatsApp" placeholder="(00) 00000-0000" autocomplete="off" readonly>
                     </div>
+                </div>
+
+                <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
+
+                <!-- Importar Orçamento -->
+                <div class="form-group">
+                    <label for="importOrcamento">📄 Importar de Orçamento (Opcional)</label>
+                    <select id="importOrcamento" onchange="importFromOrcamento()">
+                        <option value="">— Selecione um orçamento para importar —</option>
+                    </select>
+                    <p style="font-size: 0.75rem; color: var(--sage-dark); margin-top: 0.3rem;">💡 Ao importar, cliente, produtos e valores serão preenchidos automaticamente.</p>
                 </div>
 
                 <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
@@ -2161,6 +2227,92 @@
         </div>
     </div>
 
+    <!-- MODAL: ORÇAMENTO -->
+    <div id="modalOrcamento" class="modal" onclick="if(event.target.id==='modalOrcamento') closeOrcamentoModal()">
+        <div class="modal-content" style="width: 650px;">
+            <h2 id="modalOrcamentoTitle">Novo Orçamento</h2>
+            <form id="orcamentoForm">
+                <input type="hidden" id="orcamentoId">
+
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <select id="orcClientSelect" onchange="fillOrcClientData()">
+                        <option value="">Selecione um cliente</option>
+                    </select>
+                </div>
+
+                <div style="display: flex; gap: 1rem">
+                    <div class="form-group" style="flex: 1">
+                        <label>Nome do Cliente</label>
+                        <input type="text" id="orcClientName" required readonly>
+                    </div>
+                    <div class="form-group" style="flex: 1">
+                        <label>Endereço do Cliente</label>
+                        <input type="text" id="orcClientAddress">
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
+
+                <h3 style="font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--purple-dark);">📦 Itens do Orçamento</h3>
+
+                <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                    <div class="form-group" style="flex: 1.5; margin-bottom: 0;">
+                        <label>Descrição do Item</label>
+                        <input type="text" id="orcItemDesc" placeholder="Ex: Caderno Universitário">
+                    </div>
+                    <div class="form-group" style="flex: 0.5; margin-bottom: 0;">
+                        <label>Preço (R$)</label>
+                        <input type="number" step="0.01" id="orcItemPrice" placeholder="0,00" min="0">
+                    </div>
+                    <div class="form-group" style="flex: 0; margin-bottom: 0;">
+                        <label>Qtd.</label>
+                        <div class="qty-selector">
+                            <button type="button" class="qty-btn" onclick="changeOrcQty(-1)">▼</button>
+                            <input type="number" class="qty-value" id="orcItemQty" value="1" min="1" readonly>
+                            <button type="button" class="qty-btn" onclick="changeOrcQty(1)">▲</button>
+                        </div>
+                    </div>
+                    <button type="button" onclick="addOrcItem()" style="padding: 0.95rem 1.25rem; background: var(--sage); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; cursor: pointer; height: 48px; white-space: nowrap;" onmouseover="this.style.background='var(--sage-dark)'" onmouseout="this.style.background='var(--sage)'">+</button>
+                </div>
+
+                <div style="margin-top: 1rem;">
+                    <table class="order-products-table" id="orcItemsTable" style="display: none;">
+                        <thead><tr><th>Nº</th><th>Descrição</th><th>Preço</th><th>Qt.</th><th>Total</th><th></th></tr></thead>
+                        <tbody id="orcItemsBody"></tbody>
+                        <tfoot>
+                            <tr style="background: var(--kraft-light); font-weight: 700;">
+                                <td colspan="4" style="text-align: right;">TOTAL:</td>
+                                <td id="orcTotalDisplay">R$ 0,00</td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div id="orcItemsEmpty" style="text-align: center; padding: 1.5rem; color: var(--kraft-dark); font-size: 0.9rem;">
+                        Nenhum item adicionado.
+                    </div>
+                </div>
+
+                <hr style="border: none; border-top: 2px dashed var(--kraft-light); margin: 1.5rem 0;">
+
+                <div class="form-group">
+                    <label>Prazo de Entrega</label>
+                    <input type="date" id="orcDeadline" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Observações (Opcional)</label>
+                    <textarea id="orcObs" rows="2" placeholder="Notas adicionais para o orçamento..." style="width: 100%; padding: 0.95rem 1.25rem; border: 2px solid var(--kraft-light); border-radius: var(--radius-sm); font-family: inherit; font-size: 0.95rem; resize: vertical;"></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeOrcamentoModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar Orçamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- MODAL DE VISUALIZAÇÃO DO PEDIDO -->
     <div id="viewModal" class="modal" onclick="closeViewModalOnOverlay(event)">
         <div class="view-modal-content">
@@ -2177,10 +2329,8 @@
         // === CONFIGURAÇÕES ===
         // =============================================
         const EMPRESA_NOME = "Alipel Papelaria Personalizada";
-        const STORAGE_KEY = 'alipel_stationery_v4';
-        const CLIENTS_KEY = 'alipel_clients_v4';
-        const PRODUCTS_KEY = 'alipel_products_v4';
-        const INSUMOS_KEY = 'alipel_insumos_v1';
+        const DB_NAME = 'AlipelDB';
+        const DB_VERSION = 2;
 
         // =============================================
         // === GOOGLE DRIVE API (mantido original) ===
@@ -2198,14 +2348,104 @@
         // =============================================
         // === STATE ===
         // =============================================
-        let orders = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-        let clients = JSON.parse(localStorage.getItem(CLIENTS_KEY)) || [];
-        let products = JSON.parse(localStorage.getItem(PRODUCTS_KEY)) || [];
-        let insumos = JSON.parse(localStorage.getItem(INSUMOS_KEY)) || [];
+        let orders = [];
+        let clients = [];
+        let products = [];
+        let insumos = [];
+        let orcamentos = [];
         let draggedCard = null;
-
-        // Itens temporários do pedido sendo criado/editado no modal
         let currentOrderItems = [];
+        let currentOrcItems = [];
+        let db = null;
+
+        // =============================================
+        // === INDEXEDDB ===
+        // =============================================
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains('orders')) {
+                        database.createObjectStore('orders', { keyPath: 'id' });
+                    }
+                    if (!database.objectStoreNames.contains('clients')) {
+                        database.createObjectStore('clients', { keyPath: 'id' });
+                    }
+                    if (!database.objectStoreNames.contains('products')) {
+                        database.createObjectStore('products', { keyPath: 'id' });
+                    }
+                    if (!database.objectStoreNames.contains('insumos')) {
+                        database.createObjectStore('insumos', { keyPath: 'id' });
+                    }
+                    if (!database.objectStoreNames.contains('orcamentos')) {
+                        database.createObjectStore('orcamentos', { keyPath: 'id' });
+                    }
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                
+                request.onerror = (event) => {
+                    console.error('IndexedDB error:', event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function dbGetAll(storeName) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const request = store.getAll();
+                request.onsuccess = () => resolve(request.result || []);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        function dbPutAll(storeName, items) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                store.clear();
+                items.forEach(item => store.put(item));
+                tx.oncomplete = () => resolve();
+                tx.onerror = () => reject(tx.error);
+            });
+        }
+
+        async function loadAllData() {
+            try {
+                orders = await dbGetAll('orders');
+                clients = await dbGetAll('clients');
+                products = await dbGetAll('products');
+                insumos = await dbGetAll('insumos');
+                orcamentos = await dbGetAll('orcamentos');
+            } catch (e) {
+                console.error('Erro ao carregar dados:', e);
+                // Fallback: tentar carregar do localStorage antigo
+                orders = JSON.parse(localStorage.getItem('alipel_stationery_v4')) || [];
+                clients = JSON.parse(localStorage.getItem('alipel_clients_v4')) || [];
+                products = JSON.parse(localStorage.getItem('alipel_products_v4')) || [];
+                insumos = JSON.parse(localStorage.getItem('alipel_insumos_v1')) || [];
+                orcamentos = [];
+            }
+        }
+
+        async function saveAllData() {
+            try {
+                await dbPutAll('orders', orders);
+                await dbPutAll('clients', clients);
+                await dbPutAll('products', products);
+                await dbPutAll('insumos', insumos);
+                await dbPutAll('orcamentos', orcamentos);
+            } catch (e) {
+                console.error('Erro ao salvar:', e);
+            }
+        }
 
         // =============================================
         // === UTILITY FUNCTIONS ===
@@ -2339,13 +2579,10 @@
         });
 
         // =============================================
-        // === STORAGE ===
+        // === STORAGE (IndexedDB) ===
         // =============================================
-        function save() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
-            localStorage.setItem(CLIENTS_KEY, JSON.stringify(clients));
-            localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
-            localStorage.setItem(INSUMOS_KEY, JSON.stringify(insumos));
+        async function save() {
+            await saveAllData();
             render();
             updateStats();
         }
@@ -2362,6 +2599,7 @@
             currentOrderItems = [];
             loadClientOptions();
             loadProductOptions('orderProductSelect');
+            loadOrcamentoOptions();
 
             if (orderId) {
                 const order = orders.find(o => o.id === orderId);
@@ -3260,7 +3498,7 @@
                     orders = orders.map(o => 
                         o.id === orderId ? { ...o, driveLink: driveLink } : o
                     );
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+                    dbPutAll('orders', orders);
                 }
             }
             
@@ -3352,7 +3590,7 @@ _Alipel Papelaria Personalizada_
                 orders = orders.map(o => 
                     o.id === orderId ? { ...o, notificationSent: true } : o
                 );
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+                dbPutAll('orders', orders);
             }
 
             // ABRE OS DOIS JUNTOS
@@ -4090,6 +4328,13 @@ _Alipel Papelaria Personalizada_
                     btnMain.innerHTML = '<span>🧵</span> Novo Insumo';
                     btnMain.onclick = () => openInsumoModal();
                     btnMain.style.display = '';
+                } else if (viewName === 'orcamentos') {
+                    document.getElementById('header-title').textContent = 'Orçamentos';
+                    document.getElementById('header-subtitle').textContent = 'Crie e gerencie orçamentos para seus clientes';
+                    renderOrcamentos();
+                    btnMain.innerHTML = '<span>📄</span> Novo Orçamento';
+                    btnMain.onclick = () => openOrcamentoModal();
+                    btnMain.style.display = '';
                 } else if (viewName === 'relatorios') {
                     document.getElementById('header-title').textContent = 'Relatórios';
                     document.getElementById('header-subtitle').textContent = 'Análises e exportações';
@@ -4190,6 +4435,7 @@ _Alipel Papelaria Personalizada_
                     clients = [];
                     products = [];
                     insumos = [];
+                    orcamentos = [];
                     save();
                     showNotification('Todos os dados foram removidos.', 'warning');
                 }
@@ -4232,6 +4478,450 @@ _Alipel Papelaria Personalizada_
         }
 
         // =============================================
+        // === ORÇAMENTOS ===
+        // =============================================
+        function openOrcamentoModal(orcId = null) {
+            const modal = document.getElementById('modalOrcamento');
+            const form = document.getElementById('orcamentoForm');
+            const title = document.getElementById('modalOrcamentoTitle');
+            form.reset();
+            currentOrcItems = [];
+
+            // Carregar clientes no dropdown
+            const sel = document.getElementById('orcClientSelect');
+            sel.innerHTML = '<option value="">Selecione um cliente</option>';
+            clients.forEach(c => {
+                const o = document.createElement('option');
+                o.value = c.id; o.textContent = c.name; sel.appendChild(o);
+            });
+
+            if (orcId) {
+                const orc = orcamentos.find(o => o.id === orcId);
+                if (orc) {
+                    title.textContent = 'Editar Orçamento';
+                    document.getElementById('orcamentoId').value = orc.id;
+                    document.getElementById('orcClientName').value = orc.clientName || '';
+                    document.getElementById('orcClientAddress').value = orc.clientAddress || '';
+                    document.getElementById('orcDeadline').value = orc.deadline || '';
+                    document.getElementById('orcObs').value = orc.obs || '';
+                    currentOrcItems = JSON.parse(JSON.stringify(orc.items || []));
+                }
+            } else {
+                title.textContent = 'Novo Orçamento';
+                document.getElementById('orcamentoId').value = '';
+                const d = new Date(); d.setDate(d.getDate() + 7);
+                document.getElementById('orcDeadline').value = d.toISOString().split('T')[0];
+            }
+
+            renderOrcItems();
+            modal.style.display = 'flex';
+        }
+
+        function closeOrcamentoModal() {
+            document.getElementById('modalOrcamento').style.display = 'none';
+        }
+
+        function fillOrcClientData() {
+            const cid = document.getElementById('orcClientSelect').value;
+            if (!cid) { document.getElementById('orcClientName').value = ''; document.getElementById('orcClientAddress').value = ''; return; }
+            const c = clients.find(x => x.id === cid);
+            if (c) {
+                document.getElementById('orcClientName').value = c.name;
+                document.getElementById('orcClientAddress').value = c.address || '';
+            }
+        }
+
+        function changeOrcQty(delta) {
+            const inp = document.getElementById('orcItemQty');
+            let v = parseInt(inp.value) + delta;
+            if (v < 1) v = 1;
+            inp.value = v;
+        }
+
+        function addOrcItem() {
+            const desc = document.getElementById('orcItemDesc').value.trim();
+            const price = parseFloat(document.getElementById('orcItemPrice').value) || 0;
+            const qty = parseInt(document.getElementById('orcItemQty').value) || 1;
+            if (!desc) { showNotification('Informe a descrição do item!', 'warning'); return; }
+            if (price <= 0) { showNotification('Informe o preço!', 'warning'); return; }
+
+            currentOrcItems.push({ desc, price, qty, total: price * qty });
+            document.getElementById('orcItemDesc').value = '';
+            document.getElementById('orcItemPrice').value = '';
+            document.getElementById('orcItemQty').value = 1;
+            renderOrcItems();
+        }
+
+        function removeOrcItem(index) {
+            currentOrcItems.splice(index, 1);
+            renderOrcItems();
+        }
+
+        function renderOrcItems() {
+            const table = document.getElementById('orcItemsTable');
+            const empty = document.getElementById('orcItemsEmpty');
+            const body = document.getElementById('orcItemsBody');
+            const totalDisp = document.getElementById('orcTotalDisplay');
+
+            if (currentOrcItems.length === 0) { table.style.display = 'none'; empty.style.display = 'block'; return; }
+            table.style.display = 'table'; empty.style.display = 'none';
+
+            let total = 0;
+            body.innerHTML = currentOrcItems.map((item, i) => {
+                total += item.total;
+                return `<tr><td>${i + 1}</td><td>${item.desc}</td><td>${formatCurrency(item.price)}</td><td>${item.qty}</td><td><strong>${formatCurrency(item.total)}</strong></td><td><button type="button" class="remove-item-btn" onclick="removeOrcItem(${i})">✕</button></td></tr>`;
+            }).join('');
+            totalDisp.textContent = formatCurrency(total);
+        }
+
+        document.getElementById('orcamentoForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (currentOrcItems.length === 0) { showNotification('Adicione pelo menos um item!', 'warning'); return; }
+
+            const orcId = document.getElementById('orcamentoId').value;
+            const totalValue = currentOrcItems.reduce((s, i) => s + i.total, 0);
+
+            const orcData = {
+                clientName: document.getElementById('orcClientName').value.trim(),
+                clientAddress: document.getElementById('orcClientAddress').value.trim(),
+                items: currentOrcItems,
+                value: totalValue,
+                deadline: document.getElementById('orcDeadline').value,
+                obs: document.getElementById('orcObs').value.trim(),
+                status: 'pendente'
+            };
+
+            if (orcId) {
+                orcamentos = orcamentos.map(o => o.id === orcId ? { ...o, ...orcData } : o);
+            } else {
+                orcamentos.push({
+                    id: generateId('ORC'),
+                    createdAt: new Date().toISOString(),
+                    date: new Date().toISOString().split('T')[0],
+                    ...orcData
+                });
+            }
+
+            await save();
+            closeOrcamentoModal();
+            renderOrcamentos();
+            showNotification('Orçamento salvo!', 'success');
+        });
+
+        async function deleteOrcamento(orcId) {
+            if (confirm('Excluir este orçamento?')) {
+                orcamentos = orcamentos.filter(o => o.id !== orcId);
+                await save();
+                renderOrcamentos();
+            }
+        }
+
+        function renderOrcamentos() {
+            const tbody = document.getElementById('orcamentosTableBody');
+
+            // Stats
+            document.getElementById('orc-count').textContent = orcamentos.length;
+            document.getElementById('orc-approved').textContent = orcamentos.filter(o => o.status === 'aprovado').length;
+            document.getElementById('orc-total').textContent = formatCurrency(orcamentos.reduce((s, o) => s + o.value, 0));
+
+            if (orcamentos.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--kraft-dark);">📄 Nenhum orçamento criado ainda.</td></tr>';
+                return;
+            }
+
+            const sorted = [...orcamentos].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const statusColors = { 'pendente': 'var(--gold)', 'aprovado': 'var(--sage)', 'convertido': 'var(--purple-primary)' };
+            const statusLabels = { 'pendente': 'Pendente', 'aprovado': 'Aprovado', 'convertido': 'Convertido em Pedido' };
+
+            tbody.innerHTML = sorted.map(orc => {
+                const itemsSummary = orc.items.map(i => `${i.desc} (×${i.qty})`).join(', ');
+                const canConvert = orc.status !== 'convertido';
+                return `<tr>
+                    <td>${formatDate(orc.date)}</td>
+                    <td><strong>${orc.clientName}</strong></td>
+                    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${itemsSummary}</td>
+                    <td><strong>${formatCurrency(orc.value)}</strong></td>
+                    <td>${formatDate(orc.deadline)}</td>
+                    <td><span class="status-badge" style="background:${statusColors[orc.status]};color:white;">${statusLabels[orc.status]}</span></td>
+                    <td>
+                        <div style="display:flex;gap:0.25rem;flex-wrap:wrap;">
+                            <button class="btn-edit" style="padding:0.35rem 0.5rem;font-size:0.7rem;" onclick="generateOrcamentoPDF('${orc.id}')">📥 PDF</button>
+                            <button class="btn-edit" style="padding:0.35rem 0.5rem;font-size:0.7rem;" onclick="openOrcamentoModal('${orc.id}')">✏️</button>
+                            ${canConvert ? `<button class="btn-edit" style="padding:0.35rem 0.5rem;font-size:0.7rem;background:var(--sage);" onclick="convertOrcToOrder('${orc.id}')">🔄 Pedido</button>` : ''}
+                            <button class="btn-delete" style="padding:0.35rem 0.5rem;font-size:0.7rem;" onclick="deleteOrcamento('${orc.id}')">🗑️</button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        // === GERAR PDF DO ORÇAMENTO ===
+        function generateOrcamentoPDF(orcId) {
+            const orc = orcamentos.find(o => o.id === orcId);
+            if (!orc) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageW = 210;
+            const margin = 20;
+            const contentW = pageW - margin * 2;
+
+            // Cores
+            const purple = [123, 107, 168];
+            const purpleLight = [155, 139, 192];
+            const pink = [232, 164, 184];
+            const black = [26, 26, 26];
+            const gray = [100, 100, 100];
+            const white = [255, 255, 255];
+
+            // Título "Orçamento"
+            doc.setFont('helvetica', 'bolditalic');
+            doc.setFontSize(36);
+            doc.setTextColor(...purple);
+            doc.text('Orçamento', margin, 35);
+
+            // Logo text "Alipel"
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(28);
+            doc.setTextColor(...purpleLight);
+            doc.text('Alipel', pageW - margin - 55, 28);
+
+            // Subtitulo logo
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(10);
+            doc.setTextColor(...pink);
+            doc.text('Papelaria Personalizada', pageW - margin - 55, 36);
+
+            // Data e cliente
+            let y = 55;
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(...black);
+
+            const dateObj = new Date(orc.date + 'T00:00:00');
+            const months = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+            const dateFormatted = `${dateObj.getDate()} de ${months[dateObj.getMonth()]} ${dateObj.getFullYear()}`;
+
+            doc.text(`Data: ${dateFormatted}`, margin, y);
+            y += 6;
+            doc.text(`Cliente: ${orc.clientName}`, margin, y);
+            y += 6;
+            doc.text(`Endereço do Cliente: ${orc.clientAddress || ''}`, margin, y);
+
+            // Mensagem lateral
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(9);
+            doc.setTextColor(...gray);
+            doc.text('Estamos à disposição', pageW - margin - 55, 55);
+            doc.text('para esclarecer quaisquer', pageW - margin - 55, 60);
+            doc.text('dúvidas ou fornecer', pageW - margin - 55, 65);
+            doc.text('informações adicionais', pageW - margin - 55, 70);
+
+            // Tabela
+            y += 15;
+            const colWidths = [15, 65, 30, 20, 30];
+            const headers = ['Nº', 'Descrição', 'Preço', 'Qt.', 'Total'];
+            const rowHeight = 10;
+
+            // Header da tabela
+            doc.setFillColor(...purpleLight);
+            doc.setDrawColor(...purpleLight);
+            doc.rect(margin, y, contentW, rowHeight, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(9);
+            doc.setTextColor(...white);
+
+            let xPos = margin;
+            headers.forEach((h, i) => {
+                doc.text(h, xPos + 3, y + 7);
+                xPos += colWidths[i];
+            });
+
+            y += rowHeight;
+
+            // Linhas da tabela
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(10);
+            doc.setTextColor(...black);
+
+            orc.items.forEach((item, idx) => {
+                // Zebra stripes
+                if (idx % 2 === 1) {
+                    doc.setFillColor(245, 243, 248);
+                    doc.rect(margin, y, contentW, rowHeight, 'F');
+                }
+
+                // Borders
+                doc.setDrawColor(200, 200, 200);
+                doc.rect(margin, y, contentW, rowHeight, 'S');
+
+                xPos = margin;
+                const rowData = [
+                    '',
+                    item.desc,
+                    formatCurrency(item.price),
+                    String(item.qty),
+                    formatCurrency(item.total)
+                ];
+                rowData.forEach((cell, i) => {
+                    doc.text(cell, xPos + 3, y + 7);
+                    xPos += colWidths[i];
+                });
+                y += rowHeight;
+            });
+
+            // Linhas vazias para preencher tabela
+            const minRows = 8;
+            const emptyRows = Math.max(0, minRows - orc.items.length);
+            for (let i = 0; i < emptyRows; i++) {
+                doc.setDrawColor(200, 200, 200);
+                doc.rect(margin, y, contentW, rowHeight, 'S');
+                y += rowHeight;
+            }
+
+            // Total
+            doc.setFillColor(245, 243, 248);
+            doc.rect(margin + colWidths[0] + colWidths[1], y, colWidths[2] + colWidths[3] + colWidths[4], rowHeight, 'F');
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(11);
+            doc.setTextColor(...black);
+            doc.text(`Total: ${formatCurrency(orc.value)}`, margin + colWidths[0] + colWidths[1] + 3, y + 7);
+            y += rowHeight + 10;
+
+            // Resumo
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(12);
+            doc.setTextColor(...black);
+            doc.text('Resumo:', margin, y);
+            y += 7;
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(11);
+            doc.text(`• Valor Total: ${formatCurrency(orc.value)}`, margin, y); y += 6;
+            doc.text('• Forma de Pagamento: PIX - CNPJ: 65.159.599/0001-56', margin, y); y += 6;
+            doc.text(`• Prazo de Entrega: ${formatDate(orc.deadline)}`, margin, y); y += 6;
+
+            if (orc.obs) {
+                doc.text(`• Obs: ${orc.obs}`, margin, y); y += 6;
+            }
+
+            // Rodapé
+            const footerY = 272;
+            doc.setDrawColor(...black);
+            doc.setLineWidth(0.5);
+            doc.line(margin, footerY, pageW - margin, footerY);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(14);
+            doc.setTextColor(...purpleLight);
+            doc.text('Alipel', margin, footerY + 8);
+
+            doc.setFont('helvetica', 'italic');
+            doc.setFontSize(7);
+            doc.setTextColor(...pink);
+            doc.text('Papelaria Personalizada', margin, footerY + 12);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(10);
+            doc.setTextColor(...black);
+            doc.text('@alipel_papelaria', margin + 45, footerY + 10);
+
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(9);
+            doc.text('(41) 99693-1010', pageW - margin - 55, footerY + 7);
+            doc.text('Rua Xambre, 47 - Curitiba - PR', pageW - margin - 55, footerY + 12);
+
+            // Download
+            const fileName = `Orcamento_${orc.clientName.replace(/\s+/g, '_')}.pdf`;
+            doc.save(fileName);
+            showNotification(`PDF "${fileName}" gerado!`, 'success');
+        }
+
+        // === CONVERTER ORÇAMENTO EM PEDIDO ===
+        async function convertOrcToOrder(orcId) {
+            const orc = orcamentos.find(o => o.id === orcId);
+            if (!orc) return;
+
+            if (!confirm(`Converter orçamento de "${orc.clientName}" em pedido?`)) return;
+
+            // Criar pedido com dados do orçamento
+            const orderItems = orc.items.map(item => ({
+                productId: null,
+                name: item.desc,
+                unitPrice: item.price,
+                qty: item.qty,
+                subtotal: item.total
+            }));
+
+            orders.push({
+                id: generateId('ORD'),
+                status: 'producao',
+                createdAt: new Date().toISOString(),
+                saleDate: new Date().toISOString().split('T')[0],
+                client: orc.clientName,
+                clientEmail: '',
+                clientWhatsApp: '',
+                items: orderItems,
+                value: orc.value,
+                deadline: orc.deadline,
+                observations: orc.obs || `Importado do orçamento ${orc.id}`,
+                fromOrcamento: orc.id
+            });
+
+            // Marcar orçamento como convertido
+            orcamentos = orcamentos.map(o => o.id === orcId ? { ...o, status: 'convertido' } : o);
+
+            await save();
+            renderOrcamentos();
+            showNotification(`Pedido criado a partir do orçamento de ${orc.clientName}!`, 'success');
+        }
+
+        // === IMPORTAR ORÇAMENTO NO MODAL DE PEDIDO ===
+        function loadOrcamentoOptions() {
+            const sel = document.getElementById('importOrcamento');
+            sel.innerHTML = '<option value="">— Selecione um orçamento para importar —</option>';
+            orcamentos.filter(o => o.status !== 'convertido').forEach(orc => {
+                const o = document.createElement('option');
+                o.value = orc.id;
+                o.textContent = `${formatDate(orc.date)} — ${orc.clientName} — ${formatCurrency(orc.value)}`;
+                sel.appendChild(o);
+            });
+        }
+
+        async function importFromOrcamento() {
+            const orcId = document.getElementById('importOrcamento').value;
+            if (!orcId) return;
+
+            const orc = orcamentos.find(o => o.id === orcId);
+            if (!orc) return;
+
+            // Preencher cliente
+            document.getElementById('client').value = orc.clientName;
+
+            // Buscar cliente no cadastro para preencher email/whatsapp
+            const clientMatch = clients.find(c => c.name === orc.clientName);
+            if (clientMatch) {
+                document.getElementById('clientEmail').value = clientMatch.email || '';
+                document.getElementById('clientWhatsApp').value = clientMatch.phone || '';
+            }
+
+            // Preencher itens
+            currentOrderItems = orc.items.map(item => ({
+                productId: null,
+                name: item.desc,
+                unitPrice: item.price,
+                qty: item.qty,
+                subtotal: item.total
+            }));
+
+            document.getElementById('deadline').value = orc.deadline;
+            document.getElementById('observations').value = orc.obs || '';
+
+            renderOrderItems();
+            showNotification(`Orçamento de ${orc.clientName} importado!`, 'success');
+        }
+
+        // =============================================
         // === KEYBOARD SHORTCUTS ===
         // =============================================
         document.addEventListener('keydown', (e) => {
@@ -4242,6 +4932,7 @@ _Alipel Papelaria Personalizada_
                 closeInsumoModal();
                 closeViewModal();
                 closeAddProductModal();
+                closeOrcamentoModal();
             }
 
             if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
@@ -4251,24 +4942,27 @@ _Alipel Papelaria Personalizada_
         });
 
         // =============================================
-        // === INITIALIZATION ===
+        // === INITIALIZATION (IndexedDB) ===
         // =============================================
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                await openDB();
+                await loadAllData();
+            } catch (e) {
+                console.error('Erro ao inicializar IndexedDB:', e);
+            }
+
             render();
             updateStats();
-
-            if (orders.length === 0) {
-                console.log('%c✨ Alipel Papelaria Personalizada v4.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
-                console.log('%cSistema inicializado com sucesso!', 'color: #2C3E50; font-size: 14px;');
-                console.log('%cNovidades: Multi-produtos por pedido, Insumos, Preço no cadastro', 'color: #7B6BA8; font-size: 12px; font-weight: bold;');
-            }
+            console.log('%c✨ Alipel Papelaria Personalizada v5.0', 'color: #9CAF88; font-size: 20px; font-weight: bold;');
+            console.log('%cIndexedDB + Orçamentos + PDF', 'color: #7B6BA8; font-size: 12px;');
         });
 
         // Auto-save indicator
         let saveTimeout;
         const originalSave = save;
-        save = function() {
-            originalSave();
+        save = async function() {
+            await originalSave();
             
             clearTimeout(saveTimeout);
             
